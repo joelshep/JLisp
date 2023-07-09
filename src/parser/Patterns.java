@@ -1,15 +1,8 @@
 package parser;
 
 /**
- * File: Patterns.java
- * 
  * This file holds some useful Regular Expressions
  * used in validating symbols and literals in Lisp
- * 
- * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
- * @since 2012-11-01
- * @version 2012-11-01
- *
  */
 
 class Patterns{

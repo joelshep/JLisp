@@ -1,155 +1,91 @@
 package parser;
 
-import java.util.*;
-import helpers.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
- * File: TreeNode.java
- * 
- * This is the central data structure for representing Atoms
- * and S-Expressions.  It maintains the string vector of
- * tokens which make up the object and also employs the factory
- * pattern to create new TreeNodes based on whether or not they
- * are valid S-Expressions.
- * 
- * This class also stipulates the evaluate funcntions and the
- * isList method.
- * 
- * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
- * @since 2012-11-01
- * @version 2012-11-01
- *
+ * A {@link TreeNode} This is the central data structure for representing Atoms and S-Expressions. It maintains
+ * the string vector of tokens which make up the object and also employs the factory pattern
+ * to create new TreeNodes based on whether or not they are valid S-Expressions.
+ * <p>
+ * This class also implements the evaluate functions and the isList method.
  */
-
-abstract public class TreeNode{
+abstract public class TreeNode {
 	protected abstract boolean isList();
-	protected Vector <String> tokens = new Vector <String> ();
+	protected List<String> tokens = new ArrayList<>();
 
 	/**
-	 * Function: create
-	 * 
-	 * Uses the factory pattern to create an atom if the passed string
-	 * vector is appropriate or an S-Expression.
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-01
-	 * @version 2012-11-01
-	 *
-	 * @param s The string vector of the new TreeNode
-	 * 
-	 * @return The new TreeNode object
-	 * 
-	 * @throws Exception If the node is empty or if the constructor fails
-	 *
+	 * Creates and returns either an {@link SExpression} or an {@link Atom} representing the
+	 * given tokenized LISP program. {@code SExpression}s are identified by the first element of
+	 * the given list matching an opening parenthesis ("(").
+     *
+	 * @param tokens A {@code List} of tokens parsed from a string representing a LISP program.
+	 * @return A {@link TreeNode} that is the root node of the parse tree for the given program.
+	 * @throws Exception If the token list is empty or if the constructor fails.
 	 */
-	static TreeNode create(Vector <String> s) throws Exception{
-		if ( s.size() > 0 && s.get(0).matches("[(]") ){
-			return new SExpression(s);
-		} else if ( s.size() > 0 ){
-			return new Atom(s.get(0));
-		} else {
+	static TreeNode create(final List<String> tokens) throws Exception {
+		if (tokens == null || tokens.isEmpty()) {
 			throw new Exception("Tried to create a TreeNode with no data");
 		}
+
+		if (tokens.get(0).matches("[(]")) {
+			return new SExpression(tokens);
+		}
+
+		return new Atom(tokens.get(0));
 	}
 
 	/**
-	 * Function: create
-	 * 
-	 * Adapts the factory pattern to force the creation of an Atom
-	 * if the data is a boolean value.
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-01
-	 * @version 2012-11-01
+	 * Creates an {@link Atom} representing a boolean value.
 	 *
-	 * @param b The boolean value of the Atom-to-be
-	 * 
-	 * @return The new atom object
-	 *
+	 * @param b A boolean value.
+	 * @return An {@link Atom} (sliced to a {@link TreeNode}) representing the given boolean value.
 	 */
-	static TreeNode create(boolean b){
+	static TreeNode create(final boolean b) {
 		return new Atom(b);
 	}
 
 	/**
-	 * Function: create
-	 * 
-	 * Adapts the factory pattern to create an Atom if the data
-	 * is an integer.
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-01
-	 * @version 2012-11-01
+	 * Creates an {@link Atom} representing an integer value.
 	 *
-	 * @param i The integer to use as a literal
-	 * 
-	 * @return The new Atom
-	 *
+	 * @param i An integer value.
+	 * @return An {@link Atom} (sliced to a {@link TreeNode}) representing the given integer value.
 	 */
-	static TreeNode create(int i){
+	static TreeNode create(final int i) {
 		return new Atom(i);
 	}
 
 	/**
-	 * Function: evaluate
-	 * 
 	 * The evaluation of TreeNodes returns a new TreeNode.
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-01
-	 * @version 2012-11-01
-	 * 
-	 * @return The result of evaluating the TreeNode
 	 *
+	 * @return The result of evaluating the TreeNode
 	 */
 	abstract TreeNode evaluate() throws Exception;
 
 	/**
-	 * Function: evaluate
-	 * 
 	 * The evaluation of TreeNodes returns a new TreeNode.
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-01
-	 * @version 2012-11-01
-	 * 
-	 * @param flag Whether or not to take numericals literally
-	 * 
-	 * @return The result of evaluating the TreeNode
 	 *
+	 * @param flag Whether or not to take numericals literally
+	 * @return The result of evaluating the TreeNode
 	 */
 	abstract TreeNode evaluate(boolean flag) throws Exception;
-	
+
 	/**
-	 * Function: evaluate
-	 * 
 	 * The evaluation of TreeNodes returns a new TreeNode.
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-01
-	 * @version 2012-11-01
-	 * 
+     *
 	 * @param flag Whether or not to take numericals literally
 	 * @param env The scoped variables
-	 * 
 	 * @return The result of evaluating the TreeNode
 	 *
 	 */
-	abstract TreeNode evaluate(boolean flag, Hashtable <String, TreeNode> env) throws Exception;
-	
+	abstract TreeNode evaluate(boolean flag, Map<String, TreeNode> env) throws Exception;
+
 	/**
-	 * Function: evaluate
-	 * 
 	 * The evaluation of TreeNodes returns a new TreeNode.
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-01
-	 * @version 2012-11-01
-	 * 
-	 * @param env The scoped variables
-	 * 
-	 * @return The result of evaluating the TreeNode
 	 *
-	 */	
-	abstract TreeNode evaluate(Hashtable <String, TreeNode> env) throws Exception;
+	 * @param env The scoped variables
+	 * @return The result of evaluating the TreeNode
+	 */
+	abstract TreeNode evaluate(Map<String, TreeNode> env) throws Exception;
 }

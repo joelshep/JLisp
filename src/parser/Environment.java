@@ -1,40 +1,30 @@
 package parser;
-import java.util.*;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
- * File: Environment.java
- * 
- * This houses the so-called "d-list" of the program. It mangages
+ * This houses the so-called "d-list" of the program. It manages
  * the binding of functions and variables within the context of the
  * running Lisp program.
- * 
- * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
- * @since 2012-11-01
- * @version 2012-11-01
- *
  */
 class Environment{
-	public static java.util.Hashtable <String, UserFunction> funcs = new Hashtable <String, UserFunction>();
-	public static java.util.Hashtable <String, TreeNode> vars = new Hashtable <String, TreeNode>();
+	public static Map<String, UserFunction> funcs = new HashMap<>();
+	public static Map<String, TreeNode> vars = new HashMap<>();
 
 	/**
-	 * Function: executeFunction
-	 * 
 	 * Executes a requested function with the actual parameters
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-01
-	 * @version 2012-11-01
 	 *
 	 * @param name The name of the function
 	 * @param params An SExpression or Atom to be used as actual parameter
-	 * 
+	 *
 	 * @return The TreeNode (S-Expression or Atom) which is the result of evaluation
-	 * 
+	 *
 	 * @throws Exception If the requested function is undefined
 	 *
 	 */
-	public static TreeNode executeFunction(String name, TreeNode params) throws Exception{
+	public static TreeNode executeFunction(final String name, final TreeNode params) throws Exception {
 		if ( !funcs.containsKey(name) ){
 			throw new Exception("Error! Undefined function: " + name);
 		}
@@ -44,111 +34,70 @@ class Environment{
 	}
 
 	/**
-	 * Function: registerFunction
-	 * 
 	 * This defines a function in the "d-list"
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-01
-	 * @version 2012-11-01
 	 *
 	 * @param name The string name of the function
 	 * @param params The formal parameter list of the function
 	 * @param body The literal or SExpression representing the body of the function
-	 * 
+	 *
 	 * @throws Exception If the function definition is illegal
 	 *
 	 */
-	public static void registerFunction(String name, TreeNode params, TreeNode body) throws Exception{
+	public static void registerFunction(final String name, final TreeNode params, final TreeNode body) throws Exception {
 		UserFunction f = new UserFunction(name, params, body);
 		funcs.put(name, f);
 	}
 
 	/**
-	 * Function: functionIsDefined
-	 * 
 	 * Detects if a function is in the current scope
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-01
-	 * @version 2012-11-01
 	 *
 	 * @param name The string name of the function
-	 * 
+	 *
 	 * @return True if the function is defined. False if not.
 	 *
 	 */
-	public static boolean functionIsDefined(String name){
+	public static boolean functionIsDefined(final String name) {
 		return funcs.containsKey(name);
 	}
 
 	/**
-	 * Function: print
-	 * 
 	 * Sends the variable hashtable stringified to stdout
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-01
-	 * @version 2012-11-01
-	 *
-	 *
 	 */
-	public static void print(){
+	public static void print() {
 		System.out.println(vars.toString());
 	}
 
 	/**
-	 * Function: stringify
-	 * 
 	 * Returns the string version of the variable hashtable.
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-01
-	 * @version 2012-11-01
-	 * 
+	 *
 	 * @return The stringified hashtable of bound variables
 	 *
 	 * @deprecated Only for early debugging
 	 *
 	 */
-	public static String stringify(){
+	public static String stringify() {
 		return vars.toString();
 	}
 
 	/**
-	 * Function: varIsDefined
-	 * 
 	 * Detects if a variable is defined in the current scope
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-01
-	 * @version 2012-11-01
-	 * 
-	 * @param name The string name of the requested variable
+	 *
+	 * @param name The name of the requested variable.
 	 *
 	 * @return True if the variable is bound. False if not.
-	 *
 	 */
-	public static boolean varIsDefined(String name){
+	public static boolean varIsDefined(final String name) {
 		return vars.containsKey(name);
 	}
 
 	/**
-	 * Function: unbindAll
-	 * 
 	 * Used to remove variables from the environment
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-01
-	 * @version 2012-11-01
-	 *
-	 * details
-	 *
 	 */
-	public static void unbindAll(Hashtable <String, TreeNode> tbl){
-		Iterator it = tbl.entrySet().iterator();
+	public static void unbindAll(final HashMap<String, TreeNode> tbl) {
+		Iterator<Map.Entry<String, TreeNode>> it = tbl.entrySet().iterator();
+
 	    while (it.hasNext()) {
-	        Map.Entry pairs = (Map.Entry)it.next();
+	        Map.Entry<String, TreeNode> pairs =it.next();
 	        if ( vars.get(pairs.getKey()) == pairs.getValue() ){
 	        	vars.remove(pairs.getKey());
 	        }
@@ -157,99 +106,62 @@ class Environment{
 	}
 
 	/**
-	 * Function: unbind
-	 * 
 	 * Unbinds a specific variable from the envrionment
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-01
-	 * @version 2012-11-01
-	 *
-	 * @param name String name of the variable
-	 *
+	 * @param name Name of the variable.
 	 */
-	public static void unbind(String name){
+	public static void unbind(final String name) {
 		vars.remove(name);
 	}
-	
+
 	/**
-	 * Function: getVarValue
-	 * 
-	 * Finds a variable and returns it's value if it exists
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-01
-	 * @version 2012-11-01
+	 * Finds a variable and returns its value if it exists.
 	 *
 	 * @param name	The name of the variable
-	 * 
 	 * @return The TreeNode value of the variable
-	 * 
 	 * @throws Exception If the variable is not bound
-	 *
 	 */
-	public static TreeNode getVarValue(String name) throws Exception{
-		if ( vars.containsKey(name) ){
+	public static TreeNode getVarValue(final String name) throws Exception {
+		if ( vars.containsKey(name) ) {
 			return vars.get(name);
-		} else {
-			throw new Exception("Error! No such variable.");
 		}
+
+		throw new Exception("Error! No such variable.");
 	}
-	
+
 	/**
-	 * Function: mergeVars
-	 * 
 	 * This substitutes in new variable bindings to the current environment
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-02
-	 * @version 2012-11-02
 	 *
 	 * @param newVars A Hashtable of the new variable bindings
-	 *
 	 */
-	public static void mergeVars(Hashtable <String, TreeNode> newVars){
-		Iterator it = newVars.entrySet().iterator();
+	public static void mergeVars(final Map<String, TreeNode> newVars) {
+		Iterator<Map.Entry<String, TreeNode>> it = newVars.entrySet().iterator();
 	    while (it.hasNext()) {
-	        Map.Entry pairs = (Map.Entry)it.next();
-			if ( vars.contains(pairs.getKey()) ){ // Do not let it store multiple things in one bucket
+	        Map.Entry<String, TreeNode> pairs = it.next();
+			if ( vars.containsKey(pairs.getKey()) ){ // Do not let it store multiple things in one bucket
 				vars.remove(pairs.getKey());
 			}
-			vars.put( (String) pairs.getKey(), (TreeNode) pairs.getValue() );
+			vars.put( pairs.getKey(), pairs.getValue() );
 	        it.remove(); // avoids a ConcurrentModificationException
 	    }
 	}
-	
+
 	/**
-	 * Function: getVarTable
-	 * 
 	 * Returns a copy of the current environment bindings. Uses a
 	 * copy to avoid accidental corruption.
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-02
-	 * @version 2012-11-02
 	 *
 	 * @return A copy of the current environment bindings
 	 */
-	public static Hashtable <String, TreeNode> getVarTable(){
-		return new Hashtable <String, TreeNode> (vars);
+	public static Map<String, TreeNode> getVarTable() {
+		return new HashMap<>(vars);
 	}
-	
+
 	/**
-	 * Function: setVars
-	 * 
 	 * This takes a table of bindings and swaps it into the current
 	 * variable table.
-	 * 
-	 * @author Joseph T. Anderson <jtanderson@ratiocaeli.com>
-	 * @since 2012-11-02
-	 * @version 2012-11-02
 	 *
 	 * @param v The new Hashtable of variable bindings
-	 *
 	 */
-	public static void setVars(Hashtable <String, TreeNode> v){
-		vars = new Hashtable <String, TreeNode> (v);
+	public static void setVars(final Map<String, TreeNode> v) {
+		vars = new HashMap<>(v);
 	}
 }

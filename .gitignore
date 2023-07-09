@@ -2,3 +2,6 @@ specs.pdf
 test.sh
 tests
 bin/*
+.idea
+*.iml
+out/
