@@ -1,6 +1,6 @@
-package parser;
+package org.ulithi.jlisp.parser;
 
-import helpers.StringHelpers;
+import org.ulithi.jlisp.commons.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public class Parser {
 
 		while ( i < tokens.size() && i >= 0 ) {
 			// The variable l must always hold the last location of the current statement!!!
-			k = StringHelpers.indexOf(tokens, i, "("); //i + tokens.subList(i, tokens.size() - 1).indexOf("(");
+			k = StringUtils.indexOf(tokens, i, "("); //i + tokens.subList(i, tokens.size() - 1).indexOf("(");
 			if ( k == i ) {
 				// There is a new statement to add - starting at i
 				l = endOfExpression(new ArrayList<>(tokens.subList(i, tokens.size()))) + i;

@@ -1,5 +1,7 @@
-import lexer.Lexer;
-import parser.Parser;
+package org.ulithi.jlisp.main;
+
+import org.ulithi.jlisp.lexer.Lexer;
+import org.ulithi.jlisp.parser.Parser;
 
 import java.io.IOException;
 

@@ -1,6 +1,6 @@
-package parser;
+package org.ulithi.jlisp.parser;
 
-import helpers.StringHelpers;
+import org.ulithi.jlisp.commons.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +110,7 @@ class SExpression extends TreeNode {
 			dataStart = i + 1;
 		}
 
-		i = dataStart > 3 ? StringHelpers.indexOf(s, dataStart, ".") : 2;
+		i = dataStart > 3 ? StringUtils.indexOf(s, dataStart, ".") : 2;
 		addressTokens = new ArrayList<>(s.subList(1,i));
 		address = TreeNode.create(addressTokens);
 		dataTokens = new ArrayList<>(s.subList(i+1, s.size() - 1));
@@ -160,7 +160,7 @@ class SExpression extends TreeNode {
 	 * @return The String representing the list-notation of the S-Expression
 	 */
 	protected String toListString() throws Exception {
-		return "(" + StringHelpers.join(toList(), " ") + ")";
+		return "(" + StringUtils.join(toList(), " ") + ")";
 	}
 
 	/**

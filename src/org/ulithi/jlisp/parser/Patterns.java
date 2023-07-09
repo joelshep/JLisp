@@ -1,4 +1,4 @@
-package parser;
+package org.ulithi.jlisp.parser;
 
 /**
  * This file holds some useful Regular Expressions

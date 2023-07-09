@@ -1,4 +1,4 @@
-package helpers;
+package org.ulithi.jlisp.commons;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,12 +7,12 @@ import java.util.List;
  * Utilities for working with strings and lists of strings.
  */
 
-public class StringHelpers {
+public class StringUtils {
 
 	/**
 	 * Static methods only: do not construct.
 	 */
-	private StringHelpers() { }
+	private StringUtils() { }
 	/**
 	 * Function: join
 	 *

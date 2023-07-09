@@ -1,11 +1,9 @@
-package lexer;
+package org.ulithi.jlisp.lexer;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import static lexer.LexerPatterns.*;
 
 /**
  * This is the main class for the Lisp lexical analyzer. Its job is to break
@@ -70,12 +68,12 @@ public class Lexer {
 
 		while (i < s.length()) {
 			int j = i + 1;
-			if (s.substring(i, j).matches(LETTER) || s.substring(i, j).matches(NUMERIC_ATOM)) {
-				while (s.substring(i,j + 1).matches(LITERAL) || s.substring(i, j + 1).matches(NUMERIC_ATOM)) {
+			if (s.substring(i, j).matches(LexerPatterns.LETTER) || s.substring(i, j).matches(LexerPatterns.NUMERIC_ATOM)) {
+				while (s.substring(i,j + 1).matches(LexerPatterns.LITERAL) || s.substring(i, j + 1).matches(LexerPatterns.NUMERIC_ATOM)) {
 					j++;
 				}
 				tokens.add(s.substring(i,j));
-			} else if (s.substring(i, j).matches(SYMBOL)) {
+			} else if (s.substring(i, j).matches(LexerPatterns.SYMBOL)) {
 				tokens.add(s.substring(i,j));
 			}
 			i = j;

@@ -1,4 +1,4 @@
-package lexer;
+package org.ulithi.jlisp.lexer;
 
 /**
  * Regular expressions which represent meaningful and acceptable

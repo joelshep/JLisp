@@ -10,7 +10,7 @@ Running and compiling the interpreter
 
 * 	The project uses several custom packages, so when invoking the project with `java` the classpath must be set to the top-most directory of the 		binary files
 
-* 	A generic run command can look like this: `java -cp ./bin LispInterpreter < file1 > file2`
+* 	A generic run command can look like this: `java -cp ./bin org.ulithi.jlisp.main.LispInterpreter < file1 > file2`
 
 	* This will run the lisp interpreter taking the data from file1 as input and direct all output to file2
 
@@ -69,4 +69,4 @@ The parser takes the input of tokens and processes it statement-by-statement. If
 
 #### Debug Mode
 
-In the event of errors, if one wants to see a stack trace of the error, the program can be run with the `-d` flag set: `java -cp ./bin LispInterpreter -d < infile` and the stack trace of any error will be sent to `stdout`
+In the event of errors, if one wants to see a stack trace of the error, the program can be run with the `-d` flag set: `java -cp ./bin org.ulithi.jlisp.main.LispInterpreter -d < infile` and the stack trace of any error will be sent to `stdout`

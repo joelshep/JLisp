@@ -1,4 +1,4 @@
-package parser;
+package org.ulithi.jlisp.parser;
 
 import java.util.HashMap;
 import java.util.Iterator;

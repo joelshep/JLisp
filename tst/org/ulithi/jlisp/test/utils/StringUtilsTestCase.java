@@ -1,6 +1,6 @@
 package org.ulithi.jlisp.test.utils;
 
-import helpers.StringHelpers;
+import org.ulithi.jlisp.commons.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,9 +12,9 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Unit tests for {@link helpers.StringHelpers}.
+ * Unit tests for {@link StringUtils}.
  */
-public class StringHelpersTestCase {
+public class StringUtilsTestCase {
 
     /**
      * List of string tokens used by tests in this test case.
@@ -42,7 +42,7 @@ public class StringHelpersTestCase {
      */
     @Test
     public void indexOf_HappyCase() {
-        int index = StringHelpers.indexOf(tokens, 4, ")");
+        int index = StringUtils.indexOf(tokens, 4, ")");
         assertEquals(6, index);
         assertEquals(")", tokens.get(index));
     }
@@ -52,7 +52,7 @@ public class StringHelpersTestCase {
      */
     @Test
     public void indexOf_WithFullSublist() {
-        int index = StringHelpers.indexOf(tokens, 0, ")");
+        int index = StringUtils.indexOf(tokens, 0, ")");
         assertEquals(6, index);
         assertEquals(")", tokens.get(index));
     }
@@ -62,7 +62,7 @@ public class StringHelpersTestCase {
      */
     @Test
     public void indexOf_TargetAtSublistStart() {
-        int index = StringHelpers.indexOf(tokens, 6, ")");
+        int index = StringUtils.indexOf(tokens, 6, ")");
         assertEquals(6, index);
         assertEquals(")", tokens.get(index));
     }
@@ -72,7 +72,7 @@ public class StringHelpersTestCase {
      */
     @Test
     public void indexOf_TargetBeforeSublistStart() {
-        int index = StringHelpers.indexOf(tokens, 7, "(");
+        int index = StringUtils.indexOf(tokens, 7, "(");
         assertEquals(-1, index);
     }
 
@@ -81,7 +81,7 @@ public class StringHelpersTestCase {
      */
     @Test(expected=IllegalArgumentException.class)
     public void indexOf_InvalidSublistStart() {
-        StringHelpers.indexOf(tokens, tokens.size() + 3, "(");
+        StringUtils.indexOf(tokens, tokens.size() + 3, "(");
     }
 
     /**
@@ -89,6 +89,6 @@ public class StringHelpersTestCase {
      */
     @Test(expected=IllegalArgumentException.class)
     public void indexOf_EmptyList() {
-        StringHelpers.indexOf(new ArrayList<>(), 2, "N");
+        StringUtils.indexOf(new ArrayList<>(), 2, "N");
     }
 }
