@@ -3,7 +3,6 @@ package org.ulithi.jlisp.lexer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,7 +14,7 @@ public class Lexer {
 	/**
 	 * The characters to be tokenized.
 	 */
-	private String programString = "";
+	private String text = "";
 
 	/**
 	 * The ordered list of tokens produced by lexical analysis.
@@ -32,10 +31,10 @@ public class Lexer {
 		final byte[] bytes = new byte[1024];
 		while (stream.available() > 0) {
 	        stream.read(bytes, 0, 1024);
-	        programString = programString.concat(new String(bytes)).trim().toUpperCase();
+	        text = text.concat(new String(bytes)).trim().toUpperCase();
         }
 
-        tokens = tokenize(programString);
+        tokens = tokenize(text);
 	}
 
 	/**
@@ -43,8 +42,8 @@ public class Lexer {
 	 * @param s A string -- presumably representing a LISP program or expresssion -- to be tokenized.
 	 */
 	public Lexer(final String s) {
-		programString = s;
-		tokens = tokenize(programString);
+		text = s;
+		tokens = tokenize(text);
 	}
 
 	/**

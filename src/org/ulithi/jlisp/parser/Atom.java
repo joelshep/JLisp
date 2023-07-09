@@ -1,7 +1,9 @@
 package org.ulithi.jlisp.parser;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
+
+import static org.ulithi.jlisp.parser.Symbols.NIL;
 
 /**
  * An {@link Atom} is an element of a LISP program which is either an alphanumeric literal or
@@ -10,15 +12,9 @@ import java.util.Map;
  */
 class Atom extends TreeNode {
 	/**
-	 * The string representation of the token represented by this Atom.
+	 * The string representation of the value represented by this Atom.
 	 */
 	private final String literalString;
-
-	/**
-	 * Indicates if this Atom -- as a TreeNode -- represents a list (it doesn't).
-	 * @return False.
-	 */
-	protected boolean isList() { return false; }
 
 	/**
 	 * Constructs an {@link Atom} from an alphanumeric string as a literal.
@@ -32,8 +28,7 @@ class Atom extends TreeNode {
 		}
 
 		literalString = s;
-		tokens = new ArrayList<>(1);
-		tokens.add(literalString);
+		tokens = Collections.singletonList(literalString);
 	}
 
 	/**
@@ -42,9 +37,8 @@ class Atom extends TreeNode {
 	 * @param b A boolean value.
 	 */
 	public Atom(final boolean b) {
-		literalString = b ? "T" : "NIL";
-		tokens = new ArrayList<>(1);
-		tokens.add(literalString);
+		literalString = b ? "T" : NIL;
+		tokens = Collections.singletonList(literalString);
 	}
 
 	/**
@@ -54,9 +48,15 @@ class Atom extends TreeNode {
 	 */
 	public Atom (final int i) {
 		literalString = Integer.toString(i);
-		tokens = new ArrayList<>(1);
-		tokens.add(literalString);
+		tokens = Collections.singletonList(literalString);
 	}
+
+	/**
+	 * Indicates if this Atom -- as a TreeNode -- represents a list (it doesn't).
+	 * @return False.
+	 */
+	@Override
+	protected boolean isList() { return false; }
 
 	/**
 	 * Returns the atom itself, and if it is representing a variable,
@@ -120,5 +120,4 @@ class Atom extends TreeNode {
 			return literalString;
 		}
 	}
-
 }

@@ -129,6 +129,7 @@ class SExpression extends TreeNode {
 	 *
 	 * @return True if the S-Expression is a list, false otherwise.
 	 */
+	@Override
 	protected boolean isList() {
 		return data.toString().matches("NIL") || data.isList();
 	}
@@ -198,6 +199,7 @@ class SExpression extends TreeNode {
 	 * @return The result of evaluation of the SExpression
 	 * @throws Exception If evaluation fails
 	 */
+	@Override
 	protected TreeNode evaluate() throws Exception {
 		return this.evaluate(false);
 	}
@@ -209,6 +211,7 @@ class SExpression extends TreeNode {
 	 *
 	 * @param env A Hashtable of the variables to be considered during evaluation
 	 */
+	@Override
 	protected TreeNode evaluate(final Map<String, TreeNode> env) throws Exception {
 		return evaluate(false, env);
 	}
@@ -222,6 +225,7 @@ class SExpression extends TreeNode {
 	 * @param env Variable bindings to use
 	 * @return The result of evaluation
 	 */
+	@Override
 	protected TreeNode evaluate(boolean flag, final Map<String, TreeNode> env) throws Exception {
 		final Map<String, TreeNode> oldVars = Environment.getVarTable();
 		Environment.mergeVars(env);
@@ -250,6 +254,7 @@ class SExpression extends TreeNode {
 	 * @return The TreeNode representation of the result
 	 * @throws Exception If the function name, variable, etc. is undefined
 	 */
+	@Override
 	protected TreeNode evaluate(boolean flag) throws Exception {
 		String a = address.evaluate().toString();
 		SExpression params;
