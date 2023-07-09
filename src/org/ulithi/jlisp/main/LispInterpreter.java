@@ -9,12 +9,11 @@ import java.io.IOException;
  * This is the driver file for the Lisp Interpreter project.
  * <p>
  * It takes input from stdin and evaluates it line by line.
- * One should note that if muliple statements are on the same line,
+ * One should note that if multiple statements are on the same line,
  * their results will not be output until all have executed
  * successfully.
  */
 class LispInterpreter {
-
 	/**
 	 * The main function of the program.
 	 *
@@ -28,7 +27,7 @@ class LispInterpreter {
 			final Lexer lexer = new Lexer(expression);
 	    	final Parser p = new Parser(lexer.getTokens());
 	    	// System.out.println(p.printParseTree());
-			p.evaluate();
+			System.out.println(p.evaluate());
 		} catch (final IOException e) {
 			System.out.println("End of input...");
     	} catch (final Exception e) {

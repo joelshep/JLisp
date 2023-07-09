@@ -3,16 +3,24 @@ package org.ulithi.jlisp.lexer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * This is the main class for the Lisp lexical analyzer. Its job is to break
- * apart the meaningful symbols in a Lisp program and put them into an array
- * for parsing.
+ * The {@link Lexer} forms LISP language tokens from an {@link InputStream} or a {@link String} of
+ * characters representing a LISP program or expression to be evaluated.
  */
 public class Lexer {
+	/**
+	 * The characters to be tokenized.
+	 */
 	private String programString = "";
-	private final List<String> tokenArray;
+
+	/**
+	 * The ordered list of tokens produced by lexical analysis.
+	 */
+	private final List<String> tokens;
 
 	/**
 	 * Constructor which can take a stream as input. It reads the stream and tokenizes
@@ -27,43 +35,38 @@ public class Lexer {
 	        programString = programString.concat(new String(bytes)).trim().toUpperCase();
         }
 
-        tokenArray = tokenize(programString);
+        tokens = tokenize(programString);
 	}
 
 	/**
-	 * Function: Lexer
-	 *
-	 * @param s A string of the program to be analyzed
+	 * Constructs a {@link Lexer} to produce tokens from a given input string.
+	 * @param s A string -- presumably representing a LISP program or expresssion -- to be tokenized.
 	 */
 	public Lexer(final String s) {
 		programString = s;
-		tokenArray = tokenize(programString);
+		tokens = tokenize(programString);
 	}
 
 	/**
-	 * Returns the tokens gleaned from the input program.
+	 * Returns the tokens formed from the stream or string that this {@link Lexer} parsed.
 	 *
-	 * @return The list of string tokens.
+	 * @return An ordered list of tokens.
 	 */
 	public List<String> getTokens() {
-		return tokenArray;
+		return Collections.unmodifiableList(tokens);
 	}
 
 	/**
-	 * Function: tokenize
-	 *
 	 * Splits a string up into chunks meaninful according to Lisp semantics
 
 	 * @param s A string to be separated according to the Lisp semantics
 	 */
-
 	private static List<String> tokenize(final String s) {
 		int i = 0;
 		List<String> tokens = new ArrayList<>();
 
 		if (s.length() == 1) {
-			tokens.add(s);
-			return tokens;
+			return Collections.singletonList(s);
 		}
 
 		while (i < s.length()) {

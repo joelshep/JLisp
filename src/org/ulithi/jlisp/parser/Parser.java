@@ -57,16 +57,17 @@ public class Parser {
 	 * @throws Exception If any evaluation fails on individual statements
 	 *
 	 */
-	public void evaluate() throws Exception {
-		// String rtn = "";
+	public String evaluate() throws Exception {
+		final StringBuilder results = new StringBuilder(); // rtn = "";
 		for ( int i = 0; i < statements.size(); i++ ){
-			System.out.println(statements.get(i).evaluate());
-			// rtn = rtn + statements.get(i).evaluate();
-			// 			if ( i < statements.size() - 1){
-			// 				rtn = rtn + "\n";
-			// 			}
+			//System.out.println(statements.get(i).evaluate());
+			results.append(statements.get(i).evaluate());
+			if (i < statements.size() - 1) {
+				results.append("\n");
+			}
 		}
-		// return rtn;
+
+		return results.toString();
 	}
 
 	/**
