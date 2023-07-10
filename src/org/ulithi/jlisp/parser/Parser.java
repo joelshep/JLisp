@@ -5,6 +5,8 @@ import org.ulithi.jlisp.commons.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.ulithi.jlisp.parser.Symbols.*;
+
 /**
  * This is the main Parser class for the program. It handles the
  * tokens from the lexical analysis, converts them to dot-notation,
@@ -13,7 +15,7 @@ import java.util.List;
 
 public class Parser {
 
-	final List<ParseTree> statements = new ArrayList<>();
+	private final List<ParseTree> expressions = new ArrayList<>();
 
 	/**
 	 * This function initializes the parser from the lexical tokens,
@@ -31,7 +33,7 @@ public class Parser {
 
 		while ( i < tokens.size() && i >= 0 ) {
 			// The variable l must always hold the last location of the current statement!!!
-			k = StringUtils.indexOf(tokens, i, "("); //i + tokens.subList(i, tokens.size() - 1).indexOf("(");
+			k = StringUtils.indexOf(tokens, i, LPAREN);
 			if ( k == i ) {
 				// There is a new statement to add - starting at i
 				l = endOfExpression(new ArrayList<>(tokens.subList(i, tokens.size()))) + i;
@@ -44,25 +46,22 @@ public class Parser {
 			}
 
 			t = convertToDotNotation(new ArrayList<>(tokens.subList(i, l+1)));
-			statements.add(new ParseTree(t));
+			expressions.add(new ParseTree(t));
 
 			i = l + 1;
 		}
 	}
 
 	/**
-	 * This evaluates the statements one-by-one and prints
-	 * the results.
+	 * Evaluates the parsed expressions one-by-one and accumulates the results.
 	 *
-	 * @throws Exception If any evaluation fails on individual statements
-	 *
+	 * @throws Exception If evaluation fails for any individual expression.
 	 */
 	public String evaluate() throws Exception {
-		final StringBuilder results = new StringBuilder(); // rtn = "";
-		for ( int i = 0; i < statements.size(); i++ ){
-			//System.out.println(statements.get(i).evaluate());
-			results.append(statements.get(i).evaluate());
-			if (i < statements.size() - 1) {
+		final StringBuilder results = new StringBuilder();
+		for (int i = 0; i < expressions.size(); i++ ){
+			results.append(expressions.get(i).evaluate());
+			if (i < expressions.size() - 1) {
 				results.append("\n");
 			}
 		}
@@ -89,7 +88,7 @@ public class Parser {
 			if (closeParen > 1) {
 				// The expression is not ()
 
-				r.add("(");
+				r.add(LPAREN);
 
 				if (closeParen > 2) {
 					// There is more than one token - so not ( a )
@@ -106,9 +105,9 @@ public class Parser {
 						r.addAll(convertToDotNotation(tokens.subList(1,nextInnerToken)));
 						r.add(".");
 						temp = new ArrayList<>();
-						temp.add("(");
+						temp.add(LPAREN);
 						temp.addAll(tokens.subList(nextInnerToken, closeParen));
-						temp.add(")");
+						temp.add(RPAREN);
 						r.addAll(convertToDotNotation(temp));
 					} else {
 						// Since it is in the form of ( [stuff] . [stuff] ), we pass [stuff] to be converted
@@ -120,17 +119,17 @@ public class Parser {
 					// The statement is in the form ( a )
 					r.add(tokens.get(1));
 					r.add(".");
-					r.add("NIL");
+					r.add(NIL);
 				}
-				r.add(")");
+				r.add(RPAREN);
 			} else {
 				// We have ()
-				r.add("NIL");
+				r.add(NIL);
 			}
 		} else {
-			if (tokens.indexOf("(") > 0) {
-				r.addAll(tokens.subList(0, tokens.indexOf("(")));
-				r.addAll(convertToDotNotation(tokens.subList(tokens.indexOf("("), tokens.size())));
+			if (tokens.indexOf(LPAREN) > 0) {
+				r.addAll(tokens.subList(0, tokens.indexOf(LPAREN)));
+				r.addAll(convertToDotNotation(tokens.subList(tokens.indexOf(LPAREN), tokens.size())));
 			} else {
 				r = tokens;
 			}

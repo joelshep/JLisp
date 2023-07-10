@@ -5,8 +5,12 @@ package org.ulithi.jlisp.parser;
  */
 public class Symbols {
 
-    /**
-     * The NIL token.
-     */
+    /** Left parenthesis. */
+    public static final String LPAREN = "(";
+
+    /** Right parenthesis. */
+    public static final String RPAREN = ")";
+
+    /** The NIL token. */
     public static final String NIL = "NIL";
 }
