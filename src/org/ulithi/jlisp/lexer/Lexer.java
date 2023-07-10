@@ -71,7 +71,7 @@ public class Lexer {
 		while (i < s.length()) {
 			int j = i + 1;
 			if (s.substring(i, j).matches(LexerPatterns.LETTER) || s.substring(i, j).matches(LexerPatterns.NUMERIC_ATOM)) {
-				while (s.substring(i,j + 1).matches(LexerPatterns.LITERAL) || s.substring(i, j + 1).matches(LexerPatterns.NUMERIC_ATOM)) {
+				while (j < s.length() && (s.substring(i,j + 1).matches(LexerPatterns.LITERAL) || s.substring(i, j + 1).matches(LexerPatterns.NUMERIC_ATOM))) {
 					j++;
 				}
 				tokens.add(s.substring(i,j));
@@ -81,43 +81,5 @@ public class Lexer {
 			i = j;
 		}
 		return tokens;
-	}
-
-	/**
-	 * This function finds the index in a given string vector which denotes the closing
-	 * parenthesis of a lisp expression
-	 *
-	 * @deprecated Not necessary as of this version. Moved to the parser to be more effective overall
-	 *
-	 * @param s A string vector which will be analyzed. The first character must be the left parenthesis
-	 *
-	 * @throws IllegalArgumentException If the passed vector is not a parenthetical statement
-	 * @throws ArrayIndexOutOfBoundsException If the expression is malformed and the statement has no closing parenthesis
-	 */
-
-	private int endOfExpression(final List<String> s) throws IllegalArgumentException, ArrayIndexOutOfBoundsException {
-		if (! s.get(0).matches("[(]")) {
-			throw new IllegalArgumentException("ERROR.");
-		}
-
-		int openPairs = 1;
-		int end = 1;
-		while (openPairs > 0) {
-			if (end >= s.size()) {
-				throw new ArrayIndexOutOfBoundsException("Error: Unbalanced parentheses");
-			}
-			if (s.get(end).matches("[)]")) {
-				openPairs--;
-			} else if (s.get(end).matches("[(]")) {
-				openPairs++;
-			}
-
-			if (openPairs == 0) {
-				break;
-			} else {
-				end++;
-			}
-		}
-		return end;
 	}
 }

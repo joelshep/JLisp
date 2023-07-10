@@ -5,6 +5,7 @@ import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 import org.junit.runners.Suite;
+import org.ulithi.jlisp.test.lexer.LexerTestCase;
 import org.ulithi.jlisp.test.smoke.SmokeTestCase;
 import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
 
@@ -13,6 +14,7 @@ import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        LexerTestCase.class,
         SmokeTestCase.class,
         StringUtilsTestCase.class
 })
