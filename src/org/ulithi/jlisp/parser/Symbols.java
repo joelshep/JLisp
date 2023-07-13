@@ -13,4 +13,7 @@ public class Symbols {
 
     /** The NIL token. */
     public static final String NIL = "NIL";
+
+    /** The T (true) token. */
+    public static final String T = "T";
 }

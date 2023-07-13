@@ -1,5 +1,8 @@
 package org.ulithi.jlisp.parser;
 
+import org.ulithi.jlisp.exception.EvaluationException;
+import org.ulithi.jlisp.exception.ParseException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,22 +18,19 @@ class UserFunction {
 	protected TreeNode body;
 
 	/**
-	 * Constructor: UserFunction(String n, TreeNode f, TreeNode b)
-	 *
-	 * This function creates a user-defined function with the specified
-	 * name, list of formal parameters, and body.
+	 * Creates a user-defined function with the specified name, list of formal parameters,
+	 * and body.
 	 *
 	 * @todo: allow the body to be a non-list
 	 *
 	 * @param n The name of the function
 	 * @param f The list of formals - can be ()
 	 * @param b The body of the function
-	 * @throws Exception If the parameters are not in the correct format
 	 */
-	public UserFunction(final String n, final TreeNode f, final TreeNode b) throws Exception {
+	public UserFunction(final String n, final TreeNode f, final TreeNode b) {
 		name = n;
 		if ((!f.isList() && !f.toString().matches("NIL") ) || ( !b.isList() && !b.toString().matches("NIL"))) {
-			throw new Exception("Invalid function parameters or body.\n" + f.toString() + "\n" + b.toString());
+			throw new ParseException("Invalid function parameters or body.\n" + f + "\n" + b);
 		}
 
 		final String formalString = f.toString();
@@ -44,9 +44,8 @@ class UserFunction {
 	 *
 	 * @param actuals The list (possible NIL) of actual parameters
 	 * @return The result of evaluating the body
-	 * @throws Exception If evaluation fails
 	 */
-	protected TreeNode evaluate(final TreeNode actuals) throws Exception {
+	protected TreeNode evaluate(final TreeNode actuals) throws EvaluationException {
 		final Map<String, TreeNode> bindings = bind(actuals);
 		// Environment.vars.putAll(bindings);
 		// Iterator it = bindings.entrySet().iterator();
@@ -68,9 +67,8 @@ class UserFunction {
 	 *
 	 * @param s The string of parameters
 	 * @return A string vector of parameter names
-	 * @throws Exception If the parameters are malformed or inappropriate
 	 */
-	private static List<String> splitParamList(final String s) throws Exception {
+	private static List<String> splitParamList(final String s) {
 		String[] chunks = s.substring(1, s.length()-1).split("\\s");
 		List<String> rtn = new ArrayList<>();
 
@@ -79,10 +77,10 @@ class UserFunction {
 				if (!rtn.contains(chunks[i])) {
 					rtn.add(chunks[i]);
 				} else {
-					throw new Exception("Error! Formal parameter names must be distinct.");
+					throw new ParseException("Error! Formal parameter names must be distinct.");
 				}
 			} else {
-				throw new Exception("Error! Invalid parameter name: " + chunks[i]);
+				throw new ParseException("Error! Invalid parameter name: " + chunks[i]);
 			}
 		}
 		return rtn;
@@ -97,13 +95,10 @@ class UserFunction {
 	 *
 	 * @param s The TreeNode object representing the actual paramters
 	 * @return A Hashtable of bindings
-	 * @throws Exception If the wrong number of parameters are used or they
-	 * are malformed
-	 *
 	 */
-	private Map<String, TreeNode> bind(final TreeNode s) throws Exception {
+	private Map<String, TreeNode> bind(final TreeNode s) throws EvaluationException {
 		if (! s.isList() && !s.toString().matches("NIL")) {
-			throw new Exception("Error! Invalid parameters to function: " + name);
+			throw new EvaluationException("Error! Invalid parameters to function: " + name);
 		}
 
 		Map<String, TreeNode> env = new HashMap<>();
@@ -124,9 +119,9 @@ class UserFunction {
 		}
 
 		if (i < formals.size() - 1) {
-			throw new Exception("Error! Too few arguments for: " + name);
+			throw new EvaluationException("Error! Too few arguments for: " + name);
 		} else if (!tmp.data.evaluate().toString().matches("NIL")) {
-			throw new Exception("Error! Too many arguments for: " + name);
+			throw new EvaluationException("Error! Too many arguments for: " + name);
 		}
 
 		return env;

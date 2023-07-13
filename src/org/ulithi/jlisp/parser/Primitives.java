@@ -1,14 +1,18 @@
 package org.ulithi.jlisp.parser;
 
+import org.ulithi.jlisp.exception.ParseException;
+
 import java.lang.Integer;
 import java.lang.String;
 import java.lang.reflect.Method;
+
+import static org.ulithi.jlisp.parser.Symbols.*;
 
 /**
  * Implements the primitive LISP functions supported by this interpreter.
  */
 
-class Primitives {
+public final class Primitives {
 
 	// public static enum Primitive{
 	// 	ATOM,
@@ -51,21 +55,6 @@ class Primitives {
 	};
 
 	/**
-	 * Carries out the CONS operation as defined by the Lisp operational semantics.
-	 * It combines the CAR and CADR of the argument list into a single list. If
-	 * the arguments fail for these operations, an Exception will be thrown in the
-	 * SExpression constructor.
-	 *
-	 * @param sexpr The SExpression arguments in dot-notation
-	 * @return CONS[ CAR[s], CADR[s] ] - the semantically defined CONS
-	 * @throws Exception if the arguments are inappropriate
-	 */
-	public static SExpression CONS (final SExpression sexpr ) throws Exception {
-		final SExpression tmp = new SExpression(sexpr.dataTokens);
-		return new SExpression(sexpr.address.evaluate(), tmp.address.evaluate());
-	}
-
-	/**
 	 * returns the car of the given S-Expression as defined by the operational
 	 * semantics.
 	 *
@@ -84,6 +73,21 @@ class Primitives {
 	 */
 	public static TreeNode CDR (final SExpression sexpr) {
 		return sexpr.data;
+	}
+
+	/**
+	 * Carries out the CONS operation as defined by the Lisp operational semantics.
+	 * It combines the CAR and CADR of the argument list into a single list. If
+	 * the arguments fail for these operations, an Exception will be thrown in the
+	 * SExpression constructor.
+	 *
+	 * @param sexpr The SExpression arguments in dot-notation
+	 * @return CONS[ CAR[s], CADR[s] ] - the semantically defined CONS
+	 * @throws Exception if the arguments are inappropriate
+	 */
+	public static SExpression CONS (final SExpression sexpr ) throws Exception {
+		final SExpression tmp = new SExpression(sexpr.dataTokens);
+		return new SExpression(sexpr.address.evaluate(), tmp.address.evaluate());
 	}
 
 	/**
@@ -115,7 +119,7 @@ class Primitives {
 	 * @throws Exception If the S-Expression is malformed
 	 */
 	public static TreeNode NULL (final SExpression sexpr) throws Exception {
-		return TreeNode.create(sexpr.data.evaluate().toString().matches("NIL"));
+		return TreeNode.create(sexpr.data.evaluate().toString().matches(NIL));
 	}
 
 	/**
@@ -193,7 +197,11 @@ class Primitives {
 	 * @throws Exception If the S-Expression is malformed
 	 */
 	public static TreeNode LESS (final SExpression sexpr) throws Exception {
-		return TreeNode.create(Integer.parseInt(sexpr.address.evaluate(true).toString()) < Integer.parseInt(sexpr.data.evaluate(true).toString()));
+		return TreeNode.create(toInt(sexpr.address.evaluate(true)) < toInt(sexpr.data.evaluate(true))); // Integer.parseInt(sexpr.data.evaluate(true).toString()));
+	}
+
+	private static Integer toInt(final TreeNode o) {
+		return Integer.parseInt(o.toString());
 	}
 
 	/**
@@ -225,7 +233,7 @@ class Primitives {
 	 */
 	public static TreeNode COND (final SExpression sexpr) throws Exception {
 		SExpression a = new SExpression(sexpr.addressTokens);
-		if ( a.address.evaluate().toString().matches("T") ){
+		if ( a.address.evaluate().toString().matches(T) ){
 			SExpression tmp = new SExpression(a.dataTokens);
 			return tmp.address.evaluate(true);
 		} else {
@@ -257,15 +265,15 @@ class Primitives {
 	 * @return An Atom of the function name if the registration is successful
 	 * @throws Exception If the S-Expression is malformed
 	 */
-	public static TreeNode DEFUN (final SExpression sexpr) throws Exception {
+	public static TreeNode DEFUN (final SExpression sexpr) throws ParseException {
 		final String name = sexpr.address.toString();
 
 		if (!name.matches(Patterns.VALID_FUNCTION_NAME)) {
-			throw new Exception("Error! Function names must be character literals only");
+			throw new ParseException("Error! Function names must be character literals only");
 		}
 
 		if (Primitives.primitiveExists(name)) {
-			throw new Exception("Error! Cannot override a primitive function.");
+			throw new ParseException("Error! Cannot override a primitive function.");
 		}
 
 		SExpression d = new SExpression(sexpr.dataTokens);

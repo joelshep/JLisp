@@ -1,14 +1,16 @@
 package org.ulithi.jlisp.parser;
 
+import org.ulithi.jlisp.exception.ParseException;
+
 import java.util.Collections;
 import java.util.Map;
 
-import static org.ulithi.jlisp.parser.Symbols.NIL;
+import static org.ulithi.jlisp.parser.Symbols.*;
 
 /**
- * An {@link Atom} is an element of a LISP program which is either an alphanumeric literal or
- * strictly numeric. See the {@link Patterns} class to validate string literals
- * against valid syntactic patterns.
+ * An {@link Atom} is an element of a LISP program which is either a symbol, an alphanumeric literal
+ * or strictly numeric. See the {@link Patterns} class to validate string literals against valid
+ * syntactic patterns.
  */
 class Atom extends TreeNode {
 	/**
@@ -22,9 +24,9 @@ class Atom extends TreeNode {
 	 * @param s A literal string value for the atom.
 	 * @throws Exception If the string is not purely alphanumeric.
 	 */
-	public Atom(final String s) throws Exception {
-		if ( ! s.matches(Patterns.LITERAL) && ! s.matches(Patterns.NUMERIC_ATOM) ){
-			throw new Exception("Error!");
+	public Atom(final String s) throws ParseException {
+		if (!s.matches(Patterns.LITERAL) && !s.matches(Patterns.NUMERIC_ATOM)) {
+			throw new ParseException("Unable to parse string as valid atom");
 		}
 
 		literalString = s;
@@ -37,7 +39,7 @@ class Atom extends TreeNode {
 	 * @param b A boolean value.
 	 */
 	public Atom(final boolean b) {
-		literalString = b ? "T" : NIL;
+		literalString = b ? T : NIL;
 		tokens = Collections.singletonList(literalString);
 	}
 
@@ -66,7 +68,7 @@ class Atom extends TreeNode {
 	 * @throws Exception Required by parent class.
 	 */
 	@Override
-	protected TreeNode evaluate() throws Exception {
+	protected TreeNode evaluate() {
 		if ( Environment.varIsDefined(literalString) ){
 			return Environment.getVarValue(literalString);
 		} else {
@@ -80,7 +82,7 @@ class Atom extends TreeNode {
 	 * @param env A Hashtable of bound variables. Not used.
 	 */
 	@Override
-	protected TreeNode evaluate(final Map<String, TreeNode> env) throws Exception {
+	protected TreeNode evaluate(final Map<String, TreeNode> env) {
 		return evaluate();
 	}
 
@@ -90,7 +92,7 @@ class Atom extends TreeNode {
 	 * @param env A Hashtable of bound variables. Not used.
 	 */
 	@Override
-	protected TreeNode evaluate(boolean flag, final Map<String, TreeNode> env) throws Exception {
+	protected TreeNode evaluate(boolean flag, final Map<String, TreeNode> env) {
 		return evaluate();
 	}
 
@@ -100,7 +102,7 @@ class Atom extends TreeNode {
 	 * @param flag Ignored? TODO
 	 */
 	@Override
-	protected TreeNode evaluate(boolean flag) throws Exception {
+	protected TreeNode evaluate(boolean flag) {
 		return evaluate();
 	}
 

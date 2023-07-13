@@ -27,7 +27,6 @@ public class Parser {
 	 *
 	 */
 	public Parser(final List<String> tokens) throws Exception {
-		List<String> t;
 		int i = 0;
 		int k, l;
 
@@ -45,8 +44,8 @@ public class Parser {
 				l = tokens.size() - 1;
 			}
 
-			t = convertToDotNotation(new ArrayList<>(tokens.subList(i, l+1)));
-			expressions.add(new ParseTree(t));
+			final List<String> sexpr = toSExpression(new ArrayList<>(tokens.subList(i, l+1)));
+			expressions.add(new ParseTree(sexpr));
 
 			i = l + 1;
 		}
@@ -70,13 +69,12 @@ public class Parser {
 	}
 
 	/**
-	 * This uses a naïve grammar to split the given program and rejoin
-	 * it into legal Lisp S-Expressions.
+	 * This uses a naïve grammar to transform the given list of tokens into a valid LISP S-Expression.
 	 *
-	 * @param tokens The vector of tokens representing the program
-	 * @return The program converted to dot notation in a string vector
+	 * @param tokens An ordered list of tokens representing a parsed LISP expression.
+	 * @return The expression as an S-Expression in dot notation.
 	 */
-	private List<String> convertToDotNotation(final List<String> tokens) {
+	private List<String> toSExpression(final List<String> tokens) {
 		List<String> r = new ArrayList<>();
 		List<String> temp;
 		int nextInnerToken;
@@ -102,18 +100,18 @@ public class Parser {
 
 					if (!tokens.get(nextInnerToken).matches("[.]")) {
 						// The expression must be a list because it is not in dot-notation
-						r.addAll(convertToDotNotation(tokens.subList(1,nextInnerToken)));
+						r.addAll(toSExpression(tokens.subList(1, nextInnerToken)));
 						r.add(".");
 						temp = new ArrayList<>();
 						temp.add(LPAREN);
 						temp.addAll(tokens.subList(nextInnerToken, closeParen));
 						temp.add(RPAREN);
-						r.addAll(convertToDotNotation(temp));
+						r.addAll(toSExpression(temp));
 					} else {
 						// Since it is in the form of ( [stuff] . [stuff] ), we pass [stuff] to be converted
-						r.addAll(convertToDotNotation(tokens.subList(1,nextInnerToken)));
+						r.addAll(toSExpression(tokens.subList(1, nextInnerToken)));
 						r.add(".");
-						r.addAll(convertToDotNotation(tokens.subList(nextInnerToken+1, closeParen)));
+						r.addAll(toSExpression(tokens.subList(nextInnerToken+1, closeParen)));
 					}
 				} else {
 					// The statement is in the form ( a )
@@ -129,7 +127,7 @@ public class Parser {
 		} else {
 			if (tokens.indexOf(LPAREN) > 0) {
 				r.addAll(tokens.subList(0, tokens.indexOf(LPAREN)));
-				r.addAll(convertToDotNotation(tokens.subList(tokens.indexOf(LPAREN), tokens.size())));
+				r.addAll(toSExpression(tokens.subList(tokens.indexOf(LPAREN), tokens.size())));
 			} else {
 				r = tokens;
 			}

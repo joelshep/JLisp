@@ -1,15 +1,22 @@
 package org.ulithi.jlisp.parser;
 
 import org.ulithi.jlisp.commons.StringUtils;
+import org.ulithi.jlisp.exception.EvaluationException;
+import org.ulithi.jlisp.exception.ParseException;
+import org.ulithi.jlisp.exception.UndefinedSymbolException;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.ulithi.jlisp.parser.Symbols.*;
+
 /**
- * Represents S-Expressions in the interpreter. It handles evaluation and construction
- * from various kinds of input. It is also what controls whether the output is returned
- * in list notation or dot notation.
+ * Represents an S-Expression (Symbolic Expression): a.k.a. a list of {@link Atom}s, {@code  Symbols}
+ * or other {@link SExpression s-expressions}. An s-expression can also be empty. This class is able
+ * to construct s-expressions from different structures, and implies the core evaluation routine
+ * as well.
  */
 class SExpression extends TreeNode {
 	protected TreeNode address;
@@ -18,27 +25,18 @@ class SExpression extends TreeNode {
 	protected List<String> addressTokens;
 
 	/**
-	 * Constructor: SExpression(Vector <String> s)
+	 * Constructs an {@link SExpression} from an ordered list of tokens.
 	 *
-	 * This is the constructor that creates an S-Expression from a
-	 * vector string. It calls conshelper to make sure input is
-	 * valid and actually does the creation.
-	 *
-	 * @param s A string vector
-	 * @throws Exception If the input is not representative of an S-Expression
+	 * @param s An ordered list of expression tokens.
 	 */
-	public SExpression(final List<String> s) throws Exception {
+	public SExpression(final List<String> s) throws ParseException {
 		consHelper(s);
 	}
 
 	/**
-	 * This function creast
-	 *
 	 * @param t A treenode to be "cast" to an S-Expression
-	 *
-	 * @throws Exception If the Treenode is not suitable
 	 */
-	public SExpression(final TreeNode t) throws Exception {
+	public SExpression(final TreeNode t) throws ParseException {
 		consHelper(t.tokens);
 	}
 
@@ -67,9 +65,8 @@ class SExpression extends TreeNode {
 	 * This is essentially a deep-copy constructor
 	 *
 	 * @param s The to-be-copied S-Expression
-	 * @throws Exception If any of the sub-expressions are unsuitable or malformed
 	 */
-	public SExpression(final SExpression s) throws Exception {
+	public SExpression(final SExpression s) throws ParseException {
 		data = TreeNode.create(s.dataTokens);
 		address = TreeNode.create(s.addressTokens);
 		dataTokens = new ArrayList<>(s.dataTokens);
@@ -77,33 +74,28 @@ class SExpression extends TreeNode {
 	}
 
 	/**
-	 * Function: consHelper
-	 *
 	 * This is a magic function to take a string vector, make sure it is a
 	 * suitable representation of an S-Expression, and calculate
 	 * which parts are the address and which is the data.  It appropriately
 	 * updates the tokens as well.
 	 *
 	 * @param s The string vector to fit into an S-Expression
-	 *
-	 * @throws Exception If the vector is not fit for an S-Expression (i.e. does not begin with '(' )
-	 *
 	 */
-	private void consHelper(final List<String> s) throws Exception {
+	private void consHelper(final List<String> s) throws ParseException {
 		// some sanity checking for now
 		if (s.isEmpty() || !s.get(0).matches("[(]")) {
-			throw new Exception("Error! Invalid S-Expression: " + s.toString());
+			throw new ParseException("Error! Invalid S-Expression: " + s);
 		}
 
 		int i = 1;
 		int dataStart = 3;
-		if (s.get(i) == "(") {
+		if (s.get(i).equals(LPAREN)) {
 			int open = 1;
 			while (open > 0 && i < s.size()) {
 				i++;
-				if (s.get(i).equals("(")) {
+				if (s.get(i).equals(LPAREN)) {
 					open++;
-				} else if (s.get(i).equals(")")) {
+				} else if (s.get(i).equals(RPAREN)) {
 					open--;
 				}
 			}
@@ -116,11 +108,11 @@ class SExpression extends TreeNode {
 		dataTokens = new ArrayList<>(s.subList(i+1, s.size() - 1));
 		data = TreeNode.create(dataTokens);
 		tokens = new ArrayList<>();
-		tokens.add("(");
+		tokens.add(LPAREN);
 		tokens.addAll(addressTokens);
 		tokens.add(".");
 		tokens.addAll(dataTokens);
-		tokens.add(")");
+		tokens.add(RPAREN);
 	}
 
 	/**
@@ -131,27 +123,7 @@ class SExpression extends TreeNode {
 	 */
 	@Override
 	protected boolean isList() {
-		return data.toString().matches("NIL") || data.isList();
-	}
-
-	/**
-	 * Provides the basic toString functionality. It initially tries
-	 * to print it as a list but if it cannot be converted to list notation
-	 * it uses standard dot notation.
-	 *
-	 * @return The dot- or list-notation of the S-Expression
-	 */
-	@Override
-	public String toString() {
-		if (isList()) {
-			try {
-				return toListString();
-			} catch (final Exception e) {
-				return "(" + address.toString() + " . " + data.toString() + ")";
-			}
-		} else {
-			return "(" + address.toString() + " . " + data.toString() + ")";
-		}
+		return data.toString().matches(NIL) || data.isList();
 	}
 
 	/**
@@ -161,7 +133,7 @@ class SExpression extends TreeNode {
 	 * @return The String representing the list-notation of the S-Expression
 	 */
 	protected String toListString() throws Exception {
-		return "(" + StringUtils.join(toList(), " ") + ")";
+		return LPAREN + StringUtils.join(toList(), " ") + RPAREN;
 	}
 
 	/**
@@ -197,10 +169,9 @@ class SExpression extends TreeNode {
 	 * subroutine.
 	 *
 	 * @return The result of evaluation of the SExpression
-	 * @throws Exception If evaluation fails
 	 */
 	@Override
-	protected TreeNode evaluate() throws Exception {
+	protected TreeNode evaluate() {
 		return this.evaluate(false);
 	}
 
@@ -212,7 +183,7 @@ class SExpression extends TreeNode {
 	 * @param env A Hashtable of the variables to be considered during evaluation
 	 */
 	@Override
-	protected TreeNode evaluate(final Map<String, TreeNode> env) throws Exception {
+	protected TreeNode evaluate(final Map<String, TreeNode> env) {
 		return evaluate(false, env);
 	}
 
@@ -226,7 +197,7 @@ class SExpression extends TreeNode {
 	 * @return The result of evaluation
 	 */
 	@Override
-	protected TreeNode evaluate(boolean flag, final Map<String, TreeNode> env) throws Exception {
+	protected TreeNode evaluate(boolean flag, final Map<String, TreeNode> env) {
 		final Map<String, TreeNode> oldVars = Environment.getVarTable();
 		Environment.mergeVars(env);
 		TreeNode rtn = evaluate(flag);
@@ -239,7 +210,7 @@ class SExpression extends TreeNode {
 	 * It takes a flag that decides whether or not to take numerical
 	 * items literally. That should only happen when they are arguments
 	 * to a primitive or user-defined function.
-	 *
+	 * <p>
 	 * This function uses reflection on the Primitives object to find the
 	 * appropriate primitive function to run. It also first searches the
 	 * defined functions and variables for bound values.  If none are set,
@@ -252,10 +223,9 @@ class SExpression extends TreeNode {
 	 *
 	 * @param flag Whether or not to interpret numerics literally
 	 * @return The TreeNode representation of the result
-	 * @throws Exception If the function name, variable, etc. is undefined
 	 */
 	@Override
-	protected TreeNode evaluate(boolean flag) throws Exception {
+	protected TreeNode evaluate(boolean flag) {
 		String a = address.evaluate().toString();
 		SExpression params;
 		TreeNode rtn;
@@ -284,10 +254,9 @@ class SExpression extends TreeNode {
 			params = (SExpression) data;
 		}
 
-		try{
 			rtn = invokePrimitive(a, params);
 
-			/**
+			/*
 			 * @note: The commented code below was an attempt to improve
 			 * performance over using reflection, but standard timing
 			 * benchmarks showed no performance increase.  So I kept the
@@ -320,11 +289,6 @@ class SExpression extends TreeNode {
 			// 		throw new Exception("Error! Undfined literal: " + a);
 			// }
 			return rtn;
-		} catch (final Exception e) {
-			throw e;
-			// throw new Exception("Error! Undefined literal: " + toString());
-			// throw new Exception("Error!");
-		}
 	}
 
 	/**
@@ -336,13 +300,25 @@ class SExpression extends TreeNode {
 	 * @param name The string name of the requested function
 	 * @param sexpr The data to be used as primitive data
 	 * @return The object returned by the primitive cast as a TreeNode (what it should be anyway)
-	 * @throws Exception If the primitive does not exist
 	 */
-	private TreeNode invokePrimitive(final String name, final SExpression sexpr) throws Exception {
-		java.lang.reflect.Method m = Primitives.class.getDeclaredMethod(name, SExpression.class);
+	private TreeNode invokePrimitive(final String name, final SExpression sexpr) {
+		Method m;
+
+		try {
+			m = Primitives.class.getDeclaredMethod(name, SExpression.class);
+		} catch (Exception e) {
+			throw new UndefinedSymbolException("Primitive function " + name + " undefined", e);
+		}
 
 		m.setAccessible(true);
-		Object o = m.invoke(null, sexpr);
+
+		Object o;
+
+		try {
+			o = m.invoke(null, sexpr);
+		} catch (Exception e) {
+			throw new EvaluationException("Failure during evaluation  of " + name, e);
+		}
 
 		if (o.toString().matches("true")) {
 			return new Atom("T");
@@ -350,6 +326,26 @@ class SExpression extends TreeNode {
 			return new Atom("NIL");
 		} else {
 			return (TreeNode) o;
+		}
+	}
+
+	/**
+	 * Provides the basic toString functionality. It initially tries
+	 * to print it as a list but if it cannot be converted to list notation
+	 * it uses standard dot notation.
+	 *
+	 * @return The dot- or list-notation of the S-Expression
+	 */
+	@Override
+	public String toString() {
+		if (isList()) {
+			try {
+				return toListString();
+			} catch (final Exception e) {
+				return LPAREN + address.toString() + " . " + data.toString() + RPAREN;
+			}
+		} else {
+			return LPAREN + address.toString() + " . " + data.toString() + RPAREN;
 		}
 	}
 }

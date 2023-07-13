@@ -1,5 +1,8 @@
 package org.ulithi.jlisp.parser;
 
+import org.ulithi.jlisp.exception.EvaluationException;
+import org.ulithi.jlisp.exception.ParseException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,9 +27,9 @@ abstract public class TreeNode {
 	 * @return A {@link TreeNode} that is the root node of the parse tree for the given program.
 	 * @throws Exception If the token list is empty or if the constructor fails.
 	 */
-	static TreeNode create(final List<String> tokens) throws Exception {
+	static TreeNode create(final List<String> tokens) throws ParseException {
 		if (tokens == null || tokens.isEmpty()) {
-			throw new Exception("Tried to create a TreeNode with no data");
+			throw new ParseException("Tried to create a TreeNode with no data");
 		}
 
 		if (tokens.get(0).matches("[(]")) {
@@ -61,7 +64,7 @@ abstract public class TreeNode {
 	 *
 	 * @return The result of evaluating the TreeNode
 	 */
-	abstract TreeNode evaluate() throws Exception;
+	abstract TreeNode evaluate() throws EvaluationException;
 
 	/**
 	 * The evaluation of TreeNodes returns a new TreeNode.
@@ -69,7 +72,7 @@ abstract public class TreeNode {
 	 * @param flag Whether or not to take numericals literally
 	 * @return The result of evaluating the TreeNode
 	 */
-	abstract TreeNode evaluate(boolean flag) throws Exception;
+	abstract TreeNode evaluate(boolean flag) throws EvaluationException;
 
 	/**
 	 * The evaluation of TreeNodes returns a new TreeNode.
@@ -79,7 +82,7 @@ abstract public class TreeNode {
 	 * @return The result of evaluating the TreeNode
 	 *
 	 */
-	abstract TreeNode evaluate(boolean flag, Map<String, TreeNode> env) throws Exception;
+	abstract TreeNode evaluate(boolean flag, Map<String, TreeNode> env) throws EvaluationException;
 
 	/**
 	 * The evaluation of TreeNodes returns a new TreeNode.
@@ -87,5 +90,5 @@ abstract public class TreeNode {
 	 * @param env The scoped variables
 	 * @return The result of evaluating the TreeNode
 	 */
-	abstract TreeNode evaluate(Map<String, TreeNode> env) throws Exception;
+	abstract TreeNode evaluate(Map<String, TreeNode> env) throws EvaluationException;
 }

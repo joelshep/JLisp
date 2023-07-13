@@ -5,6 +5,7 @@ import org.ulithi.jlisp.lexer.Lexer;
 import org.ulithi.jlisp.parser.Parser;
 
 import static org.junit.Assert.assertEquals;
+import static org.ulithi.jlisp.test.suite.UnitTestUtilities.evaluate;
 
 /**
  * Unit test that drives several simple LISP expressions through the interpreter and validates the
@@ -15,9 +16,7 @@ public class SmokeTestCase {
     @Test
     public void evaluateSimpleMathExpression() throws Exception {
         final String expression = "(PLUS 3 2)";
-        final Lexer lexer = new Lexer(expression);
-        final Parser p = new Parser(lexer.getTokens());
-        final String result = p.evaluate();
+        final String result = evaluate(expression);
         assertEquals(5, Integer.parseInt(result));
     }
 }

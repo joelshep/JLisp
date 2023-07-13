@@ -1,5 +1,8 @@
 package org.ulithi.jlisp.parser;
 
+import org.ulithi.jlisp.exception.EvaluationException;
+import org.ulithi.jlisp.exception.UndefinedSymbolException;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -24,9 +27,9 @@ class Environment{
 	 * @throws Exception If the requested function is undefined
 	 *
 	 */
-	public static TreeNode executeFunction(final String name, final TreeNode params) throws Exception {
+	public static TreeNode executeFunction(final String name, final TreeNode params) throws EvaluationException {
 		if ( !funcs.containsKey(name) ){
-			throw new Exception("Error! Undefined function: " + name);
+			throw new EvaluationException("Error! Undefined function: " + name);
 		}
 
 		UserFunction f = funcs.get(name);
@@ -43,7 +46,7 @@ class Environment{
 	 * @throws Exception If the function definition is illegal
 	 *
 	 */
-	public static void registerFunction(final String name, final TreeNode params, final TreeNode body) throws Exception {
+	public static void registerFunction(final String name, final TreeNode params, final TreeNode body) {
 		UserFunction f = new UserFunction(name, params, body);
 		funcs.put(name, f);
 	}
@@ -120,12 +123,12 @@ class Environment{
 	 * @return The TreeNode value of the variable
 	 * @throws Exception If the variable is not bound
 	 */
-	public static TreeNode getVarValue(final String name) throws Exception {
+	public static TreeNode getVarValue(final String name) throws UndefinedSymbolException {
 		if ( vars.containsKey(name) ) {
 			return vars.get(name);
 		}
 
-		throw new Exception("Error! No such variable.");
+		throw new UndefinedSymbolException("Error! No such variable: " + name);
 	}
 
 	/**
