@@ -101,7 +101,7 @@ public class Parser {
 					if (!tokens.get(nextInnerToken).matches("[.]")) {
 						// The expression must be a list because it is not in dot-notation
 						r.addAll(toSExpression(tokens.subList(1, nextInnerToken)));
-						r.add(".");
+						r.add(DOT);
 						temp = new ArrayList<>();
 						temp.add(LPAREN);
 						temp.addAll(tokens.subList(nextInnerToken, closeParen));
@@ -110,13 +110,13 @@ public class Parser {
 					} else {
 						// Since it is in the form of ( [stuff] . [stuff] ), we pass [stuff] to be converted
 						r.addAll(toSExpression(tokens.subList(1, nextInnerToken)));
-						r.add(".");
+						r.add(DOT);
 						r.addAll(toSExpression(tokens.subList(nextInnerToken+1, closeParen)));
 					}
 				} else {
 					// The statement is in the form ( a )
 					r.add(tokens.get(1));
-					r.add(".");
+					r.add(DOT);
 					r.add(NIL);
 				}
 				r.add(RPAREN);

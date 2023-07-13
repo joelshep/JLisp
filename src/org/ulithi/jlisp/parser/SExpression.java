@@ -56,7 +56,7 @@ class SExpression extends TreeNode {
 		tokens = new ArrayList<>();
 		tokens.add("(");
 		tokens.addAll(a.tokens);
-		tokens.add(".");
+		tokens.add(DOT);
 		tokens.addAll(d.tokens);
 		tokens.add(")");
 	}
@@ -102,7 +102,7 @@ class SExpression extends TreeNode {
 			dataStart = i + 1;
 		}
 
-		i = dataStart > 3 ? StringUtils.indexOf(s, dataStart, ".") : 2;
+		i = dataStart > 3 ? StringUtils.indexOf(s, dataStart, DOT) : 2;
 		addressTokens = new ArrayList<>(s.subList(1,i));
 		address = TreeNode.create(addressTokens);
 		dataTokens = new ArrayList<>(s.subList(i+1, s.size() - 1));
@@ -110,7 +110,7 @@ class SExpression extends TreeNode {
 		tokens = new ArrayList<>();
 		tokens.add(LPAREN);
 		tokens.addAll(addressTokens);
-		tokens.add(".");
+		tokens.add(DOT);
 		tokens.addAll(dataTokens);
 		tokens.add(RPAREN);
 	}

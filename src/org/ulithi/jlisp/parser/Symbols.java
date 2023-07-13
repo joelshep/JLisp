@@ -5,6 +5,9 @@ package org.ulithi.jlisp.parser;
  */
 public class Symbols {
 
+    /** Dot symbol (for S-Expressions) **/
+    public static final String DOT = ".";
+
     /** Left parenthesis. */
     public static final String LPAREN = "(";
 
