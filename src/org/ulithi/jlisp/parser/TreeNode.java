@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.ulithi.jlisp.parser.Symbols.LPAREN;
+
 /**
  * A {@link TreeNode} This is the central data structure for representing Atoms and S-Expressions. It maintains
  * the string vector of tokens which make up the object and also employs the factory pattern
@@ -25,14 +27,13 @@ abstract public class TreeNode {
      *
 	 * @param tokens A {@code List} of tokens parsed from a string representing a LISP program.
 	 * @return A {@link TreeNode} that is the root node of the parse tree for the given program.
-	 * @throws Exception If the token list is empty or if the constructor fails.
 	 */
 	static TreeNode create(final List<String> tokens) throws ParseException {
 		if (tokens == null || tokens.isEmpty()) {
 			throw new ParseException("Tried to create a TreeNode with no data");
 		}
 
-		if (tokens.get(0).matches("[(]")) {
+		if (tokens.get(0).equals(LPAREN)) {
 			return new SExpression(tokens);
 		}
 

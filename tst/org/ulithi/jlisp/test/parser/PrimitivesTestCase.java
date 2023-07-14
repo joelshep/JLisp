@@ -38,6 +38,13 @@ public class PrimitivesTestCase {
     }
 
     @Test
+    public void evaluateConsExpression() throws Exception {
+        final String expression = "(CONS x y)";
+        final String result = evaluate(expression);
+        assertEquals("(x . y)", result);
+    }
+
+    @Test
     public void evaluateLessExpression() throws Exception {
         final String expression = "(LESS 2 3)";
         final String result = evaluate(expression);

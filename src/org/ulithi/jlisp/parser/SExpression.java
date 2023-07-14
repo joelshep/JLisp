@@ -54,11 +54,11 @@ class SExpression extends TreeNode {
 		dataTokens = d.tokens;
 		addressTokens = a.tokens;
 		tokens = new ArrayList<>();
-		tokens.add("(");
+		tokens.add(LPAREN);
 		tokens.addAll(a.tokens);
 		tokens.add(DOT);
 		tokens.addAll(d.tokens);
-		tokens.add(")");
+		tokens.add(RPAREN);
 	}
 
 	/**
@@ -83,7 +83,7 @@ class SExpression extends TreeNode {
 	 */
 	private void consHelper(final List<String> s) throws ParseException {
 		// some sanity checking for now
-		if (s.isEmpty() || !s.get(0).matches("[(]")) {
+		if (s.isEmpty() || !s.get(0).equals(LPAREN)) {
 			throw new ParseException("Error! Invalid S-Expression: " + s);
 		}
 
@@ -133,7 +133,7 @@ class SExpression extends TreeNode {
 	 * @return The String representing the list-notation of the S-Expression
 	 */
 	protected String toListString() throws Exception {
-		return LPAREN + StringUtils.join(toList(), " ") + RPAREN;
+		return LPAREN + StringUtils.join(toList(), SPACE) + RPAREN;
 	}
 
 	/**
@@ -232,8 +232,10 @@ class SExpression extends TreeNode {
 
 		if (flag && a.matches(Patterns.NUMERIC_ATOM)) {
 			return address.evaluate();
-		} else if (a.matches("NIL") || a.matches("T")) {
-			return a.matches("NIL") ? Primitives.NIL() : Primitives.T();
+		} else if (a.matches(NIL)) {
+			return Primitives.NIL();
+		} else if (a.matches(T)) {
+			return Primitives.T();
 		} else if (Environment.varIsDefined(a)) {
 			return Environment.getVarValue(a);
 		} else if (Environment.functionIsDefined(a)) {
@@ -321,9 +323,9 @@ class SExpression extends TreeNode {
 		}
 
 		if (o.toString().matches("true")) {
-			return new Atom("T");
+			return new Atom(T);
 		} else if (o.toString().matches("false")) {
-			return new Atom("NIL");
+			return new Atom(NIL);
 		} else {
 			return (TreeNode) o;
 		}

@@ -17,6 +17,9 @@ public class Symbols {
     /** The NIL token. */
     public static final String NIL = "NIL";
 
+    /** A single space character. */
+    public static final String SPACE = " ";
+
     /** The T (true) token. */
     public static final String T = "T";
 }

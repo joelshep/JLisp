@@ -79,7 +79,7 @@ public class Parser {
 		List<String> temp;
 		int nextInnerToken;
 
-		if (tokens.get(0).matches("[(]")) {
+		if (tokens.get(0).equals(LPAREN)) {
 			// We have a list or S-Expression
 
 			int closeParen = endOfExpression(tokens);
@@ -92,13 +92,13 @@ public class Parser {
 					// There is more than one token - so not ( a )
 
 					// Is the first one a nested expression?
-					if (tokens.get(1).matches("[(]")) {
+					if (tokens.get(1).equals(LPAREN)) {
 						nextInnerToken = endOfExpression(tokens.subList(1, closeParen)) + 2;
 					} else {
 						nextInnerToken = 2;
 					}
 
-					if (!tokens.get(nextInnerToken).matches("[.]")) {
+					if (!tokens.get(nextInnerToken).equals(DOT)) {
 						// The expression must be a list because it is not in dot-notation
 						r.addAll(toSExpression(tokens.subList(1, nextInnerToken)));
 						r.add(DOT);
