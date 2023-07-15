@@ -10,14 +10,21 @@ import java.util.Map;
 import static org.ulithi.jlisp.parser.Symbols.LPAREN;
 
 /**
- * A {@link TreeNode} This is the central data structure for representing Atoms and S-Expressions. It maintains
- * the string vector of tokens which make up the object and also employs the factory pattern
- * to create new TreeNodes based on whether or not they are valid S-Expressions.
- * <p>
- * This class also implements the evaluate functions and the isList method.
+ * A {@link TreeNode} This is the central data structure for representing Atoms and S-Expressions.
+ * It maintains a list tokens which make up the object, and exposes static methods for creating
+ * {@link Atom Atoms} representing integer and boolean values.
  */
 abstract public class TreeNode {
+	/**
+	 * Indicates if this {@link TreeNode} represents a List or an Atom.
+	 * @return True if this {@code TreeNode} represents a List, and false if it represents
+	 *         an Atom.
+	 */
 	protected abstract boolean isList();
+
+	/**
+	 * An ordered list of tokens associated with this {@link TreeNode}.
+	 */
 	protected List<String> tokens = new ArrayList<>();
 
 	/**
@@ -33,11 +40,15 @@ abstract public class TreeNode {
 			throw new ParseException("Tried to create a TreeNode with no data");
 		}
 
+		if (tokens.size() == 1) {
+			return new Atom(tokens.get(0));
+		}
+
 		if (tokens.get(0).equals(LPAREN)) {
 			return new SExpression(tokens);
 		}
 
-		return new Atom(tokens.get(0));
+		throw new ParseException("Tokens represent neither a list nor an atom");
 	}
 
 	/**

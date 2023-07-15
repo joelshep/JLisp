@@ -37,21 +37,21 @@ public final class Primitives {
 	// }
 
 	/**
-	 * Creates a new atom representing the "true" value.
+	 * Returns an {@link Atom} representing the "true" value.
 	 *
-	 * @return The T Atom
+	 * @return The T Atom.
 	 */
 	public static TreeNode T() {
-		return new Atom(true);
+		return Atom.T;
 	};
 
 	/**
-	 * Creates an atom to represent the NIL value.
+	 * Returns an {@link Atom} to represent the NIL (or false) value.
 	 *
-	 * @return The NIL Atom
+	 * @return The NIL Atom.
 	 */
 	public static TreeNode NIL() {
-		return new Atom(false);
+		return Atom.NIL;
 	};
 
 	/**

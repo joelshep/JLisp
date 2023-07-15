@@ -5,14 +5,23 @@ import org.ulithi.jlisp.exception.ParseException;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.ulithi.jlisp.parser.Symbols.*;
-
 /**
  * An {@link Atom} is an element of a LISP program which is either a symbol, an alphanumeric literal
  * or strictly numeric. See the {@link Patterns} class to validate string literals against valid
  * syntactic patterns.
  */
 class Atom extends TreeNode {
+
+	/**
+	 * Constant singleton {@link Atom} representing the truth value.
+	 */
+	public static final Atom T = new Atom(true);
+
+	/**
+	 * Constant singleton {@link Atom} representing the NIL value.
+	 */
+	public static final Atom NIL = new Atom(false);
+
 	/**
 	 * The string representation of the value represented by this Atom.
 	 */
@@ -22,7 +31,7 @@ class Atom extends TreeNode {
 	 * Constructs an {@link Atom} from an alphanumeric string as a literal.
 	 *
 	 * @param s A literal string value for the atom.
-	 * @throws Exception If the string is not purely alphanumeric.
+	 * @throws ParseException If the string is not purely alphanumeric.
 	 */
 	public Atom(final String s) throws ParseException {
 		if (!s.matches(Patterns.LITERAL) && !s.matches(Patterns.NUMERIC_ATOM)) {
@@ -39,7 +48,7 @@ class Atom extends TreeNode {
 	 * @param b A boolean value.
 	 */
 	public Atom(final boolean b) {
-		literalString = b ? T : NIL;
+		literalString = b ? Symbols.T : Symbols.NIL;
 		tokens = Collections.singletonList(literalString);
 	}
 
@@ -65,7 +74,6 @@ class Atom extends TreeNode {
 	 * then return the value of that variable.
 	 *
 	 * @return The atom or the variable value of it if applicable
-	 * @throws Exception Required by parent class.
 	 */
 	@Override
 	protected TreeNode evaluate() {

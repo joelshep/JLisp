@@ -323,9 +323,9 @@ class SExpression extends TreeNode {
 		}
 
 		if (o.toString().matches("true")) {
-			return new Atom(T);
+			return Atom.T;
 		} else if (o.toString().matches("false")) {
-			return new Atom(NIL);
+			return Atom.NIL;
 		} else {
 			return (TreeNode) o;
 		}
