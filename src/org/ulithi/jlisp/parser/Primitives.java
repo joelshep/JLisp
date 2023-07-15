@@ -83,9 +83,8 @@ public final class Primitives {
 	 *
 	 * @param sexpr The SExpression arguments in dot-notation
 	 * @return CONS[ CAR[s], CADR[s] ] - the semantically defined CONS
-	 * @throws Exception if the arguments are inappropriate
 	 */
-	public static SExpression CONS (final SExpression sexpr ) throws Exception {
+	public static SExpression CONS (final SExpression sexpr ) {
 		final SExpression tmp = new SExpression(sexpr.dataTokens);
 		return new SExpression(sexpr.address.evaluate(), tmp.address.evaluate());
 	}
@@ -94,9 +93,9 @@ public final class Primitives {
 	 * Determines if an S-Expression is semantically an Atom
 	 *
 	 * @param sexpr The S-Expression in question
-	 * @return True if it is an atom literal, false otherwise.
+	 * @return T if it is an atom literal, NIL otherwise.
 	 */
-	public static TreeNode ATOM (final SExpression sexpr) throws Exception {
+	public static TreeNode ATOM (final SExpression sexpr) {
 		return TreeNode.create(sexpr.address.evaluate().toString().matches(Patterns.LITERAL));
 	}
 
@@ -104,77 +103,70 @@ public final class Primitives {
 	 * Determines if the value of two S-Expressions are equal
 	 *
 	 * @param sexpr The paramenter S-Expression
-	 * @return T or NIL whether or not they are the same
-	 * @throws Exception If the S-Expression is malformed
+	 * @return T if the two S-Expressions are equal, NIL otherwise.
 	 */
-	public static TreeNode EQ (final SExpression sexpr) throws Exception {
+	public static TreeNode EQ (final SExpression sexpr) {
 		return TreeNode.create(sexpr.address.evaluate(true).toString().matches(sexpr.data.evaluate(true).toString()));
 	}
 
 	/**
-	 * Determines if the S-Expression is NIL
+	 * Indicates if an S-Expression evaluates to NIL
 	 *
-	 * @param sexpr The S-Expression in question
-	 * @return T or NIL whether or not the S-Expression is NIL
-	 * @throws Exception If the S-Expression is malformed
+	 * @param sexpr The S-Expression in question.
+	 * @return T if the S-Expression evaluates to NIL, NIL otherwise.
 	 */
-	public static TreeNode NULL (final SExpression sexpr) throws Exception {
+	public static TreeNode NULL (final SExpression sexpr) {
 		return TreeNode.create(sexpr.data.evaluate().toString().matches(NIL));
 	}
 
 	/**
-	 * Determines if an S-Expression is an integer
+	 * Indicates if an S-Expression evaluates to an integer.
 	 *
 	 * @param sexpr An S-Expression
-	 * @return T or NIL whether or not it is an integer
+	 * @return T if the S-Expression evaluates to an integer, NIL otherwise.
 	 */
 	public static TreeNode INT (final SExpression sexpr) throws Exception{
 		return TreeNode.create(sexpr.address.evaluate(true).toString().matches(Patterns.NUMERIC_ATOM));
 	}
 
 	/**
-	 * Adds two numbers.
+	 * Adds two numbers and returns an Atom representing the sum.
 	 *
 	 * @param sexpr S-Expression
 	 * @return The sum of the two elements in the given list (dot-notation form)
-	 * @throws Exception If the S-Expression is malformed
 	 */
-	public static TreeNode PLUS (final SExpression sexpr) throws Exception {
-		return TreeNode.create(Integer.parseInt(sexpr.address.evaluate(true).toString()) + Integer.parseInt(sexpr.data.evaluate(true).toString()));
+	public static TreeNode PLUS (final SExpression sexpr) {
+		return TreeNode.create(toInt(sexpr.address.evaluate(true)) + toInt(sexpr.data.evaluate(true)));
 	}
 
 	/**
-	 * Subtracts two numbers.
+	 * Subtracts two numbers and returns the difference.
 	 *
 	 * @param sexpr S-Expression list in dot-notation
 	 * @return The difference of the two paramenters as an atom
-	 * @throws Exception If the S-Expression is malformed
 	 */
 	public static TreeNode MINUS (final SExpression sexpr) throws Exception {
-		return TreeNode.create(Integer.parseInt(sexpr.address.evaluate(true).toString()) - Integer.parseInt(sexpr.data.evaluate(true).toString()));
+		return TreeNode.create(toInt(sexpr.address.evaluate(true)) - toInt(sexpr.data.evaluate(true)));
 	}
 
 	/**
-	 * Divides two numbers with integer division.
+	 * Divides two numbers with integer division and returns the quotient.
 	 *
 	 * @param sexpr S-Expression
 	 * @return The quotient of the two parameters given by the S-Expression.
-	 * @throws Exception If the S-Expression is malformed
-	 *
 	 */
 	public static TreeNode QUOTIENT(final SExpression sexpr) throws Exception {
-		return TreeNode.create(Integer.parseInt(sexpr.address.evaluate(true).toString()) / Integer.parseInt(sexpr.data.evaluate(true).toString()));
+		return TreeNode.create(toInt(sexpr.address.evaluate(true)) / toInt(sexpr.data.evaluate(true)));
 	}
 
 	/**
-	 * Computes the product of two numbers.
+	 * Computes and returns the product of two numbers.
 	 *
 	 * @param sexpr S-Expression
 	 * @return The product of the two parameters as derived from the S-Expression
-	 * @throws Exception If the S-Expression is malformed
 	 */
 	public static TreeNode TIMES (final SExpression sexpr) throws Exception {
-		return TreeNode.create(Integer.parseInt(sexpr.address.evaluate(true).toString()) * Integer.parseInt(sexpr.data.evaluate(true).toString()));
+		return TreeNode.create(toInt(sexpr.address.evaluate(true)) * toInt(sexpr.data.evaluate(true)));
 	}
 
 	/**
@@ -183,10 +175,9 @@ public final class Primitives {
 	 *
 	 * @param sexpr S-Expression
 	 * @return The remainder after division as derived from the S-Expression
-	 * @throws Exception If the S-Expression is malformed
 	 */
 	public static TreeNode REMAINDER (final SExpression sexpr) throws Exception {
-		return TreeNode.create(Integer.parseInt(sexpr.address.evaluate(true).toString()) % Integer.parseInt(sexpr.data.evaluate(true).toString()));
+		return TreeNode.create(toInt(sexpr.address.evaluate(true)) % toInt(sexpr.data.evaluate(true)));
 	}
 
 	/**
@@ -194,14 +185,9 @@ public final class Primitives {
 	 *
 	 * @param sexpr S-Expression
 	 * @return the boolean answer to the 'less than' operation
-	 * @throws Exception If the S-Expression is malformed
 	 */
 	public static TreeNode LESS (final SExpression sexpr) throws Exception {
-		return TreeNode.create(toInt(sexpr.address.evaluate(true)) < toInt(sexpr.data.evaluate(true))); // Integer.parseInt(sexpr.data.evaluate(true).toString()));
-	}
-
-	private static Integer toInt(final TreeNode o) {
-		return Integer.parseInt(o.toString());
+		return TreeNode.create(toInt(sexpr.address.evaluate(true)) < toInt(sexpr.data.evaluate(true)));
 	}
 
 	/**
@@ -212,12 +198,10 @@ public final class Primitives {
 	 * @throws Exception If the S-Expression is malformed
 	 */
 	public static TreeNode GREATER (final SExpression sexpr) throws Exception {
-		return TreeNode.create(Integer.parseInt(sexpr.address.evaluate(true).toString()) > Integer.parseInt(sexpr.data.evaluate(true).toString()));
+		return TreeNode.create(toInt(sexpr.address.evaluate(true)) > toInt(sexpr.data.evaluate(true)));
 	}
 
 	/**
-	 * Function: COND
-	 *
 	 * As per the operational semantics of Lisp, takes an S-Expression
 	 * which represents a list of conditions. It evaluates them until
 	 * one's CAR evaluates to T and then returns the second item.
@@ -249,10 +233,8 @@ public final class Primitives {
 	 *
 	 * @param sexpr S-Expression
 	 * @return The address of s
-	 * @throws Exception If the S-Expression is malformed
-	 *
 	 */
-	public static TreeNode QUOTE (final SExpression sexpr) throws Exception {
+	public static TreeNode QUOTE (final SExpression sexpr) {
 		return sexpr.address;
 	}
 
@@ -284,6 +266,15 @@ public final class Primitives {
 		Environment.registerFunction(name, params, body);
 
 		return new Atom(name);
+	}
+
+	/**
+	 * Attempts to cast the literal value of the given {@link TreeNode} to an integer.
+	 * @param node A {@link TreeNode}.
+	 * @return The integer value of the given node, interpreted as a literal.
+	 */
+	private static Integer toInt(final TreeNode node) {
+		return Integer.parseInt(node.toString());
 	}
 
 	/**

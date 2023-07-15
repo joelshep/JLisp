@@ -34,7 +34,7 @@ class SExpression extends TreeNode {
 	}
 
 	/**
-	 * @param t A treenode to be "cast" to an S-Expression
+	 * @param t A {@link TreeNode} to be "cast" to an S-Expression.
 	 */
 	public SExpression(final TreeNode t) throws ParseException {
 		consHelper(t.tokens);
@@ -228,14 +228,13 @@ class SExpression extends TreeNode {
 	protected TreeNode evaluate(boolean flag) {
 		String a = address.evaluate().toString();
 		SExpression params;
-		TreeNode rtn;
 
 		if (flag && a.matches(Patterns.NUMERIC_ATOM)) {
 			return address.evaluate();
 		} else if (a.matches(NIL)) {
-			return Primitives.NIL();
+			return Atom.NIL;
 		} else if (a.matches(T)) {
-			return Primitives.T();
+			return Atom.T;
 		} else if (Environment.varIsDefined(a)) {
 			return Environment.getVarValue(a);
 		} else if (Environment.functionIsDefined(a)) {
@@ -256,41 +255,7 @@ class SExpression extends TreeNode {
 			params = (SExpression) data;
 		}
 
-			rtn = invokePrimitive(a, params);
-
-			/*
-			 * @note: The commented code below was an attempt to improve
-			 * performance over using reflection, but standard timing
-			 * benchmarks showed no performance increase.  So I kept the
-			 * reflection strategy as opposed to increasing code complexity.
-			 */
-
-			// Primitives.Primitive enumVal = Primitives.Primitive.valueOf(a);
-
-			// switch(enumVal){
-			// 	case PLUS: rtn = Primitives.PLUS(params); break;
-			// 	case MINUS: rtn = Primitives.MINUS(params); break;
-			// 	case T: rtn = Primitives.T(); break;
-			// 	case NIL: rtn = Primitives.NIL(); break;
-			// 	case CONS: rtn = Primitives.CONS(params); break;
-			// 	case CAR: rtn = Primitives.CAR(params); break;
-			// 	case CDR: rtn = Primitives.CDR(params); break;
-			// 	case ATOM: rtn = Primitives.ATOM(params); break;
-			// 	case EQ: rtn = Primitives.EQ(params); break;
-			// 	case NULL: rtn = Primitives.NULL(params); break;
-			// 	case INT: rtn = Primitives.INT(params); break;
-			// 	case QUOTIENT: rtn = Primitives.QUOTIENT(params); break;
-			// 	case TIMES: rtn = Primitives.TIMES(params); break;
-			// 	case REMAINDER: rtn = Primitives.REMAINDER(params); break;
-			// 	case LESS: rtn = Primitives.LESS(params); break;
-			// 	case GREATER: rtn = Primitives.GREATER(params); break;
-			// 	case COND: rtn = Primitives.COND(params); break;
-			// 	case QUOTE: rtn = Primitives.QUOTE(params); break;
-			// 	case DEFUN: rtn = Primitives.DEFUN(params); break;
-			// 	default:
-			// 		throw new Exception("Error! Undfined literal: " + a);
-			// }
-			return rtn;
+		return invokePrimitive(a, params);
 	}
 
 	/**

@@ -51,4 +51,10 @@ public class PrimitivesTestCase {
         assertEquals("T", result);
     }
 
+    @Test
+    public void evaluateMathExpression() throws Exception {
+        final String expression = "(TIMES (PLUS 1 2) (MINUS 7 3))";
+        final String result = evaluate(expression);
+        assertEquals("12", result);
+    }
 }
