@@ -44,6 +44,8 @@ public class Parser {
 				l = tokens.size() - 1;
 			}
 
+			// "sexpr" is actual a list of tokens representing the tokenized expression in
+			// dotted-pair form. e.g., "( PLUS 3 2 )" becomes "( PLUS . (3 . (2 . NIL) ) )".
 			final List<String> sexpr = toSExpression(new ArrayList<>(tokens.subList(i, l+1)));
 			expressions.add(new ParseTree(sexpr));
 
