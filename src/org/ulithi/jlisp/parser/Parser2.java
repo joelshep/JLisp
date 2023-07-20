@@ -6,6 +6,7 @@ import org.ulithi.jlisp.mem.PTree;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import static org.ulithi.jlisp.parser.Symbols.*;
 
@@ -17,7 +18,7 @@ public class Parser2 {
     /**
      * An ordered list of parse trees representing individual LISP statements, ready for evaluation.
      */
-    private final List<PTree> statements = new ArrayList<>();
+    private final List<PTree> expressions = new ArrayList<>();
 
     /**
      * Parses and construct parse trees for the LISP statements in the given list of tokens. Parsed
@@ -26,6 +27,47 @@ public class Parser2 {
      * @param tokens An ordered list of LISP language tokens produced by lexical analysis of one
      *               or more LISP statements.
      */
+    public PTree parse2(final List<String> tokens) {
+        PTree.Builder builder = null;
+        PTree ptree = null;
+        Stack<PTree.Builder> builders = new Stack<>();
+
+        // So I think we need to do something like this:
+        //  1) Identify the first sexp in the given tokens: either an atom, or a list.
+        //  2) Generate the ptree for that element (recursively if needed).
+        //  3) Generate the ptree (recursively if needed) for the rest of the list.
+        //  4) Append the ptree from step 3 to the rest of the ptree in step 2.
+        //  5) Return the complete ptree from step 4.
+
+
+
+        for(final String token:tokens) {
+            if (token.equals(LPAREN)) {
+                // Do nothing for now: we already have a builder. But when we get to an
+                // inner list we'd have to go recursive.
+                builders.push(new PTree.Builder());
+                builder = builders.peek();
+            } else if (token.equals(RPAREN)) {
+                ptree = builder.build();
+                builders.pop();
+                if (builders.empty()) {
+                    break;
+                } else {
+                    builder = builders.peek();
+                    builder.addList(ptree.root());
+                }
+            } else {
+                builder.addCell(Cell.create(token));
+            }
+        }
+
+        if (ptree == null) {
+            throw new RuntimeException("Invalid expression");
+        }
+
+        return ptree;
+    }
+
     public void parse(final List<String> tokens) {
         int i = 0; // Current index in the tokens list.
         int s = 0; // Starting index of the next statement to parse.
