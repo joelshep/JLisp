@@ -1,8 +1,6 @@
 package org.ulithi.jlisp.test.smoke;
 
 import org.junit.Test;
-import org.ulithi.jlisp.lexer.Lexer;
-import org.ulithi.jlisp.parser.Parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.ulithi.jlisp.test.suite.UnitTestUtilities.evaluate;

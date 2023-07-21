@@ -21,29 +21,7 @@ public class Cell implements SExpression {
     private SExpression cdr;
 
     /**
-     * Constructs a new {@link Cell} with a literal {@link Atom} for the given {@code token} as
-     * the first element and NIL for the rest element.
-     *
-     * @param token A literal used to construct the Atom for the new cell's first element.
-     * @return The new {@code Cell}.
-     */
-    public static Cell create(final String token) {
-        return new Cell(Atom.create(token), Atom.NIL);
-    }
-
-    /**
-     * Constructs a new {@linl Cell} with a {@code Cell} (e.g., representing a list) as the
-     * first element and NIL for the rest element.
-     *
-     * @param cell A {@link Cell} representing a {@code cons}.
-     * @return The new {@code Cell}.
-     */
-    public static Cell create(final Cell cell) {
-        return new Cell(cell, Atom.NIL);
-    }
-
-    /**
-     * Constructs a new {@code Cell} with the given {@code car} and {@code cdr} elements.
+     * Private constructor. Use one of the {@code create} methods to create a new Cell.
      * @param car The new Cell's {@code car} element.
      * @param cdr The new Cell's {@code cdr} element.
      */
@@ -52,6 +30,28 @@ public class Cell implements SExpression {
         Validate.notNull(cdr);
         this.car = car;
         this.cdr = cdr;
+    }
+
+    /**
+     * Constructs a new {@link Cell} with a literal {@link Atom} for the given {@code token} as
+     * the first element and NIL for the rest element.
+     *
+     * @param token A literal used to construct the Atom for the new cell's first element.
+     * @return The new {@code Cell} of the form (ATOM . NIL).
+     */
+    public static Cell create(final String token) {
+        return new Cell(Atom.create(token), Atom.NIL);
+    }
+
+    /**
+     * Constructs a new {@link Cell} with a {@code Cell} (e.g., representing a list) as the
+     * first element and NIL for the rest element.
+     *
+     * @param cell A {@link Cell} representing a {@code cons}.
+     * @return The new {@code Cell} of the form (CELL . NIL)
+     */
+    public static Cell create(final Cell cell) {
+        return new Cell(cell, Atom.NIL);
     }
 
     /**

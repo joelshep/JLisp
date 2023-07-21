@@ -2,7 +2,7 @@ package org.ulithi.jlisp.mem;
 
 /**
  * A {@link PTree} (Parse Tree) is a set of linked cells that are the in-memory representation of
- * a LISP statement.
+ * a LISP expression. A {@link PTree} can be directly transformed to dotted-pair notation.
  */
 public class PTree {
     /**
@@ -11,20 +11,78 @@ public class PTree {
     private Cell root;
 
     /**
+     * The last ("rightmost") cell found by recursively obtaining the cdr of each cell
+     * starting at the root.
+     */
+    private Cell end;
+
+    /**
+     * Constructs a new, empty PTree.
+     */
+    public PTree() {
+        this.root = null;
+        this.end = null;
+    }
+
+    /**
      * Constructs a new {@link PTree} that has the given {@link Cell} as its root cell.
      * @param cell The root cell of the new {@code PTree}.
      */
     public PTree(final Cell cell) {
         assert cell != null : "cell is null";
         this.root = cell;
+        this.end = this.root;
     }
 
     /**
      * Returns the root cell of this {@link PTree}.
      * @return The root cell of this {@link PTree}.
      */
-    public Cell root() {
+    public final Cell root() {
         return this.root;
+    }
+
+    /**
+     * Adds a {@link Cell} to this {@link PTree}. If this {@code PTree} is currently empty (root
+     * cell is null), the given {@code cell} becomes the root cell of the tree. Otherwise, it is
+     * added as the CDR of the "end" cell.
+     *
+     * @param cell A {@link Cell} to be added to this {@link PTree}.
+     */
+    public void add(final Cell cell) {
+        assert cell != null : "cell is null";
+        if (root == null) {
+            root = cell;
+            end = root;
+        } else {
+            end.setCdr(cell);
+            end = cell;
+        }
+    }
+
+    /**
+     * Adds a list to this {@link PTree}. If this {@code PTree} is currently empty (root cell is
+     * null), then the given {@code cell} becomes the CAR of the root cell of the tree. Otherwise,
+     * it is added as the CDR of the "end" cell.
+     *
+     * @param cell A {@link Cell}, representing a list, to be added to this {@link PTree}.
+     */
+    public void addList(final Cell cell) {
+        if (root == null) {
+            root = Cell.create(cell);
+            end = root;
+        } else {
+            end.setCdr(cell);
+            end = cell;
+        }
+    }
+
+    /**
+     * Evaluates the LISP expression represented by the {@link PTree} and returns the result.
+     * @return An {@link SExpression} representing the result of the evaluation.
+     */
+    public SExpression evaluate() {
+        return null;
     }
 
     /**
@@ -33,81 +91,6 @@ public class PTree {
      */
     @Override
     public String toString() {
-        return root.toString();
-    }
-
-    /**
-     * A PTree builder. How should this work. Let's consider some examples:
-     *
-     *   (+ 1 2 4) => (+ *) -> (1 *) -> (2 *) -> (4 NIL)
-     *   So, on "(",
-     *     1) Make a new PTree builder.
-     *     2) On symbol, add cell like (V, NIL). If First cell, stop. If not first cell, chain to
-     *        new cell from last cell.
-     *     3) On ")" return builder.build().
-     * TODO - Write actual class doc.
-     */
-    public static class Builder {
-        /**
-         * The root cell of the Ptree that this builder is constructing.
-         */
-        private Cell root = null;
-
-        /**
-         * Reference to the last cell added to the PTree that this builder is constructing.
-         */
-        private Cell end = null;
-
-        /**
-         * Adds the given {@link Cell} to the dotted-pair representation being constructed by this
-         * builder. If this is the first {@code Cell} to be added, it becomes the root (leftmost)
-         * cell of the representation. Otherwise, it is appended to the rightmost cell.
-         *
-         * @param cell The {@link} Cell to be added to the dotted-pair representation.
-         * @return A reference to this {@link Builder}.
-         */
-        public Builder addCell(final Cell cell) {
-            if (root == null) {
-                root = cell;
-            } else {
-                end.setCdr(cell);
-            }
-
-            end = cell;
-
-            return this;
-        }
-
-        /**
-         * Adds the given {@link Cell} as a list to the dotted-pair representation being constructed
-         * by this builder. If this is the first {@code Cell} to be added, it becomes a child cell
-         * of the root/leftmost cell of the representation. Otherwise, it is appended to the
-         * rightmost cell.
-
-         * @param cell A {@link Cell}, representing a list, to be added to the dotted-pair
-         *             representation.
-         * @return A reference to this {@link Builder}.
-         */
-        public Builder addList(final Cell cell) {
-            if (root == null) {
-                root = Cell.create(cell);
-                end = root;
-            } else {
-                end.setCdr(cell);
-                end = cell;
-            }
-
-            return this;
-        }
-
-        /**
-         * Constructs and returns a {@link PTree} (parse tree) for this builder's dotted-pair
-         * representation.
-         *
-         * @return A parse tree based on the dotted-pair representation constructed by this builder.
-         */
-        public PTree build() {
-            return new PTree(root);
-        }
+        return String.valueOf(root);
     }
 }

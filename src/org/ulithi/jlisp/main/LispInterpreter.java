@@ -1,9 +1,8 @@
 package org.ulithi.jlisp.main;
 
 import org.ulithi.jlisp.lexer.Lexer;
+import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.parser.Parser;
-
-import java.io.IOException;
 
 /**
  * This is the driver file for the Lisp Interpreter project.
@@ -25,11 +24,12 @@ class LispInterpreter {
 			final String expression = "(PLUS 3 2 7 9)";
 	    	//final Lexer l = new Lexer(System.in);
 			final Lexer lexer = new Lexer(expression);
-	    	final Parser p = new Parser(lexer.getTokens());
+	    	final Parser p = new Parser();
+			final PTree pTree = p.parse(lexer.getTokens());
 	    	// System.out.println(p.printParseTree());
-			System.out.println(p.evaluate());
-		} catch (final IOException e) {
-			System.out.println("End of input...");
+			System.out.println(pTree.evaluate());
+//		} catch (final IOException e) {
+//			System.out.println("End of input...");
     	} catch (final Exception e) {
 			System.err.println("Error: " + e);
 			if ( args.length > 0 && args[0].matches("-d") ){
