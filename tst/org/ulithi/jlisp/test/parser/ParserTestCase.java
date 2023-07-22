@@ -55,7 +55,7 @@ public class ParserTestCase {
      */
     @Test
     public void parseEmptyList() {
-        // ( ) => (43 . NIL)
+        // ( ) => (NIL . NIL)
         final List<String> tokens = Arrays.asList("(", ")");
         final String expected = "(NIL . NIL)";
         parseAndValidate(parser, tokens, expected);
