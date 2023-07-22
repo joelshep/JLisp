@@ -27,13 +27,13 @@ public class Grammar {
     public static final String EMPTY = "[\\s]+";
 
     /** Regular expression for an alphanumeric literal. */
-    protected static final String LITERAL = "[a-zA-Z0-9]+";
+    public static final String LITERAL = "[a-zA-Z0-9]+";
 
     /** Regular expression for a function name. */
-    protected static final String FUNCTION_NAME = "[a-zA-Z][a-zA-Z0-9]*";
+    public static final String FUNCTION_NAME = "[a-zA-Z][a-zA-Z0-9]*";
 
     /** Regular expression for a number (integer). */
-    protected static final String NUMERIC_LITERAL = "[\\d\\+\\-]?[\\d]*";
+    public static final String NUMERIC_LITERAL = "[\\+\\-]?[\\d]+";
 
     /** Dot symbol (for S-Expressions) **/
     public static final String DOT = ".";
