@@ -2,7 +2,7 @@ package org.ulithi.jlisp.mem;
 
 import org.apache.commons.lang3.Validate;
 
-import static org.ulithi.jlisp.parser.Symbols.*;
+import static org.ulithi.jlisp.parser.Grammar.*;
 
 /**
  * A {@link Cell} -- a.k.a. a {@code cons} in LISP terminology -- is a pair of {@link SExpression}
@@ -54,6 +54,14 @@ public class Cell implements SExpression {
         return new Cell(cell, Atom.NIL);
     }
 
+    public static Cell create() {
+        return new Cell(Atom.NIL, Atom.NIL);
+    }
+
+    public boolean isNil() {
+        return (car.equals(Atom.NIL) && cdr.equals(Atom.NIL));
+    }
+
     /**
      * Returns the {@code car} (first/lhs) element of this {@link Cell}.
      * @return The {@code car} (first/lhs) element of this {@code Cell}.
@@ -81,7 +89,7 @@ public class Cell implements SExpression {
     }
 
     /**
-     * Sets the {@code cdr} (second/rhs element of this {@link} cell to the {@link Atom}, Symbol
+     * Sets the {@code cdr} (second/rhs element of this {@link} cell) to the {@link Atom}, Symbol
      * or List represented by the given {@link SExpression}.
      * @param sexp A non-null {@link SExpression}.
      */
@@ -97,11 +105,11 @@ public class Cell implements SExpression {
     @Override
     public String toString() {
         return LPAREN +
-                car +
-                SPACE +
-                DOT +
-                SPACE +
-                cdr +
-                RPAREN;
+               car +
+               SPACE +
+               DOT +
+               SPACE +
+               cdr +
+               RPAREN;
     }
 }
