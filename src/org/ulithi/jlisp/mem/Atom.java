@@ -1,8 +1,6 @@
 package org.ulithi.jlisp.mem;
 
-import java.awt.peer.LabelPeer;
-
-import static org.ulithi.jlisp.parser.Symbols.LPAREN;
+import org.ulithi.jlisp.parser.Grammar;
 
 /**
  * An {@link Atom} is an indivisible unit of literal data (e.g., number, boolean or character
@@ -10,9 +8,9 @@ import static org.ulithi.jlisp.parser.Symbols.LPAREN;
  */
 public class Atom implements SExpression {
 
-    public static final Atom NIL = new Atom("NIL");
+    public static final Atom NIL = new Atom(Grammar.NIL);
 
-    public static final Atom T = new Atom("T");
+    public static final Atom T = new Atom(Grammar.T);
 
     private final String literal;
 

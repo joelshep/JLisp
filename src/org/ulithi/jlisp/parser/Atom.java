@@ -34,7 +34,7 @@ class Atom extends TreeNode {
 	 * @throws ParseException If the string is not purely alphanumeric.
 	 */
 	public Atom(final String s) throws ParseException {
-		if (!s.matches(Patterns.LITERAL) && !s.matches(Patterns.NUMERIC_ATOM)) {
+		if (!s.matches(Grammar.LITERAL) && !s.matches(Grammar.NUMERIC_LITERAL)) {
 			throw new ParseException("Unable to parse string as valid atom");
 		}
 
@@ -48,7 +48,7 @@ class Atom extends TreeNode {
 	 * @param b A boolean value.
 	 */
 	public Atom(final boolean b) {
-		literalString = b ? Symbols.T : Symbols.NIL;
+		literalString = b ? Grammar.T : Grammar.NIL;
 		tokens = Collections.singletonList(literalString);
 	}
 
@@ -124,7 +124,7 @@ class Atom extends TreeNode {
 	 */
 	@Override
 	public String toString() {
-		if (literalString.matches(Patterns.NUMERIC_ATOM)) {
+		if (literalString.matches(Grammar.NUMERIC_LITERAL)) {
 			return literalString.replaceAll("\\A\\+", "");
 		} else {
 			return literalString;
