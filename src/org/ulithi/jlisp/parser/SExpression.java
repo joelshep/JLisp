@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.ulithi.jlisp.parser.Symbols.*;
-
 /**
  * Represents an S-Expression (Symbolic Expression): a.k.a. a list of {@link Atom}s, {@code  Symbols}
  * or other {@link SExpression s-expressions}. An s-expression can also be empty. This class is able
@@ -54,11 +52,11 @@ class SExpression extends TreeNode {
 		dataTokens = d.tokens;
 		addressTokens = a.tokens;
 		tokens = new ArrayList<>();
-		tokens.add(LPAREN);
+		tokens.add(Grammar.LPAREN);
 		tokens.addAll(a.tokens);
-		tokens.add(DOT);
+		tokens.add(Grammar.DOT);
 		tokens.addAll(d.tokens);
-		tokens.add(RPAREN);
+		tokens.add(Grammar.RPAREN);
 	}
 
 	/**
@@ -83,36 +81,36 @@ class SExpression extends TreeNode {
 	 */
 	private void consHelper(final List<String> s) throws ParseException {
 		// some sanity checking for now
-		if (s.isEmpty() || !s.get(0).equals(LPAREN)) {
+		if (s.isEmpty() || !s.get(0).equals(Grammar.LPAREN)) {
 			throw new ParseException("Error! Invalid S-Expression: " + s);
 		}
 
 		int i = 1;
 		int dataStart = 3;
-		if (s.get(i).equals(LPAREN)) {
+		if (s.get(i).equals(Grammar.LPAREN)) {
 			int open = 1;
 			while (open > 0 && i < s.size()) {
 				i++;
-				if (s.get(i).equals(LPAREN)) {
+				if (s.get(i).equals(Grammar.LPAREN)) {
 					open++;
-				} else if (s.get(i).equals(RPAREN)) {
+				} else if (s.get(i).equals(Grammar.RPAREN)) {
 					open--;
 				}
 			}
 			dataStart = i + 1;
 		}
 
-		i = dataStart > 3 ? StringUtils.indexOf(s, dataStart, DOT) : 2;
+		i = dataStart > 3 ? StringUtils.indexOf(s, dataStart, Grammar.DOT) : 2;
 		addressTokens = new ArrayList<>(s.subList(1,i));
 		address = TreeNode.create(addressTokens);
 		dataTokens = new ArrayList<>(s.subList(i+1, s.size() - 1));
 		data = TreeNode.create(dataTokens);
 		tokens = new ArrayList<>();
-		tokens.add(LPAREN);
+		tokens.add(Grammar.LPAREN);
 		tokens.addAll(addressTokens);
-		tokens.add(DOT);
+		tokens.add(Grammar.DOT);
 		tokens.addAll(dataTokens);
-		tokens.add(RPAREN);
+		tokens.add(Grammar.RPAREN);
 	}
 
 	/**
@@ -123,7 +121,7 @@ class SExpression extends TreeNode {
 	 */
 	@Override
 	protected boolean isList() {
-		return data.toString().matches(NIL) || data.isList();
+		return data.toString().matches(Grammar.NIL) || data.isList();
 	}
 
 	/**
@@ -133,7 +131,7 @@ class SExpression extends TreeNode {
 	 * @return The String representing the list-notation of the S-Expression
 	 */
 	protected String toListString() throws Exception {
-		return LPAREN + StringUtils.join(toList(), SPACE) + RPAREN;
+		return Grammar.LPAREN + StringUtils.join(toList(), Grammar.SPACE) + Grammar.RPAREN;
 	}
 
 	/**
@@ -229,11 +227,11 @@ class SExpression extends TreeNode {
 		String a = address.evaluate().toString();
 		SExpression params;
 
-		if (flag && a.matches(Patterns.NUMERIC_ATOM)) {
+		if (flag && a.matches(Grammar.NUMERIC_LITERAL)) {
 			return address.evaluate();
-		} else if (a.matches(NIL)) {
+		} else if (a.matches(Grammar.NIL)) {
 			return Atom.NIL;
-		} else if (a.matches(T)) {
+		} else if (a.matches(Grammar.T)) {
 			return Atom.T;
 		} else if (Environment.varIsDefined(a)) {
 			return Environment.getVarValue(a);
@@ -309,10 +307,10 @@ class SExpression extends TreeNode {
 			try {
 				return toListString();
 			} catch (final Exception e) {
-				return LPAREN + address.toString() + " . " + data.toString() + RPAREN;
+				return Grammar.LPAREN + address.toString() + " . " + data.toString() + Grammar.RPAREN;
 			}
 		} else {
-			return LPAREN + address.toString() + " . " + data.toString() + RPAREN;
+			return Grammar.LPAREN + address.toString() + " . " + data.toString() + Grammar.RPAREN;
 		}
 	}
 }

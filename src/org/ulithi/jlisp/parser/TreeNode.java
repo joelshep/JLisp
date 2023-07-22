@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.ulithi.jlisp.parser.Symbols.LPAREN;
+import static org.ulithi.jlisp.parser.Grammar.LPAREN;
 
 /**
  * A {@link TreeNode} This is the central data structure for representing Atoms and S-Expressions.

@@ -6,7 +6,7 @@ import java.lang.Integer;
 import java.lang.String;
 import java.lang.reflect.Method;
 
-import static org.ulithi.jlisp.parser.Symbols.*;
+import static org.ulithi.jlisp.parser.Grammar.*;
 
 /**
  * Implements the primitive LISP functions supported by this interpreter.
@@ -96,7 +96,7 @@ public final class Primitives {
 	 * @return T if it is an atom literal, NIL otherwise.
 	 */
 	public static TreeNode ATOM (final SExpression sexpr) {
-		return TreeNode.create(sexpr.address.evaluate().toString().matches(Patterns.LITERAL));
+		return TreeNode.create(sexpr.address.evaluate().toString().matches(LITERAL));
 	}
 
 	/**
@@ -126,7 +126,7 @@ public final class Primitives {
 	 * @return T if the S-Expression evaluates to an integer, NIL otherwise.
 	 */
 	public static TreeNode INT (final SExpression sexpr) throws Exception{
-		return TreeNode.create(sexpr.address.evaluate(true).toString().matches(Patterns.NUMERIC_ATOM));
+		return TreeNode.create(sexpr.address.evaluate(true).toString().matches(NUMERIC_LITERAL));
 	}
 
 	/**
@@ -250,7 +250,7 @@ public final class Primitives {
 	public static TreeNode DEFUN (final SExpression sexpr) throws ParseException {
 		final String name = sexpr.address.toString();
 
-		if (!name.matches(Patterns.VALID_FUNCTION_NAME)) {
+		if (!name.matches(FUNCTION_NAME)) {
 			throw new ParseException("Error! Function names must be character literals only");
 		}
 

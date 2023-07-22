@@ -73,7 +73,7 @@ class UserFunction {
 		List<String> rtn = new ArrayList<>();
 
 		for (int i = 0; i < chunks.length; i++) {
-			if (chunks[i].matches(Patterns.VALID_FUNCTION_NAME)) {
+			if (chunks[i].matches(Grammar.FUNCTION_NAME)) {
 				if (!rtn.contains(chunks[i])) {
 					rtn.add(chunks[i]);
 				} else {

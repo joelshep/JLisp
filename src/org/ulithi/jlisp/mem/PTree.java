@@ -20,7 +20,7 @@ public class PTree {
      * Constructs a new, empty PTree.
      */
     public PTree() {
-        this.root = null;
+        this.root = Cell.create();
         this.end = null;
     }
 
@@ -51,7 +51,7 @@ public class PTree {
      */
     public void add(final Cell cell) {
         assert cell != null : "cell is null";
-        if (root == null) {
+        if (root.isNil()) {
             root = cell;
             end = root;
         } else {
@@ -68,7 +68,7 @@ public class PTree {
      * @param cell A {@link Cell}, representing a list, to be added to this {@link PTree}.
      */
     public void addList(final Cell cell) {
-        if (root == null) {
+        if (root.isNil()) {
             root = Cell.create(cell);
             end = root;
         } else {
@@ -82,7 +82,7 @@ public class PTree {
      * @return An {@link SExpression} representing the result of the evaluation.
      */
     public SExpression evaluate() {
-        return null;
+        return Atom.NIL;
     }
 
     /**
