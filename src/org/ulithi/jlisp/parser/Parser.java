@@ -3,6 +3,7 @@ package org.ulithi.jlisp.parser;
 import org.ulithi.jlisp.commons.CollectionUtils;
 import org.ulithi.jlisp.exception.JLispRuntimeException;
 import org.ulithi.jlisp.exception.ParseException;
+import org.ulithi.jlisp.mem.Atom;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.PTree;
 
@@ -35,7 +36,8 @@ public class Parser {
         }
 
         if (tokens.size() == 1) {
-            return new PTree(Cell.create(tokens.get(0)));
+            final Atom atom = parseAtom(tokens.get(0));
+            return new PTree(Cell.create(atom));
         }
 
         return parseList(tokens);
@@ -46,34 +48,48 @@ public class Parser {
             throw new JLispRuntimeException("Unexpected null token list");
         }
 
-        // The full parsed expression.
-        PTree pTree = null;
-
-        Stack<PTree> stack = new Stack<>();
-        PTree current = new PTree();
+        final Stack<PTree> stack = new Stack<>();
+        PTree pTree = new PTree();
         boolean outer = true;
 
         for (final String token: tokens) {
             if (token.equals(LPAREN)) {
                 if (!outer) {
-                    stack.push(current);
-                    current = new PTree();
+                    stack.push(pTree);
+                    pTree = new PTree();
                 }
                 outer = false;
             } else if (token.equals(RPAREN)) {
-                if (stack.empty()) {
-                    pTree = current;
-                } else {
-                    PTree next = current;
-                    current = stack.pop();
-                    current.addList(next.root());
+                if (!stack.empty()) {
+                    final PTree newOne = pTree;
+                    pTree = stack.pop();
+                    pTree.addList(newOne.root());
                 }
             } else {
-                current.add(Cell.create(token));
+                pTree.add(Cell.create(parseAtom(token)));
             }
         }
 
         return pTree;
+    }
+
+    /**
+     * Parses a single atomic token and returns the appropriate {@link Atom} construct.
+     * @param token The token to be parsed.
+     * @return A numeric, string or symbolic {@link Atom} corresponding to the token,
+     *         depending on the detected data type of the token.
+     */
+    private static Atom parseAtom(final String token) {
+        if (Grammar.isNumeric(token)) {
+            return Atom.create(Integer.parseInt(token));
+        }
+
+        // TODO Symbols, properly.
+        if (token.equals("+") || token.equals("*")) {
+            return Atom.createSymbol(token);
+        }
+
+        return Atom.create(token);
     }
 
     /**
