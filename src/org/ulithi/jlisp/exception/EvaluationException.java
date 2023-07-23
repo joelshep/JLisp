@@ -20,5 +20,4 @@ public class EvaluationException extends JLispRuntimeException {
     public EvaluationException(final Exception cause) {
         super(cause);
     }
-
 }
