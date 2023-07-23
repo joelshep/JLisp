@@ -24,7 +24,7 @@ public class Atom implements SExpression {
     /**
      * Enumerates the data types that can be represented as an Atom.
      */
-    private static enum Type {
+    private enum Type {
         NIL,
         String,
         Number,
@@ -70,7 +70,7 @@ public class Atom implements SExpression {
     /**
      * Creates and returns a new {@link Atom} representing a symbol identified by the given
      * {@code name}.
-     * @param name The programmatic name of the symbok that this {@code Atom} will represent.
+     * @param name The programmatic name of the symbol that this {@code Atom} will represent.
      * @return An {@code Atom} representing the named symbol.
      */
     public static Atom createSymbol(final String name) {
@@ -120,7 +120,7 @@ public class Atom implements SExpression {
      * values and symbols cannot be converted to integers.
      * @return This {@link Atom Atom's} value as an integer.
      * @throws TypeConversionException if the type conversion is disallowed (e.g., String to
-     *         Number, or if there is no known conversion for this {@code Atom's} type.
+     *         Number), or if there is no known conversion for this {@code Atom's} type.
      */
     public int toI() {
         switch (this.type) {

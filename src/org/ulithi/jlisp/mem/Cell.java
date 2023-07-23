@@ -40,7 +40,11 @@ public class Cell implements SExpression {
      * @return The new {@code Cell} of the form (ATOM . NIL).
      */
     public static Cell create(final String token) {
-        return new Cell(Atom.create(token), Atom.NIL);
+        return create(Atom.create(token));
+    }
+
+    public static Cell create(final Atom atom) {
+        return new Cell(atom, Atom.NIL);
     }
 
     /**
