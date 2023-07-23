@@ -1,5 +1,7 @@
 package org.ulithi.jlisp.parser;
 
+import java.util.regex.Pattern;
+
 /**
  * Static methods and constants to support parsing LISP syntax.
  * <p>
@@ -27,13 +29,18 @@ public class Grammar {
     public static final String EMPTY = "[\\s]+";
 
     /** Regular expression for an alphanumeric literal. */
-    public static final String LITERAL = "[a-zA-Z0-9]+";
+    public static final String ALPHA_LITERAL = "[a-zA-Z0-9]+";
+
+    private static final Pattern ALPHA_LITERAL_PATTERN = Pattern.compile(ALPHA_LITERAL);
 
     /** Regular expression for a function name. */
     public static final String FUNCTION_NAME = "[a-zA-Z][a-zA-Z0-9]*";
 
     /** Regular expression for a number (integer). */
     public static final String NUMERIC_LITERAL = "[\\+\\-]?[\\d]+";
+
+    /** Pre-compiled Pattern for matching on the NUMERIC_LITERAL regex. */
+    private static final Pattern NUMERIC_LITERAL_PATTERN = Pattern.compile(NUMERIC_LITERAL);
 
     /** Dot symbol (for S-Expressions) **/
     public static final String DOT = ".";
@@ -52,4 +59,23 @@ public class Grammar {
 
     /** The T (true) token. */
     public static final String T = "T";
+
+    /**
+     * Indicates if the given token represents an alphanumeric literal.
+     * @param token The token to evaluate.
+     * @return True if {@code token} is alphanumeric, false otherwise.
+     */
+    public static boolean isAlphanumeric(final String token) {
+        return ALPHA_LITERAL_PATTERN.matcher(token).matches();
+    }
+
+    /**
+     * Indicates if the given token represents a numeric literal. Currently, numeric literals
+     * can only be signed integers.
+     * @param token The token to evaluate.
+     * @return True if {@code token} is a numeric literal, false otherwise.
+     */
+    public static boolean isNumeric(final String token) {
+        return NUMERIC_LITERAL_PATTERN.matcher(token).matches();
+    }
 }
