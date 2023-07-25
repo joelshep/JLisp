@@ -9,7 +9,7 @@ import org.ulithi.jlisp.parser.Grammar;
  * class type that can represent several types of data and provides seamless transformations
  * between types when possible (e.g., number to string, or string to boolean).
  */
-public class Atom implements SExpression {
+public class Atom implements Ref, SExpression {
 
     /**
      * An {@link Atom} representing the special {@code NIL} value.
@@ -89,6 +89,27 @@ public class Atom implements SExpression {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isAtom() { return true; }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isList() { return false; }
+
+    /**
+     * Indicates if this {@link Atom} is NIL.
+     * @return True if this {@code Atom} is NIL, false otherwise.
+     */
+    @Override
+    public boolean isNil() {
+        return this.type == Type.NIL;
+    }
+
+    /**
      * Indicates if this {@link Atom} is a symbol.
      * @return True if this {@code Atom} is a symbol, false otherwise.
      */
@@ -106,11 +127,11 @@ public class Atom implements SExpression {
     }
 
     /**
-     * Indicates if this {@link Atom} is NIL.
-     * @return True if this {@code Atom} is NIL, false otherwise.
+     * Indicates if this {@link Atom} is a numeric literal value.
+     * @return True if this {@code Atom} is a numeric literal value, false otherwise.
      */
-    public boolean isNil() {
-        return this.type == Type.NIL;
+    public boolean isNumber() {
+        return this.type == Type.Number;
     }
 
     /**
