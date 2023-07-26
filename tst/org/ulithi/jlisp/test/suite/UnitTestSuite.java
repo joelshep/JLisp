@@ -7,8 +7,10 @@ import org.junit.runner.notification.Failure;
 import org.junit.runners.Suite;
 import org.ulithi.jlisp.test.lexer.LexerTestCase;
 import org.ulithi.jlisp.test.mem.AtomTestCase;
+import org.ulithi.jlisp.test.parser.GrammarTestCase;
 import org.ulithi.jlisp.test.parser.ParserTestCase;
 import org.ulithi.jlisp.test.parser.PrimitivesTestCase;
+import org.ulithi.jlisp.test.primitive.EvalTestCase;
 import org.ulithi.jlisp.test.smoke.SmokeTestCase;
 import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
 
@@ -18,6 +20,8 @@ import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         AtomTestCase.class,
+        EvalTestCase.class,
+        GrammarTestCase.class,
         LexerTestCase.class,
         ParserTestCase.class,
         PrimitivesTestCase.class,
