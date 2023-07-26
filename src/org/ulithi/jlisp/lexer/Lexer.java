@@ -1,5 +1,7 @@
 package org.ulithi.jlisp.lexer;
 
+import org.ulithi.jlisp.parser.Grammar;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -70,12 +72,12 @@ public class Lexer {
 
 		while (i < s.length()) {
 			int j = i + 1;
-			if (s.substring(i, j).matches(LexerPatterns.LETTER) || s.substring(i, j).matches(LexerPatterns.NUMERIC_ATOM)) {
-				while (j < s.length() && (s.substring(i,j + 1).matches(LexerPatterns.LITERAL) || s.substring(i, j + 1).matches(LexerPatterns.NUMERIC_ATOM))) {
+			if (s.substring(i, j).matches(Grammar.LETTER) || s.substring(i, j).matches(Grammar.NUMERIC_LITERAL_START)) {
+				while (j < s.length() && (s.substring(i,j + 1).matches(Grammar.ALPHA_LITERAL) || s.substring(i, j + 1).matches(Grammar.NUMERIC_LITERAL))) {
 					j++;
 				}
 				tokens.add(s.substring(i,j));
-			} else if (s.substring(i, j).matches(LexerPatterns.SYMBOL)) {
+			} else if (s.substring(i, j).matches(Grammar.SYMBOL)) {
 				tokens.add(s.substring(i,j));
 			}
 			i = j;

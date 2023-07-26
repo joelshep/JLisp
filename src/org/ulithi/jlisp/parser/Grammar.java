@@ -36,11 +36,17 @@ public class Grammar {
     /** Regular expression for a function name. */
     public static final String FUNCTION_NAME = "[a-zA-Z][a-zA-Z0-9]*";
 
+    /** Regular expression for the start of a number (integer). */
+    public static final String NUMERIC_LITERAL_START = "[\\d\\+\\-]";
+
     /** Regular expression for a number (integer). */
     public static final String NUMERIC_LITERAL = "[\\+\\-]?[\\d]+";
 
     /** Pre-compiled Pattern for matching on the NUMERIC_LITERAL regex. */
     private static final Pattern NUMERIC_LITERAL_PATTERN = Pattern.compile(NUMERIC_LITERAL);
+
+    /** Special syntax elements. TODO: Remove math operators. */
+    public static final String SYMBOL = "[().\\+\\*]";
 
     /** Dot symbol (for S-Expressions) **/
     public static final String DOT = ".";
