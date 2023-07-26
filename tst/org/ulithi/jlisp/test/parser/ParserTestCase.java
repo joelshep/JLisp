@@ -66,9 +66,9 @@ public class ParserTestCase {
      */
     @Test
     public void parseSingleElementList() {
-        // ( END ) => (END . NIL)
-        final List<String> tokens = Arrays.asList("(", "END", ")");
-        final String expected = "(END . NIL)";
+        // ( FOO ) => (FOO . NIL)
+        final List<String> tokens = Arrays.asList("(", "FOO", ")");
+        final String expected = "(FOO . NIL)";
         parseAndValidate(parser, tokens, expected);
     }
 
@@ -76,7 +76,7 @@ public class ParserTestCase {
      * Parses a simple list of tokens.
      */
     @Test
-    public void parseSymbolList() {
+    public void parseSimpleList() {
         // ( + 1 2 4 )  =>  (+ . (1 . (2 . (4 . NIL))))
         final List<String> tokens = Arrays.asList("(", "+", "1", "2", "4", ")");
         final String expected = "(+ . (1 . (2 . (4 . NIL))))";
@@ -88,9 +88,9 @@ public class ParserTestCase {
      */
     @Test
     public void parseNestedList() {
-        // ( + 2 ( * 5 9 ) )  =>  ( + . (2 . (* . (5 . (9 . NIL)))))
+        // ( + 2 ( * 5 9 ) )  =>  (+ . (2 . ((* . (5 . (9 . NIL))) . NIL)))
         final List<String> tokens = Arrays.asList("(", "+", "2", "(", "*", "5", "9", ")", ")");
-        final String expected = "(+ . (2 . (* . (5 . (9 . NIL)))))";
+        final String expected = "(+ . (2 . ((* . (5 . (9 . NIL))) . NIL)))";
         parseAndValidate(parser, tokens, expected);
     }
 
@@ -101,7 +101,15 @@ public class ParserTestCase {
     public void parseListOfLists() {
         // ( ( 2 3 ) ( 4 5 ) )
         final List<String> tokens = Arrays.asList("(", "(", "2", "3", ")", "(", "4", "5", ")", ")");
-        final String expected = "((2 . (3 . NIL)) . (4 . (5 . NIL)))";
+        final String expected = "((2 . (3 . NIL)) . ((4 . (5 . NIL)) . NIL))";
+        parseAndValidate(parser, tokens, expected);
+    }
+
+    @Test
+    public void testOperatorAndListOperands() {
+        // (+ (* 2 3) (* 4 5))
+        final List<String> tokens = Arrays.asList("(", "+", "(", "*", "4", "5", ")", "(", "*", "2", "3", ")", ")");
+        final String expected = "(+ . ((* . (4 . (5 . NIL))) . ((* . (2 . (3 . NIL))) . NIL)))";
         parseAndValidate(parser, tokens, expected);
     }
 

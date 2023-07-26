@@ -1,18 +1,17 @@
 package org.ulithi.jlisp.mem;
 
 /**
- * A {@link PTree} (Parse Tree) is a set of linked cells that are the in-memory representation of
- * a LISP expression. A {@link PTree} can be directly transformed to dotted-pair notation.
+ * A {@link PTree} (Parse Tree) is a linked list of {@link Cell Cells} (some of which may themselves
+ * be the head nodes of other linked lists), and is the in-memory representation of a LISP expression.
+ * A {@link PTree} can be directly transformed to dotted-pair notation.
  */
 public class PTree {
-    /**
-     * The root cell of this PTree.
-     */
+    /** The root cell of this PTree. */
     private Cell root;
 
     /**
-     * The last ("rightmost") cell found by recursively obtaining the cdr of each cell
-     * starting at the root.
+     * The last ("rightmost") cell in the PTree's linked list of cells, found by recursively
+     * dereferencing the {@code rest} field of each cell, start at the {@code root}.
      */
     private Cell end;
 
@@ -44,8 +43,8 @@ public class PTree {
 
     /**
      * Adds a {@link Cell} to this {@link PTree}. If this {@code PTree} is currently empty (root
-     * cell is null), the given {@code cell} becomes the root cell of the tree. Otherwise, it is
-     * added as the CDR of the "end" cell.
+     * cell is the NIL cell), the given {@code Cell} becomes the root cell of the tree. Otherwise,
+     * it is added as the {@code rest} element of the "end" cell.
      *
      * @param cell A {@link Cell} to be added to this {@link PTree}.
      */
@@ -55,7 +54,7 @@ public class PTree {
             root = cell;
             end = root;
         } else {
-            end.setCdr(cell);
+            end.setRest(cell);
             end = cell;
         }
     }
@@ -64,16 +63,20 @@ public class PTree {
      * Adds a list to this {@link PTree}. If this {@code PTree} is currently empty (root cell is
      * null), then the given {@code cell} becomes the CAR of the root cell of the tree. Otherwise,
      * it is added as the CDR of the "end" cell.
+     * <p>
+     * This method is very similar to other {@code add()} methods, but I named it differently to
+     * be clear that it is effectively adding a new list/{@code PTree} to this {@code PTree}, not
+     * simply extending this {@code PTree's} linked list of cells.
      *
      * @param cell A {@link Cell}, representing a list, to be added to this {@link PTree}.
      */
     public void addList(final Cell cell) {
         if (root.isNil()) {
-            root = Cell.create(cell);
+            root = Cell.createAsList(cell);
             end = root;
         } else {
-            end.setCdr(cell);
-            end = cell;
+            end.setRest(Cell.createAsList(cell));
+            end = (Cell)end.getRest();
         }
     }
 
@@ -81,6 +84,7 @@ public class PTree {
      * Evaluates the LISP expression represented by the {@link PTree} and returns the result.
      * @return An {@link SExpression} representing the result of the evaluation.
      */
+    @Deprecated
     public SExpression evaluate() {
         return Atom.NIL;
     }
