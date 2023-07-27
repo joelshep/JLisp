@@ -81,15 +81,6 @@ public class PTree {
     }
 
     /**
-     * Evaluates the LISP expression represented by the {@link PTree} and returns the result.
-     * @return An {@link SExpression} representing the result of the evaluation.
-     */
-    @Deprecated
-    public SExpression evaluate() {
-        return Atom.NIL;
-    }
-
-    /**
      * Returns a {@code String} containing a dotted-pair representation of this {@code PTree}.
      * @return A {@code String} representing this {@code PTree}.
      */

@@ -1,6 +1,6 @@
 package org.ulithi.jlisp.parser;
 
-import org.ulithi.jlisp.commons.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.ParseException;
 import org.ulithi.jlisp.exception.UndefinedSymbolException;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents an S-Expression (Symbolic Expression): a.k.a. a list of {@link Atom}s, {@code  Symbols}
+ * Represents an S-Expression (Symbolic Expression): a.k.a. a list of {@link AtomOld}s, {@code  Symbols}
  * or other {@link SExpression s-expressions}. An s-expression can also be empty. This class is able
  * to construct s-expressions from different structures, and implies the core evaluation routine
  * as well.
@@ -100,7 +100,7 @@ class SExpression extends TreeNode {
 			dataStart = i + 1;
 		}
 
-		i = dataStart > 3 ? StringUtils.indexOf(s, dataStart, Grammar.DOT) : 2;
+		i = dataStart > 3 ? org.ulithi.jlisp.commons.StringUtils.indexOf(s, dataStart, Grammar.DOT) : 2;
 		addressTokens = new ArrayList<>(s.subList(1,i));
 		address = TreeNode.create(addressTokens);
 		dataTokens = new ArrayList<>(s.subList(i+1, s.size() - 1));
@@ -230,9 +230,9 @@ class SExpression extends TreeNode {
 		if (flag && a.matches(Grammar.NUMERIC_LITERAL)) {
 			return address.evaluate();
 		} else if (a.matches(Grammar.NIL)) {
-			return Atom.NIL;
+			return AtomOld.NIL;
 		} else if (a.matches(Grammar.T)) {
-			return Atom.T;
+			return AtomOld.T;
 		} else if (Environment.varIsDefined(a)) {
 			return Environment.getVarValue(a);
 		} else if (Environment.functionIsDefined(a)) {
@@ -286,9 +286,9 @@ class SExpression extends TreeNode {
 		}
 
 		if (o.toString().matches("true")) {
-			return Atom.T;
+			return AtomOld.T;
 		} else if (o.toString().matches("false")) {
-			return Atom.NIL;
+			return AtomOld.NIL;
 		} else {
 			return (TreeNode) o;
 		}
