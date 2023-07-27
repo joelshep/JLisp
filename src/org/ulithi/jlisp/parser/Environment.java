@@ -12,7 +12,7 @@ import java.util.Map;
  * the binding of functions and variables within the context of the
  * running Lisp program.
  */
-class Environment{
+public final class Environment{
 	public static Map<String, UserFunction> funcs = new HashMap<>();
 	public static Map<String, TreeNode> vars = new HashMap<>();
 
