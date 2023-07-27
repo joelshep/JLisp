@@ -1,9 +1,12 @@
 package org.ulithi.jlisp.test.smoke;
 
 import org.junit.Test;
+import org.ulithi.jlisp.lexer.Lexer;
+import org.ulithi.jlisp.mem.PTree;
+import org.ulithi.jlisp.parser.Parser;
+import org.ulithi.jlisp.primitive.Eval;
 
 import static org.junit.Assert.assertEquals;
-import static org.ulithi.jlisp.test.suite.UnitTestUtilities.evaluate;
 
 /**
  * Unit test that drives several simple LISP expressions through the interpreter and validates the
@@ -12,9 +15,24 @@ import static org.ulithi.jlisp.test.suite.UnitTestUtilities.evaluate;
  */
 public class SmokeTestCase {
     @Test
-    public void evaluateSimpleMathExpression() throws Exception {
-        final String expression = "(PLUS 3 2)";
-        final String result = evaluate(expression);
-        assertEquals(5, Integer.parseInt(result));
+    public void evaluateNumericLiteral() {
+        final String expression = "43";
+        final int result = evaluate(expression);
+        assertEquals(43, result);
+    }
+
+    @Test
+    public void evaluateSimpleMathExpression() {
+        final String expression = "(+ 3 2)";
+        final int result = evaluate(expression);
+        assertEquals(5, result);
+    }
+
+    private static int evaluate(final String expression){
+        final Lexer lexer = new Lexer(expression);
+        final Parser p = new Parser();
+        final PTree pTree = p.parse(lexer.getTokens());
+        final Eval eval = new Eval();
+        return eval.apply(pTree.root());
     }
 }
