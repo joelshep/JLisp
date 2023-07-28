@@ -1,7 +1,7 @@
-package org.ulithi.jlisp.mem;
+package org.ulithi.jlisp.core;
 
-import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.TypeConversionException;
+import org.ulithi.jlisp.mem.Ref;
 import org.ulithi.jlisp.parser.Grammar;
 
 /**

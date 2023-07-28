@@ -3,7 +3,7 @@ package org.ulithi.jlisp.parser;
 import org.ulithi.jlisp.core.Environment;
 import org.ulithi.jlisp.core.SExpressionOld;
 import org.ulithi.jlisp.exception.ParseException;
-import org.ulithi.jlisp.mem.AtomOld;
+import org.ulithi.jlisp.core.AtomOld;
 import org.ulithi.jlisp.mem.TreeNode;
 
 import java.lang.Integer;

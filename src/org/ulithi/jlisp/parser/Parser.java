@@ -3,7 +3,7 @@ package org.ulithi.jlisp.parser;
 import org.ulithi.jlisp.commons.CollectionUtils;
 import org.ulithi.jlisp.exception.JLispRuntimeException;
 import org.ulithi.jlisp.exception.ParseException;
-import org.ulithi.jlisp.mem.Atom;
+import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.PTree;
 

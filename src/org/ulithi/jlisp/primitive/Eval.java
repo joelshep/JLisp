@@ -2,7 +2,7 @@ package org.ulithi.jlisp.primitive;
 
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.exception.JLispRuntimeException;
-import org.ulithi.jlisp.mem.Atom;
+import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.Ref;
 import org.ulithi.jlisp.core.SExpression;

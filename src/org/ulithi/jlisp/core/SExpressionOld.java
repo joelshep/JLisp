@@ -6,7 +6,6 @@ import org.ulithi.jlisp.exception.ParseException;
 import org.ulithi.jlisp.exception.UndefinedSymbolException;
 import org.ulithi.jlisp.parser.Grammar;
 import org.ulithi.jlisp.parser.Primitives;
-import org.ulithi.jlisp.mem.AtomOld;
 import org.ulithi.jlisp.mem.TreeNode;
 
 import java.lang.reflect.Method;

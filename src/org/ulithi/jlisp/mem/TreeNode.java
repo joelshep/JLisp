@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.mem;
 
+import org.ulithi.jlisp.core.AtomOld;
 import org.ulithi.jlisp.core.SExpressionOld;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.ParseException;

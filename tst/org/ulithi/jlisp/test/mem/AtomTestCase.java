@@ -2,7 +2,7 @@ package org.ulithi.jlisp.test.mem;
 
 import org.junit.Test;
 import org.ulithi.jlisp.exception.TypeConversionException;
-import org.ulithi.jlisp.mem.Atom;
+import org.ulithi.jlisp.core.Atom;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
- * Unit tests for {@link org.ulithi.jlisp.mem.Atom}.
+ * Unit tests for {@link Atom}.
  */
 public class AtomTestCase {
 

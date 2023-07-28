@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.mem;
 
+import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.List;
 
 /**
