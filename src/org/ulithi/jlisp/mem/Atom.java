@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.mem;
 
+import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.TypeConversionException;
 import org.ulithi.jlisp.parser.Grammar;
 
