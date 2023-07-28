@@ -63,18 +63,6 @@ public class SExpressionOld extends TreeNode {
 	}
 
 	/**
-	 * This is essentially a deep-copy constructor
-	 *
-	 * @param s The to-be-copied S-Expression
-	 */
-	public SExpressionOld(final SExpressionOld s) throws ParseException {
-		data = TreeNode.create(s.dataTokens);
-		address = TreeNode.create(s.addressTokens);
-		dataTokens = new ArrayList<>(s.dataTokens);
-		addressTokens = new ArrayList<>(s.addressTokens);
-	}
-
-	/**
 	 * This is a magic function to take a string vector, make sure it is a
 	 * suitable representation of an S-Expression, and calculate
 	 * which parts are the address and which is the data.  It appropriately
@@ -179,7 +167,7 @@ public class SExpressionOld extends TreeNode {
 	/**
 	 * This function allows invoking of the main evaluation routine
 	 * without specifying the flag. It passes a default value and the
-	 * given environment varables.
+	 * given environment variables.
 	 *
 	 * @param env A Hashtable of the variables to be considered during evaluation
 	 */
@@ -189,11 +177,11 @@ public class SExpressionOld extends TreeNode {
 	}
 
 	/**
-	 * Provides an interface to accept both the flag and environment varaibles
+	 * Provides an interface to accept both the flag and environment variables
 	 * as arguments. This swaps in the current scope variables and when finished,
 	 * 'pops' them back out.
 	 *
-	 * @param flag Whether or not to take numericals literally
+	 * @param flag Whether to take numericals literally
 	 * @param env Variable bindings to use
 	 * @return The result of evaluation
 	 */
@@ -208,7 +196,7 @@ public class SExpressionOld extends TreeNode {
 
 	/**
 	 * This is the main evaluation function for an SExpression.
-	 * It takes a flag that decides whether or not to take numerical
+	 * It takes a flag that decides whether to take numerical
 	 * items literally. That should only happen when they are arguments
 	 * to a primitive or user-defined function.
 	 * <p>
@@ -222,7 +210,7 @@ public class SExpressionOld extends TreeNode {
 	 * CADR or CDR of the S-Expression. So we simplify here by just passing
 	 * the CDR and the primitives do any further chomping.
 	 *
-	 * @param flag Whether or not to interpret numerics literally
+	 * @param flag Whether to interpret numerics literally
 	 * @return The TreeNode representation of the result
 	 */
 	@Override

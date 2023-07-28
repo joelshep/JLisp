@@ -8,7 +8,6 @@ import org.ulithi.jlisp.mem.TreeNode;
 
 import java.lang.Integer;
 import java.lang.String;
-import java.lang.reflect.Method;
 
 import static org.ulithi.jlisp.parser.Grammar.*;
 
@@ -47,7 +46,7 @@ public final class Primitives {
 	 */
 	public static TreeNode T() {
 		return AtomOld.T;
-	};
+	}
 
 	/**
 	 * Returns an {@link AtomOld} to represent the NIL (or false) value.
@@ -56,7 +55,7 @@ public final class Primitives {
 	 */
 	public static TreeNode NIL() {
 		return AtomOld.NIL;
-	};
+	}
 
 	/**
 	 * returns the car of the given S-Expression as defined by the operational
@@ -106,7 +105,7 @@ public final class Primitives {
 	/**
 	 * Determines if the value of two S-Expressions are equal
 	 *
-	 * @param sexpr The paramenter S-Expression
+	 * @param sexpr The parameter S-Expression
 	 * @return T if the two S-Expressions are equal, NIL otherwise.
 	 */
 	public static TreeNode EQ (final SExpressionOld sexpr) {
@@ -129,7 +128,7 @@ public final class Primitives {
 	 * @param sexpr An S-Expression
 	 * @return T if the S-Expression evaluates to an integer, NIL otherwise.
 	 */
-	public static TreeNode INT (final SExpressionOld sexpr) throws Exception{
+	public static TreeNode INT (final SExpressionOld sexpr) {
 		return TreeNode.create(sexpr.address.evaluate(true).toString().matches(NUMERIC_LITERAL));
 	}
 
@@ -147,9 +146,9 @@ public final class Primitives {
 	 * Subtracts two numbers and returns the difference.
 	 *
 	 * @param sexpr S-Expression list in dot-notation
-	 * @return The difference of the two paramenters as an atom
+	 * @return The difference of the two parameters as an atom
 	 */
-	public static TreeNode MINUS (final SExpressionOld sexpr) throws Exception {
+	public static TreeNode MINUS (final SExpressionOld sexpr) {
 		return TreeNode.create(toInt(sexpr.address.evaluate(true)) - toInt(sexpr.data.evaluate(true)));
 	}
 
@@ -159,7 +158,7 @@ public final class Primitives {
 	 * @param sexpr S-Expression
 	 * @return The quotient of the two parameters given by the S-Expression.
 	 */
-	public static TreeNode QUOTIENT(final SExpressionOld sexpr) throws Exception {
+	public static TreeNode QUOTIENT(final SExpressionOld sexpr) {
 		return TreeNode.create(toInt(sexpr.address.evaluate(true)) / toInt(sexpr.data.evaluate(true)));
 	}
 
@@ -180,7 +179,7 @@ public final class Primitives {
 	 * @param sexpr S-Expression
 	 * @return The remainder after division as derived from the S-Expression
 	 */
-	public static TreeNode REMAINDER (final SExpressionOld sexpr) throws Exception {
+	public static TreeNode REMAINDER (final SExpressionOld sexpr) {
 		return TreeNode.create(toInt(sexpr.address.evaluate(true)) % toInt(sexpr.data.evaluate(true)));
 	}
 
@@ -190,18 +189,17 @@ public final class Primitives {
 	 * @param sexpr S-Expression
 	 * @return the boolean answer to the 'less than' operation
 	 */
-	public static TreeNode LESS (final SExpressionOld sexpr) throws Exception {
+	public static TreeNode LESS (final SExpressionOld sexpr) {
 		return TreeNode.create(toInt(sexpr.address.evaluate(true)) < toInt(sexpr.data.evaluate(true)));
 	}
 
 	/**
-	 * Computer the 'greater than' operator using the arguments* found in the paramter S-Expression
+	 * Computer the 'greater than' operator using the arguments* found in the parameter S-Expression
 	 *
 	 * @param sexpr S-Expression
 	 * @return The boolean answer to the 'greater than' operator
-	 * @throws Exception If the S-Expression is malformed
 	 */
-	public static TreeNode GREATER (final SExpressionOld sexpr) throws Exception {
+	public static TreeNode GREATER (final SExpressionOld sexpr) {
 		return TreeNode.create(toInt(sexpr.address.evaluate(true)) > toInt(sexpr.data.evaluate(true)));
 	}
 
@@ -209,17 +207,15 @@ public final class Primitives {
 	 * As per the operational semantics of Lisp, takes an S-Expression
 	 * which represents a list of conditions. It evaluates them until
 	 * one's CAR evaluates to T and then returns the second item.
-	 *
+	 * <p>
 	 * This roughly approximates the evcon function in the operational semantics
 	 * where the error condition is taken care of by the SExpression
 	 * constructor.
 	 *
 	 * @param sexpr The S-Expression describing the conditions
 	 * @return The result of evaluating the expression in the list with the first boolean component
-	 * @throws Exception If the S-Expression is malformed
-	 *
 	 */
-	public static TreeNode COND (final SExpressionOld sexpr) throws Exception {
+	public static TreeNode COND (final SExpressionOld sexpr) {
 		SExpressionOld a = new SExpressionOld(sexpr.addressTokens);
 		if ( a.address.evaluate().toString().matches(T) ){
 			SExpressionOld tmp = new SExpressionOld(a.dataTokens);
@@ -249,7 +245,6 @@ public final class Primitives {
 	 *
 	 * @param sexpr S-Expression containing all the necessary information
 	 * @return An Atom of the function name if the registration is successful
-	 * @throws Exception If the S-Expression is malformed
 	 */
 	public static TreeNode DEFUN (final SExpressionOld sexpr) throws ParseException {
 		final String name = sexpr.address.toString();
@@ -289,7 +284,7 @@ public final class Primitives {
 	 */
 	private static boolean primitiveExists(final String name) {
 		try{
-			final Method method = Primitives.class.getDeclaredMethod(name, SExpressionOld.class);
+			Primitives.class.getDeclaredMethod(name, SExpressionOld.class);
 			return true;
 		} catch (final Exception e) {
 			return false;
