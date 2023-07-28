@@ -1,6 +1,8 @@
 package org.ulithi.jlisp.mem;
 
 import org.apache.commons.lang3.Validate;
+import org.ulithi.jlisp.core.List;
+import org.ulithi.jlisp.core.SExpression;
 
 import static org.ulithi.jlisp.parser.Grammar.*;
 

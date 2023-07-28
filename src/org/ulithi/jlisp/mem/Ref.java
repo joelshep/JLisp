@@ -1,5 +1,7 @@
 package org.ulithi.jlisp.mem;
 
+import org.ulithi.jlisp.core.List;
+
 /**
  * The {@link Ref} interface is a simple "marker" interface for things that can be referred to
  * from {@link Cell} fields, namely: {@link Atom Atoms} (including {@code NIL}, {@link List Lists}

@@ -1,6 +1,10 @@
 package org.ulithi.jlisp.parser;
 
+import org.ulithi.jlisp.core.Environment;
+import org.ulithi.jlisp.core.SExpressionOld;
 import org.ulithi.jlisp.exception.ParseException;
+import org.ulithi.jlisp.mem.AtomOld;
+import org.ulithi.jlisp.mem.TreeNode;
 
 import java.lang.Integer;
 import java.lang.String;
@@ -37,21 +41,21 @@ public final class Primitives {
 	// }
 
 	/**
-	 * Returns an {@link Atom} representing the "true" value.
+	 * Returns an {@link AtomOld} representing the "true" value.
 	 *
 	 * @return The T Atom.
 	 */
 	public static TreeNode T() {
-		return Atom.T;
+		return AtomOld.T;
 	};
 
 	/**
-	 * Returns an {@link Atom} to represent the NIL (or false) value.
+	 * Returns an {@link AtomOld} to represent the NIL (or false) value.
 	 *
 	 * @return The NIL Atom.
 	 */
 	public static TreeNode NIL() {
-		return Atom.NIL;
+		return AtomOld.NIL;
 	};
 
 	/**
@@ -61,7 +65,7 @@ public final class Primitives {
 	 * @param sexpr The argument S-Expression
 	 * @return The address of the given S-Exp
 	 */
-	public static TreeNode CAR (final SExpression sexpr) {
+	public static TreeNode CAR (final SExpressionOld sexpr) {
 		return sexpr.address;
 	}
 
@@ -71,7 +75,7 @@ public final class Primitives {
 	 * @param sexpr An S-Expression
 	 * @return The data of the S-Expression
 	 */
-	public static TreeNode CDR (final SExpression sexpr) {
+	public static TreeNode CDR (final SExpressionOld sexpr) {
 		return sexpr.data;
 	}
 
@@ -84,9 +88,9 @@ public final class Primitives {
 	 * @param sexpr The SExpression arguments in dot-notation
 	 * @return CONS[ CAR[s], CADR[s] ] - the semantically defined CONS
 	 */
-	public static SExpression CONS (final SExpression sexpr ) {
-		final SExpression tmp = new SExpression(sexpr.dataTokens);
-		return new SExpression(sexpr.address.evaluate(), tmp.address.evaluate());
+	public static SExpressionOld CONS (final SExpressionOld sexpr ) {
+		final SExpressionOld tmp = new SExpressionOld(sexpr.dataTokens);
+		return new SExpressionOld(sexpr.address.evaluate(), tmp.address.evaluate());
 	}
 
 	/**
@@ -95,8 +99,8 @@ public final class Primitives {
 	 * @param sexpr The S-Expression in question
 	 * @return T if it is an atom literal, NIL otherwise.
 	 */
-	public static TreeNode ATOM (final SExpression sexpr) {
-		return TreeNode.create(sexpr.address.evaluate().toString().matches(LITERAL));
+	public static TreeNode ATOM (final SExpressionOld sexpr) {
+		return TreeNode.create(sexpr.address.evaluate().toString().matches(ALPHA_LITERAL));
 	}
 
 	/**
@@ -105,7 +109,7 @@ public final class Primitives {
 	 * @param sexpr The paramenter S-Expression
 	 * @return T if the two S-Expressions are equal, NIL otherwise.
 	 */
-	public static TreeNode EQ (final SExpression sexpr) {
+	public static TreeNode EQ (final SExpressionOld sexpr) {
 		return TreeNode.create(sexpr.address.evaluate(true).toString().matches(sexpr.data.evaluate(true).toString()));
 	}
 
@@ -115,7 +119,7 @@ public final class Primitives {
 	 * @param sexpr The S-Expression in question.
 	 * @return T if the S-Expression evaluates to NIL, NIL otherwise.
 	 */
-	public static TreeNode NULL (final SExpression sexpr) {
+	public static TreeNode NULL (final SExpressionOld sexpr) {
 		return TreeNode.create(sexpr.data.evaluate().toString().matches(NIL));
 	}
 
@@ -125,7 +129,7 @@ public final class Primitives {
 	 * @param sexpr An S-Expression
 	 * @return T if the S-Expression evaluates to an integer, NIL otherwise.
 	 */
-	public static TreeNode INT (final SExpression sexpr) throws Exception{
+	public static TreeNode INT (final SExpressionOld sexpr) throws Exception{
 		return TreeNode.create(sexpr.address.evaluate(true).toString().matches(NUMERIC_LITERAL));
 	}
 
@@ -135,7 +139,7 @@ public final class Primitives {
 	 * @param sexpr S-Expression
 	 * @return The sum of the two elements in the given list (dot-notation form)
 	 */
-	public static TreeNode PLUS (final SExpression sexpr) {
+	public static TreeNode PLUS (final SExpressionOld sexpr) {
 		return TreeNode.create(toInt(sexpr.address.evaluate(true)) + toInt(sexpr.data.evaluate(true)));
 	}
 
@@ -145,7 +149,7 @@ public final class Primitives {
 	 * @param sexpr S-Expression list in dot-notation
 	 * @return The difference of the two paramenters as an atom
 	 */
-	public static TreeNode MINUS (final SExpression sexpr) throws Exception {
+	public static TreeNode MINUS (final SExpressionOld sexpr) throws Exception {
 		return TreeNode.create(toInt(sexpr.address.evaluate(true)) - toInt(sexpr.data.evaluate(true)));
 	}
 
@@ -155,7 +159,7 @@ public final class Primitives {
 	 * @param sexpr S-Expression
 	 * @return The quotient of the two parameters given by the S-Expression.
 	 */
-	public static TreeNode QUOTIENT(final SExpression sexpr) throws Exception {
+	public static TreeNode QUOTIENT(final SExpressionOld sexpr) throws Exception {
 		return TreeNode.create(toInt(sexpr.address.evaluate(true)) / toInt(sexpr.data.evaluate(true)));
 	}
 
@@ -165,7 +169,7 @@ public final class Primitives {
 	 * @param sexpr S-Expression
 	 * @return The product of the two parameters as derived from the S-Expression
 	 */
-	public static TreeNode TIMES (final SExpression sexpr) throws Exception {
+	public static TreeNode TIMES (final SExpressionOld sexpr) throws Exception {
 		return TreeNode.create(toInt(sexpr.address.evaluate(true)) * toInt(sexpr.data.evaluate(true)));
 	}
 
@@ -176,7 +180,7 @@ public final class Primitives {
 	 * @param sexpr S-Expression
 	 * @return The remainder after division as derived from the S-Expression
 	 */
-	public static TreeNode REMAINDER (final SExpression sexpr) throws Exception {
+	public static TreeNode REMAINDER (final SExpressionOld sexpr) throws Exception {
 		return TreeNode.create(toInt(sexpr.address.evaluate(true)) % toInt(sexpr.data.evaluate(true)));
 	}
 
@@ -186,7 +190,7 @@ public final class Primitives {
 	 * @param sexpr S-Expression
 	 * @return the boolean answer to the 'less than' operation
 	 */
-	public static TreeNode LESS (final SExpression sexpr) throws Exception {
+	public static TreeNode LESS (final SExpressionOld sexpr) throws Exception {
 		return TreeNode.create(toInt(sexpr.address.evaluate(true)) < toInt(sexpr.data.evaluate(true)));
 	}
 
@@ -197,7 +201,7 @@ public final class Primitives {
 	 * @return The boolean answer to the 'greater than' operator
 	 * @throws Exception If the S-Expression is malformed
 	 */
-	public static TreeNode GREATER (final SExpression sexpr) throws Exception {
+	public static TreeNode GREATER (final SExpressionOld sexpr) throws Exception {
 		return TreeNode.create(toInt(sexpr.address.evaluate(true)) > toInt(sexpr.data.evaluate(true)));
 	}
 
@@ -215,13 +219,13 @@ public final class Primitives {
 	 * @throws Exception If the S-Expression is malformed
 	 *
 	 */
-	public static TreeNode COND (final SExpression sexpr) throws Exception {
-		SExpression a = new SExpression(sexpr.addressTokens);
+	public static TreeNode COND (final SExpressionOld sexpr) throws Exception {
+		SExpressionOld a = new SExpressionOld(sexpr.addressTokens);
 		if ( a.address.evaluate().toString().matches(T) ){
-			SExpression tmp = new SExpression(a.dataTokens);
+			SExpressionOld tmp = new SExpressionOld(a.dataTokens);
 			return tmp.address.evaluate(true);
 		} else {
-			SExpression b = new SExpression(sexpr.dataTokens);
+			SExpressionOld b = new SExpressionOld(sexpr.dataTokens);
 			return COND(b);
 		}
 	}
@@ -234,7 +238,7 @@ public final class Primitives {
 	 * @param sexpr S-Expression
 	 * @return The address of s
 	 */
-	public static TreeNode QUOTE (final SExpression sexpr) {
+	public static TreeNode QUOTE (final SExpressionOld sexpr) {
 		return sexpr.address;
 	}
 
@@ -247,7 +251,7 @@ public final class Primitives {
 	 * @return An Atom of the function name if the registration is successful
 	 * @throws Exception If the S-Expression is malformed
 	 */
-	public static TreeNode DEFUN (final SExpression sexpr) throws ParseException {
+	public static TreeNode DEFUN (final SExpressionOld sexpr) throws ParseException {
 		final String name = sexpr.address.toString();
 
 		if (!name.matches(FUNCTION_NAME)) {
@@ -258,14 +262,14 @@ public final class Primitives {
 			throw new ParseException("Error! Cannot override a primitive function.");
 		}
 
-		SExpression d = new SExpression(sexpr.dataTokens);
+		SExpressionOld d = new SExpressionOld(sexpr.dataTokens);
 		TreeNode params = TreeNode.create(d.addressTokens);
-		SExpression tmp = new SExpression(d.dataTokens);
+		SExpressionOld tmp = new SExpressionOld(d.dataTokens);
 		TreeNode body = TreeNode.create(tmp.addressTokens);
 
 		Environment.registerFunction(name, params, body);
 
-		return new Atom(name);
+		return new AtomOld(name);
 	}
 
 	/**
@@ -285,7 +289,7 @@ public final class Primitives {
 	 */
 	private static boolean primitiveExists(final String name) {
 		try{
-			final Method method = Primitives.class.getDeclaredMethod(name, SExpression.class);
+			final Method method = Primitives.class.getDeclaredMethod(name, SExpressionOld.class);
 			return true;
 		} catch (final Exception e) {
 			return false;

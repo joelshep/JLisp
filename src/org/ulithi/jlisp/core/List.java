@@ -1,4 +1,6 @@
-package org.ulithi.jlisp.mem;
+package org.ulithi.jlisp.core;
+
+import org.ulithi.jlisp.mem.Cell;
 
 /**
  * Wrapper class for a LISP list.

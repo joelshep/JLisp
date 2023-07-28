@@ -1,7 +1,6 @@
 package org.ulithi.jlisp.main;
 
 import org.ulithi.console.Console;
-import org.ulithi.jlisp.core.Interpreter;
 
 import java.io.BufferedReader;
 import java.io.IOException;

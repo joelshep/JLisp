@@ -1,4 +1,7 @@
-package org.ulithi.jlisp.mem;
+package org.ulithi.jlisp.core;
+
+import org.ulithi.jlisp.mem.Atom;
+import org.ulithi.jlisp.mem.Ref;
 
 /**
  * An {@link SExpression} is the fundamental LISP language element, the basis for both {@link Atom Atoms}

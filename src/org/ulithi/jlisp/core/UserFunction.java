@@ -1,7 +1,9 @@
-package org.ulithi.jlisp.parser;
+package org.ulithi.jlisp.core;
 
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.ParseException;
+import org.ulithi.jlisp.parser.Grammar;
+import org.ulithi.jlisp.mem.TreeNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -107,12 +109,12 @@ class UserFunction {
 			return env;
 		}
 
-		SExpression tmp = new SExpression(s);
+		SExpressionOld tmp = new SExpressionOld(s);
 		int i;
 		for (i = 0; i < formals.size(); i++) {
 			env.put(formals.get(i), tmp.address.evaluate());
 			try {
-				tmp = new SExpression(tmp.dataTokens);
+				tmp = new SExpressionOld(tmp.dataTokens);
 			} catch (Exception e) {
 				break;
 			}

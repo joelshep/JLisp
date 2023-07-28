@@ -1,10 +1,11 @@
 package org.ulithi.jlisp.primitive;
 
+import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.exception.JLispRuntimeException;
 import org.ulithi.jlisp.mem.Atom;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.Ref;
-import org.ulithi.jlisp.mem.SExpression;
+import org.ulithi.jlisp.core.SExpression;
 
 /**
  * Implements the LISP {@code eval} function. The {@code eval} function accepts a "form" -- a list
@@ -69,7 +70,7 @@ public class Eval {
     private static SExpression refToCar(final Cell cell) {
         final Ref ref = cell.getFirst();
         if (ref.isAtom()) { return (Atom)ref; }
-        if (ref.isCell()) { return org.ulithi.jlisp.mem.List.create(cell); }
+        if (ref.isCell()) { return List.create(cell); }
         throw new JLispRuntimeException("Don't know how to fetch CAR of ref: " + ref);
     }
 

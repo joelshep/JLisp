@@ -1,9 +1,13 @@
-package org.ulithi.jlisp.parser;
+package org.ulithi.jlisp.core;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.ParseException;
 import org.ulithi.jlisp.exception.UndefinedSymbolException;
+import org.ulithi.jlisp.parser.Grammar;
+import org.ulithi.jlisp.parser.Primitives;
+import org.ulithi.jlisp.mem.AtomOld;
+import org.ulithi.jlisp.mem.TreeNode;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -12,29 +16,29 @@ import java.util.Map;
 
 /**
  * Represents an S-Expression (Symbolic Expression): a.k.a. a list of {@link AtomOld}s, {@code  Symbols}
- * or other {@link SExpression s-expressions}. An s-expression can also be empty. This class is able
+ * or other {@link SExpressionOld s-expressions}. An s-expression can also be empty. This class is able
  * to construct s-expressions from different structures, and implies the core evaluation routine
  * as well.
  */
-class SExpression extends TreeNode {
-	protected TreeNode address;
-	protected TreeNode data;
-	protected List<String> dataTokens;
-	protected List<String> addressTokens;
+public class SExpressionOld extends TreeNode {
+	public TreeNode address;
+	public TreeNode data;
+	public List<String> dataTokens;
+	public List<String> addressTokens;
 
 	/**
-	 * Constructs an {@link SExpression} from an ordered list of tokens.
+	 * Constructs an {@link SExpressionOld} from an ordered list of tokens.
 	 *
 	 * @param s An ordered list of expression tokens.
 	 */
-	public SExpression(final List<String> s) throws ParseException {
+	public SExpressionOld(final List<String> s) throws ParseException {
 		consHelper(s);
 	}
 
 	/**
 	 * @param t A {@link TreeNode} to be "cast" to an S-Expression.
 	 */
-	public SExpression(final TreeNode t) throws ParseException {
+	public SExpressionOld(final TreeNode t) throws ParseException {
 		consHelper(t.tokens);
 	}
 
@@ -46,7 +50,7 @@ class SExpression extends TreeNode {
 	 * @param a The address-to-be TreeNode
 	 * @param d The data-to-be TreeNode
 	 */
-	public SExpression(final TreeNode a, final TreeNode d) {
+	public SExpressionOld(final TreeNode a, final TreeNode d) {
 		address = a;
 		data = d;
 		dataTokens = d.tokens;
@@ -64,7 +68,7 @@ class SExpression extends TreeNode {
 	 *
 	 * @param s The to-be-copied S-Expression
 	 */
-	public SExpression(final SExpression s) throws ParseException {
+	public SExpressionOld(final SExpressionOld s) throws ParseException {
 		data = TreeNode.create(s.dataTokens);
 		address = TreeNode.create(s.addressTokens);
 		dataTokens = new ArrayList<>(s.dataTokens);
@@ -120,7 +124,7 @@ class SExpression extends TreeNode {
 	 * @return True if the S-Expression is a list, false otherwise.
 	 */
 	@Override
-	protected boolean isList() {
+	public boolean isList() {
 		return data.toString().matches(Grammar.NIL) || data.isList();
 	}
 
@@ -148,12 +152,12 @@ class SExpression extends TreeNode {
 
 		final List<String> v = new ArrayList<>();
 
-		SExpression tmp = this;
+		SExpressionOld tmp = this;
 
 		while (tmp.isList()) {
 			v.add(tmp.address.toString());
 			try {
-				tmp = new SExpression(tmp.dataTokens);
+				tmp = new SExpressionOld(tmp.dataTokens);
 			} catch (final Exception e) {
 				break;
 			}
@@ -169,7 +173,7 @@ class SExpression extends TreeNode {
 	 * @return The result of evaluation of the SExpression
 	 */
 	@Override
-	protected TreeNode evaluate() {
+	public TreeNode evaluate() {
 		return this.evaluate(false);
 	}
 
@@ -181,7 +185,7 @@ class SExpression extends TreeNode {
 	 * @param env A Hashtable of the variables to be considered during evaluation
 	 */
 	@Override
-	protected TreeNode evaluate(final Map<String, TreeNode> env) {
+	public TreeNode evaluate(final Map<String, TreeNode> env) {
 		return evaluate(false, env);
 	}
 
@@ -195,7 +199,7 @@ class SExpression extends TreeNode {
 	 * @return The result of evaluation
 	 */
 	@Override
-	protected TreeNode evaluate(boolean flag, final Map<String, TreeNode> env) {
+	public TreeNode evaluate(boolean flag, final Map<String, TreeNode> env) {
 		final Map<String, TreeNode> oldVars = Environment.getVarTable();
 		Environment.mergeVars(env);
 		TreeNode rtn = evaluate(flag);
@@ -223,9 +227,9 @@ class SExpression extends TreeNode {
 	 * @return The TreeNode representation of the result
 	 */
 	@Override
-	protected TreeNode evaluate(boolean flag) {
+	public TreeNode evaluate(boolean flag) {
 		String a = address.evaluate().toString();
-		SExpression params;
+		SExpressionOld params;
 
 		if (flag && a.matches(Grammar.NUMERIC_LITERAL)) {
 			return address.evaluate();
@@ -238,19 +242,19 @@ class SExpression extends TreeNode {
 		} else if (Environment.functionIsDefined(a)) {
 			return Environment.executeFunction(a, TreeNode.create(dataTokens));
 		} else if (a.matches("CAR") || a.matches("CDR")) {
-			SExpression s;
+			SExpressionOld s;
 			if (data.isList()) {
-				s = new SExpression(dataTokens);
-				s = new SExpression(s.address.evaluate().tokens);
+				s = new SExpressionOld(dataTokens);
+				s = new SExpressionOld(s.address.evaluate().tokens);
 				// s = new SExpression(s.evaluate().tokens);
 			} else {
-				s = new SExpression(dataTokens);
+				s = new SExpressionOld(dataTokens);
 			}
 			params = s;
 		} else if (a.matches("DEFUN")) {
-			return Primitives.DEFUN((SExpression) data);
+			return Primitives.DEFUN((SExpressionOld) data);
 		} else {
-			params = (SExpression) data;
+			params = (SExpressionOld) data;
 		}
 
 		return invokePrimitive(a, params);
@@ -266,11 +270,11 @@ class SExpression extends TreeNode {
 	 * @param sexpr The data to be used as primitive data
 	 * @return The object returned by the primitive cast as a TreeNode (what it should be anyway)
 	 */
-	private TreeNode invokePrimitive(final String name, final SExpression sexpr) {
+	private TreeNode invokePrimitive(final String name, final SExpressionOld sexpr) {
 		Method m;
 
 		try {
-			m = Primitives.class.getDeclaredMethod(name, SExpression.class);
+			m = Primitives.class.getDeclaredMethod(name, SExpressionOld.class);
 		} catch (Exception e) {
 			throw new UndefinedSymbolException("Primitive function " + name + " undefined", e);
 		}

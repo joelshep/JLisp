@@ -1,7 +1,8 @@
-package org.ulithi.jlisp.parser;
+package org.ulithi.jlisp.core;
 
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.UndefinedSymbolException;
+import org.ulithi.jlisp.mem.TreeNode;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,9 +24,6 @@ public final class Environment{
 	 * @param params An SExpression or Atom to be used as actual parameter
 	 *
 	 * @return The TreeNode (S-Expression or Atom) which is the result of evaluation
-	 *
-	 * @throws Exception If the requested function is undefined
-	 *
 	 */
 	public static TreeNode executeFunction(final String name, final TreeNode params) throws EvaluationException {
 		if ( !funcs.containsKey(name) ){
@@ -42,9 +40,6 @@ public final class Environment{
 	 * @param name The string name of the function
 	 * @param params The formal parameter list of the function
 	 * @param body The literal or SExpression representing the body of the function
-	 *
-	 * @throws Exception If the function definition is illegal
-	 *
 	 */
 	public static void registerFunction(final String name, final TreeNode params, final TreeNode body) {
 		UserFunction f = new UserFunction(name, params, body);
@@ -121,7 +116,6 @@ public final class Environment{
 	 *
 	 * @param name	The name of the variable
 	 * @return The TreeNode value of the variable
-	 * @throws Exception If the variable is not bound
 	 */
 	public static TreeNode getVarValue(final String name) throws UndefinedSymbolException {
 		if ( vars.containsKey(name) ) {
