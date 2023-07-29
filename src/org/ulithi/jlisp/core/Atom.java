@@ -10,7 +10,7 @@ import org.ulithi.jlisp.parser.Grammar;
  * class type that can represent several types of data and provides seamless transformations
  * between types when possible (e.g., number to string, or string to boolean).
  */
-public class Atom implements Ref, SExpression {
+public class Atom extends SExpression implements Ref {
 
     /**
      * An {@link Atom} representing the special {@code NIL} value.

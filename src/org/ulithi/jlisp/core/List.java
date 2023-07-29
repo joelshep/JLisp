@@ -7,7 +7,7 @@ import org.ulithi.jlisp.mem.Cell;
  * <p>
  * TODO - Not sure this class is actually needed or useful.
  */
-public class List implements SExpression {
+public class List extends SExpression {
 
     /** The root Cell of this List. */
     private final Cell root;

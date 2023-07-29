@@ -5,6 +5,7 @@ import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 import org.junit.runners.Suite;
+import org.ulithi.jlisp.test.core.SExpressionTestCase;
 import org.ulithi.jlisp.test.lexer.LexerTestCase;
 import org.ulithi.jlisp.test.mem.AtomTestCase;
 import org.ulithi.jlisp.test.parser.GrammarTestCase;
@@ -25,6 +26,7 @@ import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
         LexerTestCase.class,
         ParserTestCase.class,
         PrimitivesTestCase.class,
+        SExpressionTestCase.class,
         SmokeTestCase.class,
         StringUtilsTestCase.class
 })

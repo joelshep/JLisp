@@ -59,6 +59,28 @@ public class Cell implements Ref {
     }
 
     /**
+     * Constructs a new {@link Cell} with a literal {@link Atom} for the given integer value as
+     * the {@code first} element and {@code NIL} as the {@code rest} element.
+     *
+     * @param value An integer used to construct the Atom for the new cell's first element.
+     * @return A new {@code Cell} of the form (ATOM . NIL).
+     */
+    public static Cell create(final int value) {
+        return create(Atom.create(value));
+    }
+
+    /**
+     * Constructs a new {@link Cell} with a literal {@link Atom} for the given Boolean value as
+     * the {@code first} element and {@code NIL} as the {@code rest} element.
+     *
+     * @param bool A Boolean used to construct the Atom for the new cell's first element.
+     * @return A new {@code Cell} of the form (ATOM . NIL).
+     */
+    public static Cell create(final boolean bool) {
+        return create(Atom.create(bool));
+    }
+
+    /**
      * Constructs a new {@link Cell} with the given {@link Atom} as the {@code first} element and
      * {@code NIL} as the {@code rest} element.
      * @param atom The {@code Atom} that will be the new cell's {@code first} element.

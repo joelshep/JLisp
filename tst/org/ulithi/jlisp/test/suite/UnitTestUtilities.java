@@ -16,10 +16,20 @@ public class UnitTestUtilities {
      * @return The result of the evaluation, as a {@code String}.
      */
     public static String evaluate(final String expression) {
-        final Lexer lexer = new Lexer(expression);
-        final Parser p = new Parser();
-        final PTree ptree = p.parse(lexer.getTokens());
+        final PTree ptree = parse(expression);
         final Eval eval = new Eval();
         return String.valueOf(eval.apply(ptree.root()));
+    }
+
+    /**
+     * Scans and parses the given LISP {@code expression} and returns resulting parse tree
+     * ({@link PTree}.
+     * @param expression The LISP expression to evaluate.
+     * @return The result of the parsing, as a {@code PTree}.
+     */
+    public static PTree parse(final String expression) {
+        final Lexer lexer = new Lexer(expression);
+        final Parser p = new Parser();
+        return p.parse(lexer.getTokens());
     }
 }
