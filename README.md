@@ -120,3 +120,4 @@ ERROR
 * https://bernsteinbear.com/blog/lisp/
 * https://buildyourownlisp.com/
 * http://lisp2d.net/teach/i.php (good discussion of the memory model)
+* http://www-formal.stanford.edu/jmc/history/lisp/node3.html - McCarthy's history of LISP
