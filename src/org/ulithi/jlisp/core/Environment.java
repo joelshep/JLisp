@@ -9,13 +9,13 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * This houses the so-called "d-list" of the program. It manages
- * the binding of functions and variables within the context of the
- * running Lisp program.
+ * The JLISP {@link Environment} manages bindings for symbols, variables, functions, etc., to
+ * their storage or implementation.
  */
 public final class Environment{
-	public static Map<String, UserFunction> funcs = new HashMap<>();
-	public static Map<String, TreeNode> vars = new HashMap<>();
+
+	private final Map<String, UserFunction> funcs = new HashMap<>();
+	private final Map<String, TreeNode> vars = new HashMap<>();
 
 	/**
 	 * Executes a requested function with the actual parameters
@@ -25,7 +25,7 @@ public final class Environment{
 	 *
 	 * @return The TreeNode (S-Expression or Atom) which is the result of evaluation
 	 */
-	public static TreeNode executeFunction(final String name, final TreeNode params) throws EvaluationException {
+	public TreeNode executeFunction(final String name, final TreeNode params) throws EvaluationException {
 		if ( !funcs.containsKey(name) ){
 			throw new EvaluationException("Error! Undefined function: " + name);
 		}
@@ -41,7 +41,7 @@ public final class Environment{
 	 * @param params The formal parameter list of the function
 	 * @param body The literal or SExpression representing the body of the function
 	 */
-	public static void registerFunction(final String name, final TreeNode params, final TreeNode body) {
+	public void registerFunction(final String name, final TreeNode params, final TreeNode body) {
 		UserFunction f = new UserFunction(name, params, body);
 		funcs.put(name, f);
 	}
@@ -54,14 +54,14 @@ public final class Environment{
 	 * @return True if the function is defined. False if not.
 	 *
 	 */
-	public static boolean functionIsDefined(final String name) {
+	public boolean functionIsDefined(final String name) {
 		return funcs.containsKey(name);
 	}
 
 	/**
 	 * Sends the variable hashtable stringified to stdout
 	 */
-	public static void print() {
+	public void print() {
 		System.out.println(vars.toString());
 	}
 
@@ -73,7 +73,7 @@ public final class Environment{
 	 * @deprecated Only for early debugging
 	 *
 	 */
-	public static String stringify() {
+	public String stringify() {
 		return vars.toString();
 	}
 
@@ -84,14 +84,14 @@ public final class Environment{
 	 *
 	 * @return True if the variable is bound. False if not.
 	 */
-	public static boolean varIsDefined(final String name) {
+	public boolean varIsDefined(final String name) {
 		return vars.containsKey(name);
 	}
 
 	/**
 	 * Used to remove variables from the environment
 	 */
-	public static void unbindAll(final HashMap<String, TreeNode> tbl) {
+	public void unbindAll(final HashMap<String, TreeNode> tbl) {
 		Iterator<Map.Entry<String, TreeNode>> it = tbl.entrySet().iterator();
 
 	    while (it.hasNext()) {
@@ -107,7 +107,7 @@ public final class Environment{
 	 * Unbinds a specific variable from the envrionment
 	 * @param name Name of the variable.
 	 */
-	public static void unbind(final String name) {
+	public void unbind(final String name) {
 		vars.remove(name);
 	}
 
@@ -117,7 +117,7 @@ public final class Environment{
 	 * @param name	The name of the variable
 	 * @return The TreeNode value of the variable
 	 */
-	public static TreeNode getVarValue(final String name) throws UndefinedSymbolException {
+	public TreeNode getVarValue(final String name) throws UndefinedSymbolException {
 		if ( vars.containsKey(name) ) {
 			return vars.get(name);
 		}
@@ -130,7 +130,7 @@ public final class Environment{
 	 *
 	 * @param newVars A Hashtable of the new variable bindings
 	 */
-	public static void mergeVars(final Map<String, TreeNode> newVars) {
+	public void mergeVars(final Map<String, TreeNode> newVars) {
 		Iterator<Map.Entry<String, TreeNode>> it = newVars.entrySet().iterator();
 	    while (it.hasNext()) {
 	        Map.Entry<String, TreeNode> pairs = it.next();
@@ -148,7 +148,7 @@ public final class Environment{
 	 *
 	 * @return A copy of the current environment bindings
 	 */
-	public static Map<String, TreeNode> getVarTable() {
+	public Map<String, TreeNode> getVarTable() {
 		return new HashMap<>(vars);
 	}
 
@@ -158,7 +158,8 @@ public final class Environment{
 	 *
 	 * @param v The new Hashtable of variable bindings
 	 */
-	public static void setVars(final Map<String, TreeNode> v) {
-		vars = new HashMap<>(v);
+	public void setVars(final Map<String, TreeNode> v) {
+		vars.clear();
+		vars.putAll(new HashMap<>(v));
 	}
 }
