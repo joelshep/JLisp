@@ -35,7 +35,7 @@ tree nodes. This process produces an S-Expression representing the output of the
 There are two layers to JLISP's representation of a LISP expression: the physical memory model, and
 the conceptual language model.
 
-The memory model describes the in-memory structure -- the AST essentially -- that the Parser generates.
+The **memory model** describes the in-memory structure -- the AST essentially -- that the Parser generates.
 JLISP builds the parse tree, or AST, from simple CONS cells, which can be presented as a *dotted pair*.
 A CONS cell consists of two fields: each field is a pointer (or, in JLISP, a reference: Java doesn't
 have pointers). The first field/pointer is the CAR of the CONS cell, the second pointer is the CDR.
@@ -47,7 +47,7 @@ expressions are stored in memory as linked lists of cells. For example `(+ 1 2)`
 `(+ *)-->(1 *)-->(2 NIL)` (where * represents a pointer to the next cell in the list). In dotted-pair
 notation, this is represented as `(+ . (1 . (2 . NIL)))`.
 
-The conceptual language model describes, well, the lists -- or, more precisely, the S-Expressions
+The **language model** describes, well, the lists -- or, more precisely, the S-Expressions
 (Symbolic Expressions) that LISP syntax builds on. S-Expressions (sexprs, or sexps) are either
 *atoms* -- numeric and alphanumeric literals, and symbols like variable and function names -- or
 lists of atoms and sexprs:
@@ -69,11 +69,16 @@ A cell field can be one of several things:
 
 This is where it gets a touch messy. Atoms and lists are part of the language model. Cells are not:
 they're part of the memory model. At first, I made them all sexprs (i.e., I had them all inherit
-from SExpression) but cells are *not* sexprs. But, in the memory model, atoms and cells are the
+from SExpression) but cells are *not* sexprs. In the memory model, however, atoms and cells are the
 things that can be referred to from cell fields: they are all *references*.
 
 So, in JLISP, a cell is a pair of Refs, and the Atom and Cell classes inherit from Ref, which
 is a simple marker interface in the JLISP memory model.
+
+The ```SExpression``` class in ```org.ulithi.jlisp.core``` is not only the super-class for
+```Atom``` and ```List```, but it is the bridge between the language model and the memory model.
+The ```SExpression``` class's primary function is to transform cells and references to atoms
+and lists.
 
 ## Evaluation
 
