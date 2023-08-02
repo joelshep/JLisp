@@ -44,9 +44,9 @@ public class ParserTestCase {
      */
     @Test
     public void parseNumericLiteral() {
-        // 43 => (43 . NIL)
+        // 43 => (43 . NAL)
         final List<String> tokens = Arrays.asList("43");
-        final String expected = "(43 . NIL)";
+        final String expected = "(43 . NAL)";
         parseAndValidate(parser, tokens, expected);
     }
 

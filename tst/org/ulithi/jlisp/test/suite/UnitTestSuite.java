@@ -34,6 +34,7 @@ import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
         SmokeTestCase.class,
         StringUtilsTestCase.class
 })
+
 public class UnitTestSuite {
     public static void main(final String[] args) {
         Result result = JUnitCore.runClasses(UnitTestSuite.class);

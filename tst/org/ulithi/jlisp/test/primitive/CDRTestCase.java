@@ -3,6 +3,7 @@ package org.ulithi.jlisp.test.primitive;
 import org.junit.Test;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.List;
+import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.primitive.CAR;
 import org.ulithi.jlisp.primitive.CDR;
@@ -15,7 +16,7 @@ public class CDRTestCase {
     public void testCDROfSimpleList() {
         final String expression = "(4 5 6)";
         final PTree pTree = parse(expression);
-        final List list = (List)(new CDR()).apply(pTree.root());
+        final List list = (List)(new CDR()).apply(SExpression.create(pTree.root()));
         assertEquals("(5 . (6 . NIL))", String.valueOf(list));
     }
 
@@ -23,7 +24,7 @@ public class CDRTestCase {
     public void testCDROfSingleElementList() {
         final String expression = "(HELLO)";
         final PTree pTree = parse(expression);
-        final Atom atom = (Atom)(new CDR()).apply(pTree.root());
+        final Atom atom = (Atom)(new CDR()).apply(SExpression.create(pTree.root()));
         assertEquals(Atom.NIL, atom);
     }
 
@@ -31,7 +32,7 @@ public class CDRTestCase {
     public void testCDROfListOfLists() {
         final String expression = "((A B) (C D) (E F)))";
         final PTree pTree = parse(expression);
-        final List list = (List)(new CDR()).apply(pTree.root());
+        final List list = (List)(new CDR()).apply(SExpression.create(pTree.root()));
         assertEquals("((C . (D . NIL)) . ((E . (F . NIL)) . NIL))", String.valueOf(list));
     }
 
@@ -39,7 +40,7 @@ public class CDRTestCase {
     public void testCDROfEmptyList() {
         final String expression = "()";
         final PTree pTree = parse(expression);
-        final Atom atom = (Atom)(new CDR()).apply(pTree.root());
+        final Atom atom = (Atom)(new CDR()).apply(SExpression.create(pTree.root()));
         assertEquals(Atom.NIL, atom);
     }
 }
