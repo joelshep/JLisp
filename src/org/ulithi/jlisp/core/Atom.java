@@ -12,19 +12,13 @@ import org.ulithi.jlisp.parser.Grammar;
  */
 public class Atom extends SExpression implements Ref {
 
-    /**
-     * An {@link Atom} representing the special {@code NIL} value.
-     */
+    /** An {@link Atom} representing the special {@code NIL} value. */
     public static final Atom NIL = new Atom(Grammar.NIL, Type.NIL);
 
-    /**
-     * An {@link Atom} representing the special {@code T} (true) value.
-     */
+    /** An {@link Atom} representing the special {@code T} (true) value. */
     public static final Atom T = new Atom(Boolean.TRUE, Type.Boolean);
 
-    /**
-     * Enumerates the data types that can be represented as an Atom.
-     */
+    /** Enumerates the data types that can be represented as an Atom. */
     private enum Type {
         NIL,
         String,
@@ -36,7 +30,8 @@ public class Atom extends SExpression implements Ref {
     /** The underlying type of this Atom. */
     private final Type type;
 
-    /** The underlying value of this Atom. For Symbols, the value is the programmatic name
+    /**
+     * The underlying value of this Atom. For Symbols, the value is the programmatic name
      * or token for the symbol: e.g., "+" for the addition operator, "flag" for a variable, etc.
      */
     private final Object value;
