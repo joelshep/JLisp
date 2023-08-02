@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.main;
 
+import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.lexer.Lexer;
 import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.core.Environment;
@@ -60,7 +61,7 @@ public class Interpreter implements Runnable {
             final Lexer lexer = new Lexer(expression);
             final Parser p = new Parser();
             final PTree pTree = p.parse(lexer.getTokens());
-            final int ret = eval.apply(pTree.root());
+            final SExpression ret = eval.apply(pTree.root());
             System.out.println(" " + ret);
             return true;
         } catch (final Exception e) {

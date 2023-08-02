@@ -74,7 +74,7 @@ public class EvalTestCase {
         final List<String> tokens = Arrays.asList("(", "+", "2", "3", ")");
         PTree ptree = parser.parse(tokens);
         System.out.println(ptree);
-        int foo = eval.apply(ptree.root());
+        int foo = eval.apply(ptree.root()).toAtom().toI();
         System.out.println("Eval returned " + foo);
         assertEquals("(+ 2 3)", 5, foo);
     }
@@ -87,7 +87,7 @@ public class EvalTestCase {
         final List<String> tokens = Arrays.asList("(", "+", "2", "3", "4", "5", ")");
         PTree ptree = parser.parse(tokens);
         System.out.println(ptree);
-        int foo = eval.apply(ptree.root());
+        int foo = eval.apply(ptree.root()).toAtom().toI();
         System.out.println("Eval returned " + foo);
         assertEquals("(+ 2 3 4 5)", 14, foo);
     }
@@ -100,7 +100,7 @@ public class EvalTestCase {
         final List<String> tokens = Arrays.asList("(", "+", "2", "(", "*", "2", "3", ")", ")");
         PTree ptree = parser.parse(tokens);
         System.out.println(ptree);
-        int foo = eval.apply(ptree.root());
+        int foo = eval.apply(ptree.root()).toAtom().toI();
         assertEquals("(+ 2 (* 2 3))", 8, foo);
         System.out.println("Eval returned " + foo);
     }
@@ -114,7 +114,7 @@ public class EvalTestCase {
         final List<String> tokens = Arrays.asList("(", "+", "(", "*", "4", "5", ")", "(", "*", "2", "3", ")", ")");
         PTree ptree = parser.parse(tokens);
         System.out.println(ptree);
-        int foo = eval.apply(ptree.root());
+        int foo = eval.apply(ptree.root()).toAtom().toI();
         assertEquals("(+ (* 4 5) (* 2 3))", 26, foo);
         System.out.println("Eval returned " + foo);
     }
@@ -127,7 +127,7 @@ public class EvalTestCase {
         final List<String> tokens = Arrays.asList("(", "+", "(", "*", "4", "(", "+", "2", "3", ")", ")", "(", "*", "2", "3", ")", ")");
         PTree ptree = parser.parse(tokens);
         System.out.println(ptree);
-        int foo = eval.apply(ptree.root());
+        int foo = eval.apply(ptree.root()).toAtom().toI();
         assertEquals("(+ (* 4 (+ 2 3)) (* 2 3))", 26, foo);
         System.out.println("Eval returned " + foo);
     }
@@ -142,7 +142,7 @@ public class EvalTestCase {
         final List<String> tokens = (new Lexer(expr)).getTokens();
         PTree ptree = parser.parse(tokens);
         System.out.println(ptree);
-        int foo = eval.apply(ptree.root());
+        int foo = eval.apply(ptree.root()).toAtom().toI();
         assertEquals("(+ (* 4 (+ 2 3)) (* 2 3))", 26, foo);
         System.out.println("Eval returned " + foo);
     }
