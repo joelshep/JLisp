@@ -15,8 +15,6 @@ public class CAR implements Function {
     public SExpression apply (final SExpression sexp) {
         if (sexp.isNil()) { return Atom.NIL; }
         if (sexp.isList()) { return ((List)sexp).toList().car(); }
-
-        //return SExpression.create(cell.getFirst());
         throw new EvaluationException("Argument to CAR must be a list");
     }
 }
