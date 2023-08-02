@@ -23,7 +23,7 @@ public abstract class SExpression {
     public static SExpression create(final Cell cell) {
         assert cell != null: "Cell is null";
         if (cell.isNil()) { return Atom.NIL; }
-        if (cell.getFirst().isAtom() && cell.getRest().isNil()) { return (Atom)cell.getFirst(); }
+        if (cell.isAtom()) { return (Atom)cell.getFirst(); }
         return List.create(cell);
     }
 
@@ -42,19 +42,46 @@ public abstract class SExpression {
         assert ref != null: "Ref is null";
         if (ref.isNil()) { return Atom.NIL; }
         if (ref.isAtom()) { return (Atom)ref; }
-        if (ref.isList()) { return List.create((Cell)ref); }
         return List.create((Cell)ref);
     }
+
+    /**
+     * Indicates if this {@link SExpression} is NIL.
+     * @return True if this s-expression is {@code NIL}, false otherwise.
+     */
+    public abstract boolean isNil();
 
     /**
      * Indicates if this {@link SExpression} is an {@link Atom}.
      * @return True if this s-expression is an {@code Atom}, false otherwise.
      */
-    public abstract boolean isAtom();
+    public final boolean isAtom() {
+        return this instanceof Atom;
+    }
+
+    /**
+     * If possible, returns this {@link SExpression} as an {@link Atom}. Callers should check
+     * {@code isAtom()} before calling this method.
+     * @return This {@link SExpression} as an {@link Atom}.
+     */
+    public final Atom toAtom() {
+        return (Atom)this;
+    }
 
     /**
      * Indicates if this {@link SExpression} is a {@link List}.
      * @return True if this is a reference to a {@code List}, false otherwise.
      */
-    public abstract boolean isList();
+    public final boolean isList() {
+        return this instanceof List;
+    }
+
+    /**
+     * If possible, returns this {@link SExpression} as a {@link List}. Callers should check
+     * {@code isList()} before calling this method.
+     * @return This {@link SExpression} as a {@link List}.
+     */
+    public final List toList() {
+        return (List)this;
+    }
 }
