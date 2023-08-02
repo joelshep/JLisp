@@ -8,10 +8,14 @@ import org.ulithi.jlisp.core.SExpression;
 import static org.ulithi.jlisp.parser.Grammar.*;
 
 /**
- * A {@link Cell} is a pair of {@link Ref references}: {@code first} (or {@code left}) and
- * {@code rest} (or {@code right}). Both references are <em>required</em>, however the
- * {@code rest} reference can be the special {@code NIL} value. A reference can refer to an
- * {@link Atom} or another {@code Cell}.
+ * {@link Cell Cells} are the basic unit of storage in JLISP, acting either as storage for a single
+ * literal, or as a node in a list. All {@code cells} are pairs of {@link Ref references}:
+ * {@code first} (or {@code left}) and {@code rest} (or {@code right}). Both references ar
+ * e <em>required</em>. The {@code first} reference can be a reference to an {@link Atom} or to
+ * the root {@code cell} of a sub-list. The {@code rest} reference can be a reference to a
+ * {@code cell} representing the next element in the list, or the {@code NIL} atom representing
+ * the end of the list, or the special {@code NAL} (Not A List) terminator if the {@code cell} is
+ * pure storage (not a list node). A reference can refer to an {@link Atom} or another {@code Cell}.
  * <p>
  * Cells are part of JLISP's <em>memory model</em>, not part of the language model. While it seemed
  * natural for cell fields to be treated as CAR and CDR, they aren't quite the same. E.g., the
@@ -24,6 +28,29 @@ import static org.ulithi.jlisp.parser.Grammar.*;
  * is to an {@code Atom} or another {@code Cell}.
  */
 public class Cell implements Ref {
+
+    /**
+     * The (very) special NAL reference, which is used only as the rest reference in a cell that
+     * represents pure storage of a literal value. TODO - Note: I'm not sure if this is the right
+     * way to handle such values, but the issue is that I "need" to use cells to represent both
+     * standalone atomic values, as well as lists.
+     */
+    private static final class NALReference implements Ref {
+        /**
+         * Constructs a new NAL reference.
+         */
+        private NALReference() { }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String toString() { return "NAL"; }
+    }
+
+    /** Singleton instance of the special NAL reference. */
+    private static final Ref NAL = new NALReference();
+
     /**
      * The first/lhs field in this cell. This can be an Atom, or a reference to a Cell.
      */
@@ -48,53 +75,98 @@ public class Cell implements Ref {
     }
 
     /**
-     * Constructs a new {@link Cell} with a literal {@link Atom} for the given {@code token} as
-     * the {@code first} element and {@code NIL} as the {@code rest} element.
+     * Constructs a new list {@link Cell} with a literal {@link Atom} for the given {@code token}
+     * as the {@code first} element and {@code NIL} as the {@code rest} element.
      *
      * @param token A literal used to construct the Atom for the new cell's first element.
-     * @return A new {@code Cell} of the form (ATOM . NIL).
+     * @return A new list {@code Cell} of the form {@code (ATOM . NIL)}.
      */
     public static Cell create(final String token) {
         return create(Atom.create(token));
     }
 
     /**
-     * Constructs a new {@link Cell} with a literal {@link Atom} for the given integer value as
+     * Creates a new storage-only {@link Cell} with a literal {@link Atom} for the given
+     * {@code token} as the {@code first} element and {@code NAL} as the {@code rest}
+     * element.
+     *
+     * @param token A literal used to construct the Atom for the new cell's first element.
+     * @return A new storage-only {@code Cell} of the form {@code (ATOM . NAL)}.
+     */
+    public static Cell createStorage(final String token) {
+        return createStorage(Atom.create(token));
+    }
+
+    /**
+     * Constructs a new list {@link Cell} with a literal {@link Atom} for the given integer value as
      * the {@code first} element and {@code NIL} as the {@code rest} element.
      *
      * @param value An integer used to construct the Atom for the new cell's first element.
-     * @return A new {@code Cell} of the form (ATOM . NIL).
+     * @return A new list {@code Cell} of the form {@code (ATOM . NIL)}.
      */
     public static Cell create(final int value) {
         return create(Atom.create(value));
     }
 
     /**
-     * Constructs a new {@link Cell} with a literal {@link Atom} for the given Boolean value as
+     * Creates a new storage-only {@link Cell} with a literal {@link Atom} for the given integer
+     * value as the {@code first} element and {@code NAL} as the {@code rest} element.
+     *
+     * @param value An integer used to construct the Atom for the new cell's first element.
+     * @return A new storage-only {@code Cell} of the form {@code (ATOM . NAL)}.
+     */
+    public static Cell createStorage(final int value) {
+        return createStorage(Atom.create(value));
+    }
+
+    /**
+     * Constructs a new list{@link Cell} with a literal {@link Atom} for the given Boolean value as
      * the {@code first} element and {@code NIL} as the {@code rest} element.
      *
      * @param bool A Boolean used to construct the Atom for the new cell's first element.
-     * @return A new {@code Cell} of the form (ATOM . NIL).
+     * @return A new list {@code Cell} of the form {@code (ATOM . NIL)}.
      */
     public static Cell create(final boolean bool) {
         return create(Atom.create(bool));
     }
 
     /**
-     * Constructs a new {@link Cell} with the given {@link Atom} as the {@code first} element and
-     * {@code NIL} as the {@code rest} element.
+     * Creates a new storage-only {@link Cell} with a literal {@link Atom} for the given Boolean
+     * value as the {@code first} element and {@code NAL} as the {@code rest} element.
+     *
+     * @param bool A Boolean used to construct the Atom for the new cell's first element.
+     * @return A new storage-only {@code Cell} of the form {@code (ATOM . NAL)}.
+     */
+    public static Cell createStorage(final boolean bool) {
+        return createStorage(Atom.create(bool));
+    }
+
+    /**
+     * Constructs a new list {@link Cell} with the given {@link Atom} as the {@code first} element
+     * and {@code NIL} as the {@code rest} element.
      * @param atom The {@code Atom} that will be the new cell's {@code first} element.
-     * @return A new {@code Cell} of the form (ATOM . NIL).
+     * @return A new list {@code Cell} of the form {@code (ATOM . NIL)}.
      */
     public static Cell create(final Atom atom) {
         return new Cell(atom, Atom.NIL);
     }
 
     /**
+     * Constructs a new storage-only {@link Cell} with the given {@link Atom} -- assumed to be a
+     * pure atom, not a node of a list -- as the {@code first} element and {@code NAL} as the
+     * {@code rest} element. A {@link Cell} created by this method cannot be part of a {@code List}.
+     * @param atom The {@link Atom} that this cell provides memory storage for.
+     * @return A new storage-only {@code Cell} of the form {@code (atom . NAL)}.
+     */
+    public static Cell createStorage(final Atom atom) {
+        return new Cell(atom, NAL);
+    }
+
+    /**
      * Constructs a new {@link Cell} with the given {@code Cell} -- assumed to be the root cell
      * of a list -- as the {@code first} element and {@code NIL} as the {@code rest} element.
      * @param cell The root cell of a list.
-     * @return A new {@code Cell} of the form (ROOT_CELL . NIL).
+     * @return A new {@code Cell} of the form {@code (ROOT_CELL . NIL)}.
      */
     public static Cell createAsList(final Cell cell) {
         return new Cell(cell, Atom.NIL);
@@ -111,12 +183,13 @@ public class Cell implements Ref {
     }
 
     /**
-     * A {@link Cell} itself is not an {@code Atom}, although its elements may be.
-     * @return False.
+     * Indicates if this {@link Cell} is storage-only: i.e. a "pure atom".
+     * @return True if this is a storage-only cell with a single {@link Atom} reference,
+     *         false otherwise.
      */
     @Override
     public boolean isAtom() {
-        return false;
+        return rest.equals(NAL);
     }
 
     /**
@@ -139,7 +212,7 @@ public class Cell implements Ref {
     }
 
     /**
-     * Indicates if this {@link Cell} is a {@code Cell}. It is.
+     * Indicates if this {@link Ref} is a {@code Cell}. It is.
      * @return True.
      */
     @Override
@@ -160,7 +233,6 @@ public class Cell implements Ref {
      * or List represented by the given {@link SExpression}.
      * @param sexp A non-null {@link SExpression}.
      */
-    @Deprecated
     public void setFirst(final Ref sexp) {
         Validate.notNull(sexp);
         this.first = sexp;

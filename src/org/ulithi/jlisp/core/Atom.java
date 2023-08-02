@@ -85,18 +85,6 @@ public class Atom extends SExpression implements Ref {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isAtom() { return true; }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isList() { return false; }
-
-    /**
      * Indicates if this {@link Atom} is NIL.
      * @return True if this {@code Atom} is NIL, false otherwise.
      */

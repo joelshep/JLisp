@@ -66,7 +66,6 @@ public class Eval {
 
         if (func == null) {
             if (cell.isAtom() && ((Atom) car).isLiteral()) {
-                //return (Atom) car;
                 return car;
             }
 

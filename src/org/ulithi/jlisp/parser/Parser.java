@@ -37,7 +37,7 @@ public class Parser {
 
         if (tokens.size() == 1) {
             final Atom atom = parseAtom(tokens.get(0));
-            return new PTree(Cell.create(atom));
+            return new PTree(Cell.createStorage(atom));
         }
 
         return parseList(tokens);
