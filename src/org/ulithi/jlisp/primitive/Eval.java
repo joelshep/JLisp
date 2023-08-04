@@ -30,6 +30,7 @@ public class Eval {
     public Eval() {
         primitives.put("CAR", new CAR());
         primitives.put("CDR", new CDR());
+        primitives.put("LENGTH", new LENGTH());
         primitives.put("PLUS", new PLUS());
         primitives.put("TIMES", new TIMES());
         primitives.put("+", new PLUS());

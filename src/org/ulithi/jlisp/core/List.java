@@ -100,10 +100,30 @@ public class List extends SExpression {
     }
 
     /**
+     * Returns the length of this {@link List}. This is <em>not</em> a recursive function: it
+     * returns the number of direct elements of this {@code List}. If some of those elements are
+     * themselves {@code Lists}, they are counted as a single element for the purposes of this
+     * function.
+     *
+     * @return An {@link Atom} representing the number of atoms or lists that are direct members
+     *         of this list.
+     */
+    public SExpression length() {
+        int count = 0;
+        Ref curr = root;
+
+        while (!curr.isNil()) {
+            count++;
+            curr = ((Cell)curr).getRest();
+        }
+
+        return SExpression.create(Cell.createStorage(count));
+    }
+
+    /**
      * {@inheritDoc}
      */
     public String toString() {
         return String.valueOf(root);
     }
-
 }

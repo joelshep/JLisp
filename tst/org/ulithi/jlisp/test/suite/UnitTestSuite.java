@@ -14,6 +14,7 @@ import org.ulithi.jlisp.test.parser.PrimitivesTestCase;
 import org.ulithi.jlisp.test.primitive.CARTestCase;
 import org.ulithi.jlisp.test.primitive.CDRTestCase;
 import org.ulithi.jlisp.test.primitive.EvalTestCase;
+import org.ulithi.jlisp.test.primitive.LENGTHTestCase;
 import org.ulithi.jlisp.test.smoke.SmokeTestCase;
 import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
 
@@ -27,6 +28,7 @@ import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
         CDRTestCase.class,
         EvalTestCase.class,
         GrammarTestCase.class,
+        LENGTHTestCase.class,
         LexerTestCase.class,
         ParserTestCase.class,
         PrimitivesTestCase.class,
