@@ -39,7 +39,7 @@ public class Interpreter implements Runnable {
     public void initialize() { }
 
     /**
-     * Resets this {@link Interpreter} (allowing continued operation after an expression
+     * Resets this {@link Interpreter}, allowing continued operation after an expression
      * evaluation failure.
      */
     public void reset() { }

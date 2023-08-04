@@ -6,7 +6,6 @@ import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.mem.PTree;
-import org.ulithi.jlisp.primitive.CAR;
 import org.ulithi.jlisp.primitive.CDR;
 
 import static org.junit.Assert.assertEquals;
@@ -21,7 +20,7 @@ public class CDRTestCase {
         final PTree pTree = parse(expression);
 
         try {
-            final SExpression sexp = (new CDR()).apply(SExpression.create(pTree.root()));
+            (new CDR()).apply(SExpression.create(pTree.root()));
             fail("CAR should throw exception if argument is not a list");
         } catch (final EvaluationException e) {
             // Expected.

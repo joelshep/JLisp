@@ -3,7 +3,6 @@ package org.ulithi.jlisp.main;
 import org.ulithi.console.Console;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
@@ -22,7 +21,7 @@ public final class REPL {
 	 *
 	 * @param args Any commandline arguments passed to the application.
 	 */
-	public static void main (final String [] args) throws IOException {
+	public static void main (final String [] args) {
 		final Console console = new Console();
 
 		console.setTitle("JLisp");
@@ -33,7 +32,7 @@ public final class REPL {
 	/**
 	 * Initializes the JLISP interpreter and runs the basic REPL (Read-Evaluate-Print-Loop).
 	 */
-	private static void startRepl () throws IOException {
+	private static void startRepl () {
 		// Create a Forth VM that will accept strings of tokens directly (not via stream).
 		final Interpreter ip = new Interpreter();
 

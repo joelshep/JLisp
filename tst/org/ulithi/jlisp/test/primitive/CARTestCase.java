@@ -20,7 +20,7 @@ public class CARTestCase {
         final PTree pTree = parse(expression);
 
         try {
-            final Atom atom = (Atom) (new CAR()).apply(SExpression.create(pTree.root()));
+            (new CAR()).apply(SExpression.create(pTree.root()));
             fail("CAR should throw exception if argument is not a list");
         } catch (final EvaluationException e) {
             // Expected.
