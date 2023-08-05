@@ -12,28 +12,22 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Very basic unit tests for {@link org.ulithi.jlisp.parser.Parser} and related classes. At the
+ * Basic unit tests for {@link org.ulithi.jlisp.parser.Parser} and related classes. At the
  * moment, these tests simply parse a selection of valid expressions and verify the resulting
  * dotted-pair expression matches what is expected.
  */
 public class ParserTestCase {
 
-    /**
-     * Parser reference, re-initialized with each test.
-     */
+    /** Parser reference, re-initialized with each test. */
     private Parser parser;
 
-    /**
-     * Creates a new {@link Parser} instance before each test.
-     */
+    /** Creates a new {@link Parser} instance before each test. */
     @Before
     public void setUp() {
         this.parser = new Parser();
     }
 
-    /**
-     * De-allocates the {@link Parser} instance after each test.
-     */
+    /** De-allocates the {@link Parser} instance after each test. */
     @After
     public void tearDown() {
         this.parser = null;
@@ -44,9 +38,9 @@ public class ParserTestCase {
      */
     @Test
     public void parseNumericLiteral() {
-        // 43 => (43 . NAL)
+        // 43 => (43 . null)
         final List<String> tokens = Arrays.asList("43");
-        final String expected = "(43 . NAL)";
+        final String expected = "(43 . null)";
         parseAndValidate(parser, tokens, expected);
     }
 
@@ -55,9 +49,9 @@ public class ParserTestCase {
      */
     @Test
     public void parseEmptyList() {
-        // ( ) => (NIL . NIL)
+        // ( ) => (NIL . null)
         final List<String> tokens = Arrays.asList("(", ")");
-        final String expected = "(NIL . NIL)";
+        final String expected = "(NIL . null)";
         parseAndValidate(parser, tokens, expected);
     }
 

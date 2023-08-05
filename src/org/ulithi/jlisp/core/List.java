@@ -4,10 +4,10 @@ import org.ulithi.jlisp.exception.JLispRuntimeException;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.Ref;
 
+import static org.ulithi.jlisp.mem.NilReference.NIL;
+
 /**
  * Wrapper class for a LISP list.
- * <p>
- * TODO - Not sure this class is actually needed or useful.
  */
 public class List extends SExpression {
 
@@ -43,11 +43,11 @@ public class List extends SExpression {
 
         if (root.isNil()) {
             root.setFirst(atom);
+            root.setRest(NIL);
             end = root;
         } else {
-            end.setRest(Cell.create());
+            end.setRest(Cell.create(atom));
             end = (Cell)end.getRest();
-            end.setFirst(atom);
         }
     }
 
@@ -63,6 +63,7 @@ public class List extends SExpression {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isNil() { return false; }
 
     /**
@@ -87,14 +88,14 @@ public class List extends SExpression {
     }
 
     /**
-     * Given a Cell, returns an s-expression represent the referee of the cell's first element.
-     * TODO - Edit JavaDoc
+     * Returns an s-expression representing the referee of this list's root cell's {@code rest}
+     * element.
      *
-     * @return The referee of the cell's first element, as an s-expression.
+     * @return The referee of this list's root cell's {@code rest} element, as an s-expression.
      */
     public SExpression cdr() {
         final Ref ref = root.getRest();
-        if (ref.isAtom()) { return (Atom)ref; }
+        if (ref == null || ref.isNil()) { return Atom.NIL; }
         if (ref.isCell()) { return List.create(ref); }
         throw new JLispRuntimeException("Don't know how to fetch CDR of ref: " + ref);
     }
