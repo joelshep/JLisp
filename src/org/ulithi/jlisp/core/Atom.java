@@ -1,8 +1,8 @@
 package org.ulithi.jlisp.core;
 
 import org.ulithi.jlisp.exception.TypeConversionException;
+import org.ulithi.jlisp.mem.NilReference;
 import org.ulithi.jlisp.mem.Ref;
-import org.ulithi.jlisp.parser.Grammar;
 
 /**
  * An {@link Atom} is an indivisible unit of literal data (e.g., number, boolean or character
@@ -13,7 +13,7 @@ import org.ulithi.jlisp.parser.Grammar;
 public class Atom extends SExpression implements Ref {
 
     /** An {@link Atom} representing the special {@code NIL} value. */
-    public static final Atom NIL = new Atom(Grammar.NIL, Type.NIL);
+    public static final Atom NIL = new Atom(NilReference.NIL, Type.NIL);
 
     /** An {@link Atom} representing the special {@code T} (true) value. */
     public static final Atom T = new Atom(Boolean.TRUE, Type.Boolean);
