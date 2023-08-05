@@ -5,10 +5,12 @@ import org.ulithi.jlisp.core.List;
 
 /**
  * The {@link Ref} interface is a simple "marker" interface for things that can be referred to
- * from {@link Cell} fields, namely: {@link Atom Atoms} (including {@code NIL}, {@link List Lists}
- * and other {@code Cells}.
+ * from {@link Cell} fields, namely: {@link Atom Atoms} which are containers for single literal
+ * values and symbols, {@link List Lists}, the special {@link NilReference} element, and finally other
+ * {@code Cells}: either the root/head node of a list, or the next cell in the current list.
  */
 public interface Ref {
+
     /**
      * Indicates if this is a reference to an {@link Atom}.
      * @return True if this is a reference to an {@code Atom}, false otherwise.

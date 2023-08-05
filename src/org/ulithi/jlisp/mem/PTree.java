@@ -5,7 +5,7 @@ package org.ulithi.jlisp.mem;
  * be the head nodes of other linked lists), and is the in-memory representation of a LISP expression.
  * A {@link PTree} can be directly transformed to dotted-pair notation.
  */
-public class PTree {
+public final class PTree {
     /** The root cell of this PTree. */
     private Cell root;
 
@@ -37,7 +37,7 @@ public class PTree {
      * Returns the root cell of this {@link PTree}.
      * @return The root cell of this {@link PTree}.
      */
-    public final Cell root() {
+    public Cell root() {
         return this.root;
     }
 
