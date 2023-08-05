@@ -1,6 +1,5 @@
 package org.ulithi.jlisp.test.primitive;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.SExpression;
@@ -16,11 +15,10 @@ import static org.ulithi.jlisp.test.suite.UnitTestUtilities.parse;
 public class LENGTHTestCase {
 
     @Test
-    @Ignore("Empty lists currently parsed into atoms: next thing to fix")
     public void testLengthOfEmptyList() {
         final String expression = "( )";
         final PTree pTree = parse(expression);
-        final Atom atom = (Atom) (new LENGTH().apply(SExpression.create(pTree.root())));
+        final Atom atom = (new LENGTH().apply(SExpression.create(pTree.root()))).toAtom();
         assertEquals(0, atom.toI());
     }
 
@@ -28,7 +26,7 @@ public class LENGTHTestCase {
     public void testLengthOfSimpleList() {
         final String expression = "(1 2 3)";
         final PTree pTree = parse(expression);
-        final Atom atom = (Atom) (new LENGTH().apply(SExpression.create(pTree.root())));
+        final Atom atom = (new LENGTH().apply(SExpression.create(pTree.root()))).toAtom();
         assertEquals(3, atom.toI());
     }
 
@@ -36,7 +34,7 @@ public class LENGTHTestCase {
     public void testLengthOfNestedList() {
         final String expression = "(1 (A B C) 3 (DEF))";
         final PTree pTree = parse(expression);
-        final Atom atom = (Atom) (new LENGTH().apply(SExpression.create(pTree.root())));
+        final Atom atom = (new LENGTH().apply(SExpression.create(pTree.root()))).toAtom();
         assertEquals(4, atom.toI());
     }
 
@@ -44,7 +42,7 @@ public class LENGTHTestCase {
     public void testLengthOfNestedList2() {
         final String expression = "((A B C) 1 (DEF) 3)";
         final PTree pTree = parse(expression);
-        final Atom atom = (Atom) (new LENGTH().apply(SExpression.create(pTree.root())));
+        final Atom atom = (new LENGTH().apply(SExpression.create(pTree.root()))).toAtom();
         assertEquals(4, atom.toI());
     }
 
