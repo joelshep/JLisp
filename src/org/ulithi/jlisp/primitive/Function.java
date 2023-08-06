@@ -18,4 +18,13 @@ public interface Function {
      * @return The result of applying this {@code Function} to the given {@code SExpression}.
      */
     SExpression apply (SExpression sexp);
+
+    /**
+     * Indicates if this {@link Function} is a LISP "special" function, meaning that its arguments
+     * should not be evaluated before the function is invoked, but passed in as-is to the function
+     * to handle as needed.
+     *
+     * @return True if this function will process its own arguments, false otherwise.
+     */
+    default boolean isSpecial() { return false; }
 }

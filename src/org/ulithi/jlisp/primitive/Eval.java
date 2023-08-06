@@ -32,6 +32,7 @@ public class Eval {
         primitives.put("CDR", new CDR());
         primitives.put("LENGTH", new LENGTH());
         primitives.put("PLUS", new PLUS());
+        primitives.put("QUOTE", new QUOTE());
         primitives.put("TIMES", new TIMES());
         primitives.put("+", new PLUS());
         primitives.put("*", new TIMES());
@@ -51,7 +52,7 @@ public class Eval {
         if ( cell.isNil() ) { return Atom.NIL; }
 
         // Get the root cell's first element as an s-expression.
-        final SExpression car = refToCar(cell);
+        final SExpression car = cellToCar(cell);
 
         // If the referee (the thing being referred to) is a list, recursively evaluate it
         // and return the result.
@@ -66,27 +67,31 @@ public class Eval {
         final Function func = primitives.get(car.toString());
 
         if (func == null) {
-            if (cell.isAtom() && ((Atom) car).isLiteral()) {
-                return car;
-            }
-
+            if (car.isAtom() && (car.toAtom()).isLiteral()) { return car; }
             throw new UndefinedSymbolException("Unknown symbol: " + car);
         }
 
-        // Iterate over 'rest', evaluate each element, accumulate the results in a
-        // sexpr/cell/list, and then invoke the function at the end.
-        final List args = List.create();
+        Ref rest = cell.getRest();
 
-        Ref curr = cell.getRest();
+        if (func.isSpecial()) {
+            return func.apply(SExpression.create(rest));
+        } else {
+            // Iterate over 'rest', evaluate each element, accumulate the results in a
+            // sexpr/cell/list, and then invoke the function at the end.
+            final List args = List.create();
 
-        while (!curr.isNil()) {
-            SExpression intermediate = apply((Cell)curr);
-            if (intermediate.isAtom()) { args.add(intermediate.toAtom()); }
-            if (intermediate.isList()) { args.add(intermediate.toList()); }
-            curr = ((Cell) curr).getRest();
+            while (!rest.isNil()) {
+                SExpression intermediate = apply((Cell) rest);
+                if (intermediate.isAtom()) {
+                    args.add(intermediate.toAtom());
+                } else if (intermediate.isList()) {
+                    args.add(intermediate.toList());
+                }
+                rest = ((Cell) rest).getRest();
+            }
+
+            return func.apply(args);
         }
-
-        return func.apply(args);
     }
 
     /**
@@ -94,7 +99,7 @@ public class Eval {
      * @param cell A Cell from a parse tree.
      * @return The referee of the cell's first element, as an s-expression.
      */
-    private static SExpression refToCar(final Cell cell) {
+    private static SExpression cellToCar(final Cell cell) {
         final Ref ref = cell.getFirst();
         if (ref.isAtom()) { return (Atom)ref; }
         if (ref.isCell()) { return List.create(cell); }
