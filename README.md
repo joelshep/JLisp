@@ -122,6 +122,9 @@ ERROR
 
 ## References
 
+* https://stackoverflow.com/questions/16606172/is-an-empty-list-in-lisp-built-from-a-cons-cell - Good
+comments on NIL, atoms and lists
+* https://people.csail.mit.edu/jaffer/r5rs/Pairs-and-lists.html - Scheme manual
 * https://gigamonkeys.com/book/ - Practical Common Lisp
 * https://bernsteinbear.com/blog/lisp/
 * https://buildyourownlisp.com/
