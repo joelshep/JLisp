@@ -1,1 +1,0 @@
-java -cp ./bin org.ulithi.jlisp.main.LispInterpreter < input_file > output_file
