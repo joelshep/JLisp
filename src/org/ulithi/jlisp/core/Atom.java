@@ -107,7 +107,7 @@ public class Atom extends SExpression implements Ref {
      * @return True if this {@code Atom} is a literal value, false otherwise.
      */
     public boolean isLiteral() {
-        return this.type != Type.Symbol;
+        return this.type != Type.Symbol && this.type != Type.NIL;
     }
 
     /**
