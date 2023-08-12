@@ -115,7 +115,7 @@ public class AtomTestCase {
         assertEquals("T", atom.toString());
 
         atom = Atom.NIL;
-        assertTrue(atom.isLiteral());
+        assertFalse(atom.isLiteral());
         assertTrue(atom.isNil());
         assertFalse(atom.isSymbol());
         assertEquals("NIL", atom.toS());
