@@ -14,8 +14,16 @@ public class List extends SExpression {
     /** The root cell of this List. */
     private final Cell root;
 
+    /**
+     * Reference to the last top-level cell in this list: used to determine where
+     * to add a new cell to extend the list.
+     */
     private Cell end;
 
+    /**
+     * Creates an empty {@link List}.
+     * @return An empty {@code List}.
+     */
     public static List create() {
         return new List(Cell.create());
     }
@@ -38,6 +46,33 @@ public class List extends SExpression {
         this.end = root;
     }
 
+    /**
+     * Extends this {@link List} with the given {@link Ref reference}. If this is an empty list,
+     * the given {@code ref} becomes the first element in this list. If this is not an empty
+     * list, the {@code ref} is appended to the last cell in this {@code list}.
+     *
+     * @param ref The {@code Ref} to append to this {@code List}.
+     */
+    public void add(final Ref ref) {
+        assert ref != null : "ref is null";
+
+        if (root.isNil()) {
+            root.setFirst(ref);
+            root.setRest(NIL);
+            end = root;
+        } else {
+            end.setRest(ref);
+            end = (Cell)end.getRest();
+        }
+    }
+
+    /**
+     * Extends this {@link List} with the given {@link Atom}. If this is an empty list, the
+     * {@code Atom} becomes the first element in this list. If this is not an empty list, the
+     * {@code Atom} is appended via a cell to this {@code list}.
+     *
+     * @param atom The {@code Atom} to append to this {@code List}.
+     */
     public void add(final Atom atom) {
         assert atom != null : "atom is null";
 
@@ -51,13 +86,31 @@ public class List extends SExpression {
         }
     }
 
+    /**
+     * Extends this {@link List} with the given {@code List}. If this is an empty list, the
+     * {@code list} becomes the first element in this list (i.e. a sublist of this list).
+     * If this is not an empty list, the {@code List} is appended via a cell to this {@code list},
+     * effectively extending this list.
+     *
+     * @param list The {@code List} to append to this {@code List}.
+     */
     public void add(final List list) {
-        this.end.setRest(list.getRoot());
-        this.end = list.getEnd();
+        if (this.isEmpty()) {
+            this.root.setFirst(list.getRoot());
+            this.root.setRest(Atom.NIL);
+        } else {
+            this.end.setRest(list.getRoot());
+        }
+
+        this.end = list.end;
     }
 
-    protected Cell getEnd() {
-        return this.end;
+    /**
+     * Indicates if this {@link List} is empty.
+     * @return True if this list is empty, false otherwise.
+     */
+    private boolean isEmpty() {
+        return this.root.getFirst() == NIL;
     }
 
     /**

@@ -27,39 +27,27 @@ import static org.ulithi.jlisp.mem.NilReference.NIL;
  * second/right-hand field is called {@code rest}. When callers fetch these fields, they receive
  * {@code Refs}, which they then need to handle appropriately, depending on whether the reference
  * is to an {@code Atom} or another {@code Cell}.
- * <p><strong>NIL vs NULL</strong></p>
- * A key concept in understanding how cells, atoms and lists work is to understand the difference
- * between {@code NIL} and {@code NULL}. {@code NIL} is a LISP language concept. It is a special
- * value that is both a list and an atom. But the key point is that it is a <em>value</em> defined
- * by the language.
+ * <p><strong>NIL</strong></p>
+ * {@code NIL} is a LISP language concept, and play the interesting double role of being both an
+ * atom and an <em>empty</em> list. From the Stack Overflow article linked in the README:
+ * "In Lisp languages that aren't spectacular cluster-fumbles of this sort, empty lists are atoms,
+ * and non-empty lists are binary cells with a field which holds the first item, and another field
+ * that holds the rest of the list."
  * <p>
- * {@code NULL}, on the other hand, is a terminal reference: it indicates that the cell field
- * literally refers to nothing: no cell, no value (including {@code NIL}), no list. It is not
- * a language-defined value: it is an internal implementation concept.
- * <p>
- * In general, when {@code NIL} appears as the first element in a cell, it is interpreted as an
- * atom. When it appears as the second element in a cell, it is interpreted as the end of a list.
- * {@code NULL} can only appear as the second element in the cell, and its meaning is that the
- * cell is pure storage for whatever the first value is. It is <em>not</em> a list element.
+ * In general, when {@code NIL} appears as the first element in a cell, it is interpreted as the
+ * {@code NIL} atom and as the empty list. When it appears as the second element in a cell, it is
+ * interpreted as the end of a list.
  * <p>
  * So, valid (and invalid) cells include:<ul>
  *     <li>{@code (ATOM . NIL)} - A terminal list node whose value is an atom.</li>
- *     <li>{@code (NIL . NIL)} - A terminal list node whose value is {@code NIL}.</li>
  *     <li>{@code (LIST . NIL} - A terminal list node whose value is a list.</li>
+ *     <li>{@code (NIL . NIL)} - An empty list.</li>
  *     <li>{@code (ATOM . <Cell>)} - A non-terminal list node whose value is an atom.</li>
- *     <li>{@code (NIL . <Cell>>)} - A non-terminal list node whose value is {@code NIL}.</li>
  *     <li>{@code (LIST . <Cell>)} - A non-terminal list node whose value is a list.</li>
- *     <li>{@code (ATOM . <null>)} - Pure storage for an atom-value.</li>
- *     <li>{@code (NIL . <null>)} - The empty list!</li>
- *     <li>{@code (LIST . <null>)} - Invalid.</li>
- *     <li>{@code (<null> . <anything>)} - Invalid.</li>
+ *     <li>{@code (NIL . <Cell>>)} - Invalid.</li>
  * </ul>
  */
 public class Cell implements Ref {
-
-    /** The {@code NULL} reference, signifying a non-list (a.k.a. storage) node. */
-    public static final Ref NULL_REF = null;
-
     /**
      * The first/lhs field in this cell. This can be an Atom, or a reference to a Cell, which
      * is interpreted as the head cell of a sub-list.
@@ -73,6 +61,12 @@ public class Cell implements Ref {
     private Ref rest;
 
     /**
+     * Indicates if this cell is being used purely for storage. If so, only the "first" reference
+     * is valid; the "rest" reference is undefined.
+     */
+    private final boolean isStorage;
+
+    /**
      * Private constructor. Use one of the {@code create} methods to create a new Cell.
      *
      * @param first The new Cell's {@code first} element.
@@ -82,6 +76,20 @@ public class Cell implements Ref {
         Validate.notNull(first);
         this.first = first;
         this.rest = rest;
+        this.isStorage = false;
+    }
+
+    /**
+     * Private constructor for making a storage-only cell. Use one of the {@code create} methods to
+     * create a new Cell.
+     *
+     * @param first The new Cell's {@code first} element.
+     */
+    private Cell(final Ref first) {
+        Validate.notNull(first);
+        this.first = first;
+        this.rest = null;
+        this.isStorage = true;
     }
 
     /**
@@ -170,7 +178,8 @@ public class Cell implements Ref {
      * @return A new storage-only {@code Cell} of the form {@code (ref . NULL_REF)}.
      */
     public static Cell createStorage(final Ref ref) {
-        return new Cell(ref, NULL_REF);
+        Validate.isInstanceOf(Atom.class, ref);
+        return new Cell(ref);
     }
 
     /**
@@ -184,12 +193,11 @@ public class Cell implements Ref {
     }
 
     /**
-     * Creates a new {@link Cell} with {@code NIL} as its {@code first} element and {@code NULL_REF}
-     * as its {@code rest} element, signifying te empty list.
-     * @return A new {@code Cell} representing an empty list, of the form {@code (NIL . NULL_REF)}.
+     * Creates a new {@link Cell} with {@code NIL} references, signifying an empty list.
+     * @return A new {@code Cell} representing an empty list, of the form {@code (NIL . NIL)}.
      */
     public static Cell create() {
-        return new Cell(NIL, NULL_REF);
+        return new Cell(NIL, NIL);
     }
 
     /**
@@ -198,7 +206,7 @@ public class Cell implements Ref {
      */
     @Override
     public boolean isAtom() {
-        return first.isAtom() && rest == NULL_REF;
+        return this.isStorage;
     }
 
     /**

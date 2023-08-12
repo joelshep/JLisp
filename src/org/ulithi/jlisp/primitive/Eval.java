@@ -49,7 +49,7 @@ public class Eval {
      * @return The resulting value of the evaluation.
      */
     public SExpression apply(final Cell cell) {
-        if ( cell.isNil() ) { return Atom.NIL; }
+        if ( cell.isNil() ) { return List.create(); }
 
         // Get the root cell's first element as an s-expression.
         final SExpression car = cellToCar(cell);
@@ -101,7 +101,9 @@ public class Eval {
      */
     private static SExpression cellToCar(final Cell cell) {
         final Ref ref = cell.getFirst();
-        if (ref.isAtom()) { return (Atom)ref; }
+        // Deal with the empty list first, maybe returning ... an empty list?!
+        if (ref.isNil()) { return List.create(); }
+        if (ref.isAtom()) { return Atom.create(ref); }
         if (ref.isCell()) { return List.create(cell); }
         throw new JLispRuntimeException("Don't know how to fetch CAR of ref: " + ref);
     }
