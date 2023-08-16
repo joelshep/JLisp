@@ -1,6 +1,7 @@
 package org.ulithi.jlisp.core;
 
 import org.ulithi.jlisp.exception.TypeConversionException;
+import org.ulithi.jlisp.mem.NilReference;
 import org.ulithi.jlisp.mem.Ref;
 import org.ulithi.jlisp.parser.Grammar;
 
@@ -34,6 +35,19 @@ public class Atom extends SExpression implements Ref {
      * or token for the symbol: e.g., "+" for the addition operator, "flag" for a variable, etc.
      */
     private final Object value;
+
+    /**
+     * Creates and returns a new {@link Atom}: either {@code F} if {@code ref} is {@code NIL} or
+     * {@code ref} itself if it is an {@code Atom}. Overrides the {@link SExpression} implementation
+     * to return only {@code Atoms} and handle the empty list appropriately.
+     *
+     * @param ref A {@link Ref}, which may represent an {@link Atom} or a {@link List}.
+     * @return An {@link Atom} as represented by the {@code Ref}.
+     */
+    public static Atom create (final Ref ref) {
+        if (ref == NilReference.NIL) { return Atom.F; }
+        return (Atom) ref;
+    }
 
     /**
      * Creates and returns a new {@link Atom} representing the given {@code String} literal.
