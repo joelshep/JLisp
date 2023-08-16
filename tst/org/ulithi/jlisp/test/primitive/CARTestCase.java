@@ -9,6 +9,7 @@ import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.primitive.CAR;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.ulithi.jlisp.test.suite.UnitTestUtilities.parse;
 
@@ -55,7 +56,9 @@ public class CARTestCase {
     public void testCAROfEmptyList() {
         final String expression = "()";
         final PTree pTree = parse(expression);
-        final Atom atom = (Atom)(new CAR()).apply(SExpression.create(pTree.root()));
-        assertEquals(Atom.NIL, atom);
+        final SExpression sexp = (new CAR()).apply(SExpression.create(pTree.root()));
+        assertTrue(sexp.isList());
+        final List list = sexp.toList();
+        assertTrue(list.isEmpty());
     }
 }

@@ -12,7 +12,7 @@ public final class NilReference implements Ref {
     public static final Ref NIL = new NilReference();
 
     @Override
-    public final boolean isAtom() { return true; }
+    public final boolean isAtom() { return false; }
 
     @Override
     public final boolean isCell() { return false; }

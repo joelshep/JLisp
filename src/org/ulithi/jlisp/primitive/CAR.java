@@ -13,7 +13,6 @@ import org.ulithi.jlisp.exception.EvaluationException;
 public class CAR implements Function {
     @Override
     public SExpression apply (final SExpression sexp) {
-        if (sexp.isNil()) { return Atom.NIL; }
         if (sexp.isList()) { return ((List)sexp).toList().car(); }
         throw new EvaluationException("Argument to CAR must be a list");
     }

@@ -80,6 +80,19 @@ The ```SExpression``` class in ```org.ulithi.jlisp.core``` is not only the super
 The ```SExpression``` class's primary function is to transform cells and references to atoms
 and lists.
 
+### A Word About NIL
+
+In JLISP, ```NIL``` is a condition, not a value. ```NIL``` is not defined as a value in JLISP.
+For atoms, T (true) and F (false) are the Boolean values. An empty list when coerced, to a Boolean,
+evaluates to F: all other lists evaluate to T. The ```NIL?``` predicate returns T for the F atom
+and the empty list, and returns T otherwise. ```NIL``` only exists in the memory model, as an
+end-of-list marker.
+
+I originally tried to implement ```NIL``` with similar semantics to early LISP versions, where
+NIL was false was an atom was an empty list was a list terminator ... but it proved to be more
+overloading than I could manage. So, I gave up and decided to go a more Scheme-like route by
+simply excluding ```NIL``` as a first-class concept.
+
 ## Evaluation
 
 Eval starts with a cell, which is *probably* the root cell of a parse tree.

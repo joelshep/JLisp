@@ -11,12 +11,18 @@ import static org.ulithi.jlisp.mem.NilReference.NIL;
 /**
  * {@link Cell Cells} are the basic unit of storage in JLISP, acting either as storage for a single
  * literal, or as a node in a list. All {@code cells} are pairs of {@link Ref references}:
- * {@code first} (or {@code left}) and {@code rest} (or {@code right}). Both references ar
- * e <em>required</em>. The {@code first} reference can be a reference to an {@link Atom} or to
- * the root {@code cell} of a sub-list. The {@code rest} reference can be a reference to a
- * {@code cell} representing the next element in the list, or the {@code NIL} atom representing
- * the end of the list, or the special {@code NAL} (Not A List) terminator if the {@code cell} is
- * pure storage (not a list node). A reference can refer to an {@link Atom} or another {@code Cell}.
+ * {@code first} (or {@code left}) and {@code rest} (or {@code right}). Both references are
+ * <em>required</em>. The {@code first} reference can be a reference to an {@link Atom} or to the
+ * root {@code cell} of a sub-list. The {@code rest} reference can be a reference to a {@code cell}
+ * representing the next element in the list, or the {@code NIL} atom representing the end of the
+ * list. A reference can refer to an {@link Atom} or another {@code Cell}.
+ * <p>
+ * Cells can also be used as "pure storage": as just a holder for a value. In a storage-only cell,
+ * the {@code first} reference is the value; the {@code rest} reference is undefined (but typically
+ * {@code NIL}.
+ * <p>
+ * The type of value held in a cell's {@code first} element can be determined by the {@code isAtom()},
+ * {@code isList()} and {@code isNil()} methods.
  * <p>
  * Cells are part of JLISP's <em>memory model</em>, not part of the language model. While it seemed
  * natural for cell fields to be treated as CAR and CDR, they aren't quite the same. E.g., the
@@ -65,32 +71,6 @@ public class Cell implements Ref {
      * is valid; the "rest" reference is undefined.
      */
     private final boolean isStorage;
-
-    /**
-     * Private constructor. Use one of the {@code create} methods to create a new Cell.
-     *
-     * @param first The new Cell's {@code first} element.
-     * @param rest The new Cell's {@code rest} element.
-     */
-    private Cell(final Ref first, final Ref rest) {
-        Validate.notNull(first);
-        this.first = first;
-        this.rest = rest;
-        this.isStorage = false;
-    }
-
-    /**
-     * Private constructor for making a storage-only cell. Use one of the {@code create} methods to
-     * create a new Cell.
-     *
-     * @param first The new Cell's {@code first} element.
-     */
-    private Cell(final Ref first) {
-        Validate.notNull(first);
-        this.first = first;
-        this.rest = null;
-        this.isStorage = true;
-    }
 
     /**
      * Creates a {@link Cell} representing a terminal list node with the given {@link Ref}
@@ -201,12 +181,45 @@ public class Cell implements Ref {
     }
 
     /**
-     * Indicates if this {@link Cell} represents a pure (storage-only) {@link Atom}.
-     * @return True if this cell is a storage-only {@code Atom}, false otherwise.
+     * Private constructor. Use one of the {@code create} methods to create a new Cell.
+     *
+     * @param first The new Cell's {@code first} element.
+     * @param rest The new Cell's {@code rest} element.
      */
-    @Override
-    public boolean isAtom() {
+    private Cell(final Ref first, final Ref rest) {
+        Validate.notNull(first);
+        this.first = first;
+        this.rest = rest;
+        this.isStorage = false;
+    }
+
+    /**
+     * Private constructor for making a storage-only cell. Use one of the {@code create} methods to
+     * create a new Cell.
+     *
+     * @param first The new Cell's {@code first} element.
+     */
+    private Cell(final Ref first) {
+        Validate.notNull(first);
+        this.first = first;
+        this.rest = null;
+        this.isStorage = true;
+    }
+
+    /**
+     * Indicates if this {@link Cell} is a storage-only {@code Cell}.
+     * @return True if this {@code Cell} is storage-only, false otherwise.
+     */
+    public boolean isStorage() {
         return this.isStorage;
+    }
+
+    /**
+     * Indicates if this {@link Cell} is pure storage for an {@link Atom}.
+     * @return True if this {@code Cell} is pure storage for an {@code Atom}, false otherwise.
+     */
+    public boolean isAtom() {
+        return isNil() || (first instanceof Atom && rest == null);
     }
 
     /**
@@ -214,7 +227,7 @@ public class Cell implements Ref {
      * @return This cell's {@code first} value as an {@link Atom}.
      */
     public Atom toAtom() {
-        return (Atom)first;
+        return (Atom)Atom.create(first);
     }
 
     /**
@@ -224,7 +237,8 @@ public class Cell implements Ref {
      */
     @Override
     public boolean isList() {
-        return first.isList();
+        // If the first reference is nil, it's an empty list.
+        return (first instanceof Cell) || isNil();
     }
 
     /**

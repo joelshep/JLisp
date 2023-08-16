@@ -66,6 +66,9 @@ public class Grammar {
     /** The T (true) token. */
     public static final String T = "T";
 
+    /** The F (false) token. */
+    public static final String F = "F";
+
     /**
      * Indicates if the given token represents an alphanumeric literal.
      * @param token The token to evaluate.

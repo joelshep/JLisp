@@ -7,7 +7,8 @@ import org.junit.runner.notification.Failure;
 import org.junit.runners.Suite;
 import org.ulithi.jlisp.test.core.SExpressionTestCase;
 import org.ulithi.jlisp.test.lexer.LexerTestCase;
-import org.ulithi.jlisp.test.mem.AtomTestCase;
+import org.ulithi.jlisp.test.core.AtomTestCase;
+import org.ulithi.jlisp.test.mem.CellTestCase;
 import org.ulithi.jlisp.test.parser.GrammarTestCase;
 import org.ulithi.jlisp.test.parser.ParserTestCase;
 import org.ulithi.jlisp.test.parser.PrimitivesTestCase;
@@ -27,6 +28,7 @@ import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
         AtomTestCase.class,
         CARTestCase.class,
         CDRTestCase.class,
+        CellTestCase.class,
         EvalTestCase.class,
         GrammarTestCase.class,
         LENGTHTestCase.class,

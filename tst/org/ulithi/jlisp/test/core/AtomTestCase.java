@@ -1,4 +1,4 @@
-package org.ulithi.jlisp.test.mem;
+package org.ulithi.jlisp.test.core;
 
 import org.junit.Test;
 import org.ulithi.jlisp.exception.TypeConversionException;
@@ -19,6 +19,7 @@ public class AtomTestCase {
         Atom atom = Atom.create(43);
         assertTrue(atom.isLiteral());
         assertFalse(atom.isNil());
+        assertTrue(atom.isNumber());
         assertFalse(atom.isSymbol());
         assertEquals("43", atom.toS());
         assertTrue(atom.toB());
@@ -28,6 +29,7 @@ public class AtomTestCase {
         atom = Atom.create(0);
         assertTrue(atom.isLiteral());
         assertFalse(atom.isNil());
+        assertTrue(atom.isNumber());
         assertFalse(atom.isSymbol());
         assertEquals("0", atom.toS());
         assertFalse(atom.toB());
@@ -37,6 +39,7 @@ public class AtomTestCase {
         atom = Atom.create(-1);
         assertTrue(atom.isLiteral());
         assertFalse(atom.isNil());
+        assertTrue(atom.isNumber());
         assertFalse(atom.isSymbol());
         assertEquals("-1", atom.toS());
         assertTrue(atom.toB());
@@ -49,6 +52,7 @@ public class AtomTestCase {
         Atom atom = Atom.create("Hello");
         assertTrue(atom.isLiteral());
         assertFalse(atom.isNil());
+        assertFalse(atom.isNumber());
         assertFalse(atom.isSymbol());
         assertEquals("Hello", atom.toS());
         assertTrue(atom.toB());
@@ -63,6 +67,7 @@ public class AtomTestCase {
         atom = Atom.create("");
         assertTrue(atom.isLiteral());
         assertFalse(atom.isNil());
+        assertFalse(atom.isNumber());
         assertFalse(atom.isSymbol());
         assertEquals("", atom.toS());
         assertFalse(atom.toB());
@@ -77,6 +82,7 @@ public class AtomTestCase {
         atom = Atom.create("123");
         assertTrue(atom.isLiteral());
         assertFalse(atom.isNil());
+        assertFalse(atom.isNumber());
         assertFalse(atom.isSymbol());
         assertEquals("123", atom.toS());
         assertTrue(atom.toB());
@@ -91,6 +97,7 @@ public class AtomTestCase {
         atom = Atom.create("0");  // Zero
         assertTrue(atom.isLiteral());
         assertFalse(atom.isNil());
+        assertFalse(atom.isNumber());
         assertFalse(atom.isSymbol());
         assertEquals("0", atom.toS());
         assertTrue(atom.toB());
@@ -108,38 +115,44 @@ public class AtomTestCase {
         Atom atom = Atom.T;
         assertTrue(atom.isLiteral());
         assertFalse(atom.isNil());
+        assertFalse(atom.isNumber());
         assertFalse(atom.isSymbol());
         assertEquals("T", atom.toS());
         assertTrue(atom.toB());
         assertEquals(-1, atom.toI());
         assertEquals("T", atom.toString());
 
-        atom = Atom.NIL;
-        assertFalse(atom.isLiteral());
-        assertTrue(atom.isNil());
+        atom = Atom.F;
+        assertTrue(atom.isLiteral());
+        assertFalse(atom.isNil());
+        assertFalse(atom.isNumber());
         assertFalse(atom.isSymbol());
-        assertEquals("NIL", atom.toS());
+        assertEquals("F", atom.toS());
         assertFalse(atom.toB());
         assertEquals(0, atom.toI());
-        assertEquals("NIL", atom.toString());
+        assertEquals("F", atom.toString());
 
         atom = Atom.create(true);
         assertTrue(atom.isLiteral());
         assertFalse(atom.isNil());
+        assertFalse(atom.isNumber());
         assertFalse(atom.isSymbol());
         assertEquals("T", atom.toS());
         assertTrue(atom.toB());
         assertEquals(-1, atom.toI());
         assertEquals("T", atom.toString());
+        assertEquals(Atom.T, atom);
 
         atom = Atom.create(false);
         assertTrue(atom.isLiteral());
         assertFalse(atom.isNil());
+        assertFalse(atom.isNumber());
         assertFalse(atom.isSymbol());
-        assertEquals("NIL", atom.toS());
+        assertEquals("F", atom.toS());
         assertFalse(atom.toB());
         assertEquals(0, atom.toI());
-        assertEquals("NIL", atom.toString());
+        assertEquals("F", atom.toString());
+        assertEquals(Atom.F, atom);
     }
 
     @Test
@@ -147,6 +160,7 @@ public class AtomTestCase {
         Atom atom = Atom.createSymbol("FOO");
         assertFalse(atom.isLiteral());
         assertFalse(atom.isNil());
+        assertFalse(atom.isNumber());
         assertTrue(atom.isSymbol());
         try {
             atom.toS();

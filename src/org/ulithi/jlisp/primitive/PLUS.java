@@ -9,18 +9,18 @@ import org.ulithi.jlisp.mem.Cell;
 public class PLUS implements Function{
     @Override
     public SExpression apply(final SExpression sexp) {
-        if (sexp.isNil() || !sexp.isList()) {
+        if (!sexp.isList()) {
             throw new EvaluationException("List argument expected");
         }
 
         List args = sexp.toList();
+        int result = 0;
 
-        int result = ((Atom)args.car()).toI();
-
-        while (!args.cdr().isNil()) {
+        do {
+            result += ((Atom)args.car()).toI();
+            if (args.endp()) break;
             args = args.cdr().toList();
-            result += ((Atom) args.car()).toI();
-        }
+        } while (true);
 
         return Atom.create(result);
     }

@@ -12,7 +12,7 @@ public abstract class SExpression {
     /**
      * Creates and returns a new {@link SExpression}. The subtype depends on the given
      * {@link Cell}, according to the following rules:<ul>
-     *     <li>If cell.first() is NIL, return NIL atom</li>
+     *     <li>If cell.first() is NIL, return an empty list</li>
      *     <li>If cell.first() is an atom and cell.rest() is NIL, return the atom</li>
      *     <li>Else, return a list with the given cell as the root</li>
      * </ul>
@@ -22,15 +22,15 @@ public abstract class SExpression {
      */
     public static SExpression create(final Cell cell) {
         assert cell != null: "Cell is null";
-        if (cell.isNil()) { return Atom.NIL; }
-        if (cell.isAtom()) { return (Atom)cell.getFirst(); }
+        if (cell.isNil()) { return List.create(); }
+        if (cell.isAtom()) { return Atom.create(cell.getFirst()); }
         return List.create(cell);
     }
 
     /**
      * Creates and returns a new {@link SExpression}. The subtype depends on the given
      * {@link Ref}, according to the following rules:<ul>
-     *     <li>If cell.first() is NIL, return NIL atom</li>
+     *     <li>If cell.first() is NIL, return the empty list</li>
      *     <li>If cell.first() is an atom and cell.rest() is NIL, return the atom</li>
      *     <li>Else, return a list with the given cell as the root</li>
      * </ul>
@@ -40,16 +40,10 @@ public abstract class SExpression {
      */
     public static SExpression create(final Ref ref) {
         assert ref != null: "Ref is null";
-        if (ref.isNil()) { return Atom.NIL; }
+        if (ref.isNil()) { return List.create(); }
         if (ref.isAtom()) { return (Atom)ref; }
         return List.create((Cell)ref);
     }
-
-    /**
-     * Indicates if this {@link SExpression} is NIL.
-     * @return True if this s-expression is {@code NIL}, false otherwise.
-     */
-    public abstract boolean isNil();
 
     /**
      * Indicates if this {@link SExpression} is an {@link Atom}.

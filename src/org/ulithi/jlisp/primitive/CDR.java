@@ -13,7 +13,6 @@ import org.ulithi.jlisp.exception.EvaluationException;
 public class CDR implements Function {
     @Override
     public SExpression apply (final SExpression sexp) {
-        if (sexp.isNil()) { return Atom.NIL; }
         if (sexp.isList()) { return ((List)sexp).toList().cdr(); }
         throw new EvaluationException("Argument to CDR must be a list");
     }

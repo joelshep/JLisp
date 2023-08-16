@@ -16,9 +16,7 @@ public class LENGTH implements Function{
      */
     @Override
     public SExpression apply(final SExpression sexp) {
-        if (sexp.isNil()) { return Atom.create(0); }
         if (sexp.isList()) { return ((List)sexp).length(); }
-
         throw new EvaluationException("Argument to LENGTH must be a list");
     }
 }

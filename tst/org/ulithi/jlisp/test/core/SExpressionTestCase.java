@@ -2,7 +2,6 @@ package org.ulithi.jlisp.test.core;
 
 import org.junit.Test;
 import org.ulithi.jlisp.core.Atom;
-import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.PTree;
@@ -21,28 +20,30 @@ public class SExpressionTestCase {
     @Test
     public void testNilCell() {
         final Cell cell = Cell.create();
-        final SExpression atom = SExpression.create(cell);
-        assertEquals(Atom.NIL, atom);
+        final SExpression sexp = SExpression.create(cell);
+        assertTrue(sexp.isList());
+        assertTrue(sexp.toList().isEmpty());
     }
 
     @Test
     public void testNilRef() {
         final Ref ref = Cell.create().getFirst();
-        final SExpression atom = SExpression.create(ref);
-        assertEquals(Atom.NIL, atom);
+        final SExpression sexp = SExpression.create(ref);
+        assertTrue(sexp.isList());
+        assertTrue(sexp.toList().isEmpty());
     }
 
     @Test
     public void testStorageCell() {
         final Cell cell = Cell.createStorage("HELLO");
 
-        SExpression atom = SExpression.create(cell);
-        assertTrue(atom.isAtom());
-        assertEquals("HELLO", ((Atom)atom).toS());
+        SExpression sexp = SExpression.create(cell);
+        assertTrue(sexp.isAtom());
+        assertEquals("HELLO", ((Atom)sexp).toS());
 
         final Ref ref = cell.getFirst();
-        atom = SExpression.create(ref);
-        assertEquals("HELLO", ((Atom)atom).toS());
+        sexp = SExpression.create(ref);
+        assertEquals("HELLO", ((Atom)sexp).toS());
     }
 
     @Test
@@ -59,13 +60,13 @@ public class SExpressionTestCase {
     public void testNumericStorageCell() {
         final Cell cell = Cell.createStorage(1234);
 
-        SExpression atom = SExpression.create(cell);
-        assertTrue(atom.isAtom());
-        assertEquals(1234, ((Atom)atom).toI());
+        SExpression sexp = SExpression.create(cell);
+        assertTrue(sexp.isAtom());
+        assertEquals(1234, ((Atom)sexp).toI());
 
         final Ref ref = cell.getFirst();
-        atom = SExpression.create(ref);
-        assertEquals(1234, ((Atom)atom).toI());
+        sexp = SExpression.create(ref);
+        assertEquals(1234, ((Atom)sexp).toI());
     }
 
     @Test
@@ -86,22 +87,22 @@ public class SExpressionTestCase {
     public void testBooleanStorageCell() {
         final Cell trueCell = Cell.createStorage(true);
 
-        SExpression atom = SExpression.create(trueCell);
-        assertTrue(atom.isAtom());
-        assertTrue(((Atom) atom).toB());
+        SExpression sexp = SExpression.create(trueCell);
+        assertTrue(sexp.isAtom());
+        assertTrue(((Atom) sexp).toB());
 
         Ref ref = trueCell.getFirst();
-        atom = SExpression.create(ref);
-        assertTrue(((Atom) atom).toB());
+        sexp = SExpression.create(ref);
+        assertTrue(((Atom) sexp).toB());
 
         final Cell falseCell = Cell.createStorage(false);
-        atom = SExpression.create(falseCell);
-        assertTrue(atom.isAtom());
-        assertFalse(((Atom) atom).toB());
+        sexp = SExpression.create(falseCell);
+        assertTrue(sexp.isAtom());
+        assertFalse(((Atom) sexp).toB());
 
         ref = falseCell.getFirst();
-        atom = SExpression.create(ref);
-        assertFalse(((Atom) atom).toB());
+        sexp = SExpression.create(ref);
+        assertFalse(((Atom) sexp).toB());
     }
 
     @Test
@@ -121,7 +122,7 @@ public class SExpressionTestCase {
         sexp = SExpression.create(falseCell);
         assertFalse(sexp.isAtom());
         assertTrue(sexp.isList());
-        assertEquals("(NIL . NIL)", String.valueOf(sexp));
+        assertEquals("(F . NIL)", String.valueOf(sexp));
 
         ref = falseCell.getFirst();
         sexp = SExpression.create(ref);
@@ -132,35 +133,35 @@ public class SExpressionTestCase {
     public void testSimpleList() {
         final String expression = "(1 2 3 4)";
         final PTree pTree = parse(expression);
-        SExpression list = SExpression.create(pTree.root());
-        assertTrue(list.isList());
-        assertEquals("(1 . (2 . (3 . (4 . NIL))))", String.valueOf(list));
+        SExpression sexp = SExpression.create(pTree.root());
+        assertTrue(sexp.isList());
+        assertEquals("(1 . (2 . (3 . (4 . NIL))))", String.valueOf(sexp));
     }
 
     @Test
     public void testCarAtom() {
         final String expression = "(A B C D)";
         final PTree pTree = parse(expression);
-        SExpression atom = SExpression.create(pTree.root().getFirst());
-        assertTrue(atom.isAtom());
-        assertEquals("A", ((Atom)atom).toS());
+        SExpression sexp = SExpression.create(pTree.root().getFirst());
+        assertTrue(sexp.isAtom());
+        assertEquals("A", ((Atom)sexp).toS());
     }
 
     @Test
     public void testCarList() {
         final String expression = "((A B C) D E F)";
         final PTree pTree = parse(expression);
-        SExpression list = SExpression.create(pTree.root().getFirst());
-        assertTrue(list.isList());
-        assertEquals("(A . (B . (C . NIL)))", String.valueOf(list));
+        SExpression sexp = SExpression.create(pTree.root().getFirst());
+        assertTrue(sexp.isList());
+        assertEquals("(A . (B . (C . NIL)))", String.valueOf(sexp));
     }
 
     @Test
     public void testCdr() {
         final String expression = "(A B C D)";
         final PTree pTree = parse(expression);
-        SExpression list = SExpression.create(pTree.root().getRest());
-        assertTrue(list.isList());
-        assertEquals("(B . (C . (D . NIL)))", String.valueOf(list));
+        SExpression sexp = SExpression.create(pTree.root().getRest());
+        assertTrue(sexp.isList());
+        assertEquals("(B . (C . (D . NIL)))", String.valueOf(sexp));
     }
 }

@@ -1,8 +1,8 @@
 package org.ulithi.jlisp.core;
 
 import org.ulithi.jlisp.exception.TypeConversionException;
-import org.ulithi.jlisp.mem.NilReference;
 import org.ulithi.jlisp.mem.Ref;
+import org.ulithi.jlisp.parser.Grammar;
 
 /**
  * An {@link Atom} is an indivisible unit of literal data (e.g., number, boolean or character
@@ -12,15 +12,14 @@ import org.ulithi.jlisp.mem.Ref;
  */
 public class Atom extends SExpression implements Ref {
 
-    /** An {@link Atom} representing the special {@code NIL} value. */
-    public static final Atom NIL = new Atom(NilReference.NIL, Type.NIL);
+    /** An {@link Atom} representing the special {@code F} (false) value. */
+    public static final Atom F = new Atom(Boolean.FALSE, Type.Boolean);
 
     /** An {@link Atom} representing the special {@code T} (true) value. */
     public static final Atom T = new Atom(Boolean.TRUE, Type.Boolean);
 
     /** Enumerates the data types that can be represented as an Atom. */
     private enum Type {
-        NIL,
         String,
         Number,
         Boolean,
@@ -60,7 +59,7 @@ public class Atom extends SExpression implements Ref {
      * @return An {@code Atom} representing the given {@code Boolean} value.
      */
     public static Atom create(final Boolean bValue) {
-        return new Atom(bValue, Type.Boolean);
+        return (bValue ? T : F);
     }
 
     /**
@@ -85,19 +84,10 @@ public class Atom extends SExpression implements Ref {
     }
 
     /**
-     * Indicates if this {@link Atom} is NIL.
-     * @return True if this {@code Atom} is NIL, false otherwise.
-     */
-    @Override
-    public boolean isNil() {
-        return this.type == Type.NIL;
-    }
-
-    /**
      * Indicates if this {@link Atom} is a symbol.
      * @return True if this {@code Atom} is a symbol, false otherwise.
      */
-    public boolean isSymbol() {
+    public final boolean isSymbol() {
         return this.type == Type.Symbol;
     }
 
@@ -106,30 +96,30 @@ public class Atom extends SExpression implements Ref {
      * value.
      * @return True if this {@code Atom} is a literal value, false otherwise.
      */
-    public boolean isLiteral() {
-        return this.type != Type.Symbol && this.type != Type.NIL;
+    public final boolean isLiteral() {
+        return this.type != Type.Symbol;
     }
 
     /**
      * Indicates if this {@link Atom} is a numeric literal value.
      * @return True if this {@code Atom} is a numeric literal value, false otherwise.
      */
-    public boolean isNumber() {
+    public final boolean isNumber() {
         return this.type == Type.Number;
     }
 
     /**
      * Returns this {@link Atom Atom's} value as an integer. Number atoms have their value returned
      * directly (currently only integer numbers are supported). For Boolean atoms, returns -1 if
-     * the atom's value is True, and returns 0 if it is False. For NIL atoms, returns 0 only. String
-     * values and symbols cannot be converted to integers.
+     * the atom's value is True, and returns 0 if it is False. String values and symbols cannot be
+     * converted to integers.
+     *
      * @return This {@link Atom Atom's} value as an integer.
      * @throws TypeConversionException if the type conversion is disallowed (e.g., String to
      *         Number), or if there is no known conversion for this {@code Atom's} type.
      */
-    public int toI() {
+    public final int toI() {
         switch (this.type) {
-            case NIL: return 0;
             case Number: return ((Number)value).intValue();
             case Boolean: return ((Boolean)value) ? -1 : 0;
             case String: throw new TypeConversionException("Can't convert string literal to number");
@@ -141,15 +131,14 @@ public class Atom extends SExpression implements Ref {
     /**
      * Returns this {@link Atom Atom's} value as a boolean. Boolean atoms have their value returned
      * directly. For numeric atoms, returns true if the value is non-zero, false otherwise. For
-     * string atoms, returns true if the value is non-empty (i.e., not ""), false otherwise. NIL
-     * atoms return false only.
+     * string atoms, returns true if the value is non-empty (i.e., not ""), false otherwise.
+     *
      * @return This {@link Atom Atom's} value as a boolean.
      * @throws TypeConversionException if the type conversion is disallowed or if there is no known
      *         conversion for this {@code Atom's} type.
      */
-    public boolean toB() {
+    public final boolean toB() {
         switch (this.type) {
-            case NIL: return false;
             case Number: return ((Number)value).intValue() != 0;
             case Boolean: return ((Boolean)value);
             case String: return !((String)value).isEmpty();
@@ -161,12 +150,13 @@ public class Atom extends SExpression implements Ref {
     /**
      * Returns this {@link Atom Atom's} value as a character string. All types except symbols
      * can be converted to a {@code String}.
+     *
      * @return This {@link Atom Atom's} value as a character string.
      * @throws TypeConversionException if the type conversion is disallowed or if there is no known
      *         conversion for this {@code Atom's} type.
      */
-    public String toS() {
-        if (this.type == Type.Boolean) { return ((Boolean)value) ? "T" : "NIL"; }
+    public final String toS() {
+        if (this.type == Type.Boolean) { return ((Boolean)value) ? Grammar.T : Grammar.F; }
         if (this.type != Type.Symbol) { return String.valueOf(value); }
         throw new TypeConversionException("Can't convert symbol to character string");
     }
@@ -176,8 +166,8 @@ public class Atom extends SExpression implements Ref {
      * @return The {@code String} representation of this {@link Atom Atom's} value.
      */
     @Override
-    public String toString() {
-        if (this.type == Type.Boolean) { return ((Boolean)value) ? "T" : "NIL"; }
+    public final String toString() {
+        if (this.type == Type.Boolean) { return ((Boolean)value) ? Grammar.T : Grammar.F; }
         return String.valueOf(value);
     }
 }

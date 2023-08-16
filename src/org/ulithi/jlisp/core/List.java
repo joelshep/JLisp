@@ -97,7 +97,7 @@ public class List extends SExpression {
     public void add(final List list) {
         if (this.isEmpty()) {
             this.root.setFirst(list.getRoot());
-            this.root.setRest(Atom.NIL);
+            this.root.setRest(NIL);
         } else {
             this.end.setRest(list.getRoot());
         }
@@ -109,15 +109,10 @@ public class List extends SExpression {
      * Indicates if this {@link List} is empty.
      * @return True if this list is empty, false otherwise.
      */
-    private boolean isEmpty() {
-        return this.root.getFirst() == NIL;
+    public boolean isEmpty() {
+        final Ref first = this.root.getFirst();
+        return (first == NIL);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isNil() { return false; }
 
     /**
      * Returns the {@link Cell} that is the root node of this {@link List}.
@@ -128,13 +123,12 @@ public class List extends SExpression {
     }
 
     /**
-     * Given a Cell, returns an s-expression represent the referee of the cell's first element.
-     * TODO - Edit JavaDoc
-     *
+     * Given a Cell, returns an s-expression representing the referee of the cell's first element.
      * @return The referee of the cell's first element, as an s-expression.
      */
     public SExpression car() {
         final Ref ref = root.getFirst();
+        if (ref.isNil()) { return List.create(); }
         if (ref.isAtom()) { return (Atom)ref; }
         if (ref.isCell()) { return List.create(ref); }
         throw new JLispRuntimeException("Don't know how to fetch CAR of ref: " + ref);
@@ -143,14 +137,21 @@ public class List extends SExpression {
     /**
      * Returns an s-expression representing the referee of this list's root cell's {@code rest}
      * element.
-     *
      * @return The referee of this list's root cell's {@code rest} element, as an s-expression.
      */
     public SExpression cdr() {
         final Ref ref = root.getRest();
-        if (ref == null || ref.isNil()) { return Atom.NIL; }
+        if (ref.isNil()) { return List.create(); }
         if (ref.isCell()) { return List.create(ref); }
         throw new JLispRuntimeException("Don't know how to fetch CDR of ref: " + ref);
+    }
+
+    /**
+     * Indicates if this {@link List} is terminal (CDR is nil).
+     * @return True if this {@code List} is terminal, false otherwise.
+     */
+    public boolean endp() {
+        return root.getRest() == NIL;
     }
 
     /**
