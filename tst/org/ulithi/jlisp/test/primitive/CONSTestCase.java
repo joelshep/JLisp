@@ -15,7 +15,24 @@ public class CONSTestCase {
 
     @Test
     public void testConsEmptyListToEmptyList() {
-        // CONS NIL () -> (NIL)   (NIL . NIL)
+        // CONS () () -> ()
+        final String expression = "(CONS () ()))";
+        final PTree pTree = parse(expression);
+        System.out.println(pTree);
+        final SExpression sexp = (new Eval()).apply(pTree.root());
+        System.out.println(sexp);
+        assertEquals("(NIL . NIL)", String.valueOf(sexp));
+    }
+
+    @Test
+    public void testConsAtoms() {
+        // CONS 1 2 3 => (1 2 3)
+        final String expression = "(CONS 1 2 3)";
+        final PTree pTree = parse(expression);
+        System.out.println(pTree);
+        final SExpression sexp = (new Eval()).apply(pTree.root());
+        System.out.println(sexp);
+        assertEquals("(1 . (2 . (3 . NIL)))", String.valueOf(sexp));
     }
 
     @Test
@@ -26,6 +43,7 @@ public class CONSTestCase {
         System.out.println(pTree);
         final SExpression sexp = (new Eval()).apply(pTree.root());
         System.out.println(sexp);
+        assertEquals("(HELLO . NIL)", String.valueOf(sexp));
     }
 
     @Test
@@ -36,7 +54,6 @@ public class CONSTestCase {
         System.out.println(pTree);
         final SExpression sexp = (new Eval()).apply(pTree.root());
         assertEquals("((PHONE . (HOME . NIL)) . NIL)", String.valueOf(sexp));
-
     }
 
     @Test
