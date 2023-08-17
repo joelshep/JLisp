@@ -96,13 +96,13 @@ public class List extends SExpression {
      */
     public void add(final List list) {
         if (this.isEmpty()) {
-            this.root.setFirst(list.getRoot());
-            this.root.setRest(NIL);
+            root.setFirst(list.getRoot());
+            root.setRest(NIL);
+            end = root;
         } else {
-            this.end.setRest(list.getRoot());
+            end.setRest(list.getRoot());
+            end = (Cell)end.getRest();
         }
-
-        this.end = list.end;
     }
 
     /**
