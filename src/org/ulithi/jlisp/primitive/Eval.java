@@ -32,11 +32,12 @@ public class Eval {
         primitives.put("CDR", new CDR());
         primitives.put("CONS", new CONS());
         primitives.put("LENGTH", new LENGTH());
-        primitives.put("PLUS", new PLUS());
+        primitives.put("MINUS", new Math.MINUS());
+        primitives.put("PLUS", new Math.PLUS());
         primitives.put("QUOTE", new QUOTE());
-        primitives.put("TIMES", new TIMES());
-        primitives.put("+", new PLUS());
-        primitives.put("*", new TIMES());
+        primitives.put("TIMES", new Math.TIMES());
+        primitives.put("+", new Math.PLUS());
+        primitives.put("*", new Math.TIMES());
     }
 
     /**
