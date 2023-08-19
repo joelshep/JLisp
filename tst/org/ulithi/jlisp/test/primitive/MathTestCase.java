@@ -69,7 +69,7 @@ public class MathTestCase {
      * Evaluates an addition expression with a nested sub-expression: (+ 2 (* 2 3))
      */
     @Test
-    public void testMultiplyAndAdd() {
+    public void testMultiplyThenAdd() {
         final List<String> tokens = Arrays.asList("(", "+", "2", "(", "*", "2", "3", ")", ")");
         PTree ptree = parser.parse(tokens);
         System.out.println(ptree);
@@ -83,7 +83,7 @@ public class MathTestCase {
      * (+ (* 4 5) (* 2 3))
      */
     @Test
-    public void testMultiplyTwiceAndAdd() {
+    public void testMultiplyTwiceThenAdd() {
         final List<String> tokens = Arrays.asList("(", "+", "(", "*", "4", "5", ")", "(", "*", "2", "3", ")", ")");
         PTree ptree = parser.parse(tokens);
         System.out.println(ptree);
@@ -97,7 +97,7 @@ public class MathTestCase {
      *   (+ (* 4 (+ 2 3)) (* 2 3))
      */
     @Test
-    public void testThreeLayers() {
+    public void testAddMultipleThenAdd() {
         final String expr = "(+ (* 4 (+ 2 3)) (* 2 3))";
         final List<String> tokens = (new Lexer(expr)).getTokens();
         PTree ptree = parser.parse(tokens);
@@ -108,7 +108,7 @@ public class MathTestCase {
     }
 
     @Test
-    public void testSimpleSubtract() {
+    public void testSubtractTwoNumbers() {
         final String expr = "(MINUS 11 5)";
         final List<String> tokens = (new Lexer(expr)).getTokens();
         PTree ptree = parser.parse(tokens);
@@ -139,4 +139,39 @@ public class MathTestCase {
         assertEquals(expr, 53, foo);
         System.out.println("Eval returned " + foo);
     }
+
+    @Test
+    public void testSubtractSingleNumberNegates() {
+        final String expr = "(MINUS 40)";
+        final List<String> tokens = (new Lexer(expr)).getTokens();
+        PTree ptree = parser.parse(tokens);
+        System.out.println(ptree);
+        int foo = eval.apply(ptree.root()).toAtom().toI();
+        assertEquals(expr, -40, foo);
+        System.out.println("Eval returned " + foo);
+    }
+
+    @Test
+    public void testDivideTwoNumbers() {
+        final String expr = "(QUOTIENT 72 8)";
+        final List<String> tokens = (new Lexer(expr)).getTokens();
+        PTree ptree = parser.parse(tokens);
+        System.out.println(ptree);
+        int foo = eval.apply(ptree.root()).toAtom().toI();
+        assertEquals(expr, 9, foo);
+        System.out.println("Eval returned " + foo);
+    }
+
+    @Test
+    public void testDivideFourNumbers() {
+        final String expr = "(QUOTIENT 200 4 5 5)";
+        final List<String> tokens = (new Lexer(expr)).getTokens();
+        PTree ptree = parser.parse(tokens);
+        System.out.println(ptree);
+        int foo = eval.apply(ptree.root()).toAtom().toI();
+        assertEquals(expr, 2, foo);
+        System.out.println("Eval returned " + foo);
+    }
+
+
 }

@@ -35,8 +35,11 @@ public class Eval {
         primitives.put("MINUS", new Math.MINUS());
         primitives.put("PLUS", new Math.PLUS());
         primitives.put("QUOTE", new QUOTE());
+        primitives.put("QUOTIENT", new Math.QUOTIENT());
         primitives.put("TIMES", new Math.TIMES());
+        primitives.put("-", new Math.MINUS());
         primitives.put("+", new Math.PLUS());
+        primitives.put("/", new Math.QUOTIENT());
         primitives.put("*", new Math.TIMES());
     }
 

@@ -21,13 +21,12 @@ public class Math {
             }
 
             List args = sexp.toList();
-            int result = 0;
+            int result = ((Atom)args.car()).toI();
 
-            do {
-                result += ((Atom)args.car()).toI();
-                if (args.endp()) break;
+            while (!args.endp()) {
                 args = args.cdr().toList();
-            } while (true);
+                result += ((Atom)args.car()).toI();
+            }
 
             return Atom.create(result);
         }
@@ -45,6 +44,12 @@ public class Math {
 
             List args = sexp.toList();
             int result = ((Atom)args.car()).toI();
+
+            // When invoked with a single argument, MINUS returns the
+            // negation of its argument.
+            if (args.endp()) {
+                return Atom.create(-result);
+            }
 
             while (!args.endp()) {
                 args = args.cdr().toList();
@@ -66,13 +71,35 @@ public class Math {
             }
 
             List args = sexp.toList();
-            int result = 1;
+            int result = ((Atom)args.car()).toI();
 
-            do {
-                result *= ((Atom)args.car()).toI();
-                if (args.endp()) break;
+            while (!args.endp()) {
                 args = args.cdr().toList();
-            } while (true);
+                result *= ((Atom)args.car()).toI();
+            };
+
+            return Atom.create(result);
+        }
+    }
+
+    /**
+     * The {@code QUOTIENT} function, a.k.a. division.
+     */
+    public static class QUOTIENT implements Function {
+
+        @Override
+        public SExpression apply(final SExpression sexp) {
+            if (!sexp.isList()) {
+                throw new EvaluationException("List argument expected");
+            }
+
+            List args = sexp.toList();
+            int result = ((Atom)args.car()).toI();
+
+            while (!args.endp()) {
+                args = args.cdr().toList();
+                result /= ((Atom)args.car()).toI();
+            };
 
             return Atom.create(result);
         }
