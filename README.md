@@ -1,5 +1,8 @@
 # JLISP - A LISP interpreter and REPL
 
+Greenspun's Tenth Rule: Any sufficiently complicated C or Fortran program contains an ad hoc,
+informally-specified, bug-ridden, slow implementation of half of Common Lisp.
+
 ## Introduction
 
 JLISP is a LISP interpreter and REPL (Read-Evaluate-Print-Loop), implemented in Java.
@@ -144,3 +147,4 @@ comments on NIL, atoms and lists
 * http://lisp2d.net/teach/i.php - Good discussion of the memory model
 * http://www-formal.stanford.edu/jmc/history/lisp/node3.html - McCarthy's history of LISP
 * https://dept-info.labri.fr/~strandh/Teaching/MTP/Common/David-Lamkins/contents.html - Learning LISP
+* https://en.wikipedia.org/wiki/Greenspun%27s_tenth_rule
