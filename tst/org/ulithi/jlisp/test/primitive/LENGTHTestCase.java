@@ -4,13 +4,13 @@ import org.junit.Test;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.mem.PTree;
-import org.ulithi.jlisp.primitive.LENGTH;
+import org.ulithi.jlisp.primitive.Util.LENGTH;
 
 import static org.junit.Assert.assertEquals;
 import static org.ulithi.jlisp.test.suite.UnitTestUtilities.parse;
 
 /**
- * Unit tests for {@link org.ulithi.jlisp.primitive.LENGTH}.
+ * Unit tests for {@link org.ulithi.jlisp.primitive.Util.LENGTH}.
  */
 public class LENGTHTestCase {
 

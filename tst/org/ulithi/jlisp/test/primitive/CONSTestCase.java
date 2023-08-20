@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.ulithi.jlisp.test.suite.UnitTestUtilities.parse;
 
 /**
- * Unit tests for {@link org.ulithi.jlisp.primitive.CONS}.
+ * Unit tests for {@link org.ulithi.jlisp.primitive.Lang.CONS}.
  */
 public class CONSTestCase {
 

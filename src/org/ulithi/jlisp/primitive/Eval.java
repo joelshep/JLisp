@@ -14,12 +14,12 @@ import java.util.Map;
 /**
  * Implements the LISP {@code eval} function. The {@code eval} function accepts a "form" -- a list
  * whose first element is a symbol that identifies an operator or function -- and evaluates it
- * according the LISP language semantics, returning the result as an s-expression. TODO - I think.
+ * according the LISP language semantics, returning the result as an s-expression.
  * <p>
  * This is currently a very crude albeit functional implementation, that can only handle simple
  * arithmetic expressions. It does, however, correctly implement recursive evaluation.
  */
-public class Eval {
+public class Eval implements FunctionRegistrar {
 
     /**
      * This is probably short-term. For now, it is a map from primitive function names/symbols
@@ -27,28 +27,42 @@ public class Eval {
      */
     private final Map<String, Function> primitives = new HashMap<>();
 
+    /**
+     * Adds the named function to the primitives map, and warms if a function definition
+     * is being overwritten.
+     * @param name The programmatic name to associate with the function.
+     * @param function The function.
+     */
+    private void putFunction(final String name, final Function function) {
+        if (primitives.put(name, function) != null) {
+            System.err.println("WARNING: Function '" + name + "' definition overwritten");
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void registerFunction(final Function function) {
+        putFunction(function.name(), function);
+
+        for (final String synonym: function.synonyms() ) {
+            putFunction(synonym, function);
+        }
+    }
+
+    /**
+     * Constructs a new instance of {@link Eval}, and registers system-defined functions.
+     */
     public Eval() {
-        primitives.put("CAR", new CAR());
-        primitives.put("CDR", new CDR());
-        primitives.put("CONS", new CONS());
-        primitives.put("LENGTH", new LENGTH());
-        primitives.put("MINUS", new Math.MINUS());
-        primitives.put("PLUS", new Math.PLUS());
-        primitives.put("QUOTE", new QUOTE());
-        primitives.put("QUOTIENT", new Math.QUOTIENT());
-        primitives.put("TIMES", new Math.TIMES());
-        primitives.put("-", new Math.MINUS());
-        primitives.put("+", new Math.PLUS());
-        primitives.put("/", new Math.QUOTIENT());
-        primitives.put("*", new Math.TIMES());
+        new Lang().provideFunctions(this);
+        new Math().provideFunctions(this);
+        new Util().provideFunctions(this);
     }
 
     /**
      * Given the root {@link Cell} of a parsed JLISP expression, evaluates the expression and
      * returns the result.
-     * <p>
-     * TODO - The result should, I believe, be an s-expression, but for now we're just dealing
-     * with ints.
      *
      * @param cell The root {@link Cell} of the parsed expression to evaluate.
      * @return The resulting value of the evaluation.

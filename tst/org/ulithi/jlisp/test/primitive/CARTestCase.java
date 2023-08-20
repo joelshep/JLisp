@@ -6,13 +6,16 @@ import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.mem.PTree;
-import org.ulithi.jlisp.primitive.CAR;
+import static org.ulithi.jlisp.primitive.Lang.CAR;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.ulithi.jlisp.test.suite.UnitTestUtilities.parse;
 
+/**
+ * Unit tests for {@link org.ulithi.jlisp.primitive.Lang.CAR}.
+ */
 public class CARTestCase {
 
     @Test

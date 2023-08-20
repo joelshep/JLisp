@@ -3,9 +3,32 @@ package org.ulithi.jlisp.primitive;
 import org.ulithi.jlisp.core.SExpression;
 
 /**
- * A {@link Function} is the core unit of execution in LISP.
+ * A {@link Function} is the core unit of execution in LISP. A function has a programmatic name,
+ * may have alternate programmatic names ("synonyms"), and an implementation which is evaluated
+ * by invoking the {@code apply} method. Functions that evaluate their own arguments are
+ * "special" functions: most functions are not special and their arguments are recursively
+ * evaluated before the function itself is invoked.
  */
 public interface Function {
+
+    /** Single instance of an empty {@code String} array. */
+    String[] EMPTY_SYNONYMS = new String[]{ };
+
+    /**
+     * Returns the programmatic name for this {@link Function}.
+     * @return The programmatic name for this {@code Function}.
+     */
+    String name();
+
+    /**
+     * Returns synonyms for this {@link Function}: alternate programmatic names. Most
+     * functions do not have synonyms.
+     *
+     * @return An array of alternate programmatic names for this {@code Function}, or an
+     *         empty array if there are none.
+     */
+    default String[] synonyms() { return EMPTY_SYNONYMS; }
+
     /**
      * Applies this {@link Function} the given {@link SExpression} and returns the result as
      * a new {@link SExpression}. The elements of the given {@code sexp} is assumed to have been
@@ -17,7 +40,7 @@ public interface Function {
      * @param sexp An {@link SExpression} representing the arguments to this {@link Function}.
      * @return The result of applying this {@code Function} to the given {@code SExpression}.
      */
-    SExpression apply (SExpression sexp);
+    SExpression apply(SExpression sexp);
 
     /**
      * Indicates if this {@link Function} is a LISP "special" function, meaning that its arguments
