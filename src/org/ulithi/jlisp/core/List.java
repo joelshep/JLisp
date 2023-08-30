@@ -56,29 +56,6 @@ public class List extends SExpression {
     }
 
     /**
-     * Extends this {@link List} with the given {@link Ref reference}. If this is an empty list,
-     * the given {@code ref} becomes the first element in this list. If this is not an empty
-     * list, the {@code ref} is appended to the last cell in this {@code list}.
-     *
-     * @param ref The {@code Ref} to append to this {@code List}.
-     * @return This {@code List} with the given {@code ref} appended
-     */
-    public List add(final Ref ref) {
-        assert ref != null : "ref is null";
-
-        if (root.isNil()) {
-            root.setFirst(ref);
-            root.setRest(NIL);
-            end = root;
-        } else {
-            end.setRest(ref);
-            end = (Cell)end.getRest();
-        }
-
-        return this;
-    }
-
-    /**
      * Extends this {@link List} with the given {@link Atom}. If this is an empty list, the
      * {@code Atom} becomes the first element in this list. If this is not an empty list, the
      * {@code Atom} is appended via a cell to this {@code list}.

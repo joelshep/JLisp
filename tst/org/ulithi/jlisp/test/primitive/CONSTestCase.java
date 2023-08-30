@@ -31,7 +31,7 @@ public class CONSTestCase {
         final PTree pTree = parse(expression);
 
         try {
-            final SExpression sexp = (new Eval()).apply(pTree.root());
+            (new Eval()).apply(pTree.root());
             fail("Expected WrongArgumentCountException");
         } catch (final WrongArgumentCountException e) {
             // Expected.
