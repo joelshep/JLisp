@@ -37,6 +37,7 @@ public class List extends SExpression {
         return new List(root);
     }
 
+
     /**
      * Private constructor: constructs a new List with the given Cell as its root node.
      * @param root The root node of the new List.
@@ -47,13 +48,22 @@ public class List extends SExpression {
     }
 
     /**
+     * Returns the {@link Cell} that is the root node of this {@link List}.
+     * @return The root node of this list.
+     */
+    public Cell getRoot() {
+        return root;
+    }
+
+    /**
      * Extends this {@link List} with the given {@link Ref reference}. If this is an empty list,
      * the given {@code ref} becomes the first element in this list. If this is not an empty
      * list, the {@code ref} is appended to the last cell in this {@code list}.
      *
      * @param ref The {@code Ref} to append to this {@code List}.
+     * @return This {@code List} with the given {@code ref} appended
      */
-    public void add(final Ref ref) {
+    public List add(final Ref ref) {
         assert ref != null : "ref is null";
 
         if (root.isNil()) {
@@ -64,6 +74,8 @@ public class List extends SExpression {
             end.setRest(ref);
             end = (Cell)end.getRest();
         }
+
+        return this;
     }
 
     /**
@@ -72,8 +84,9 @@ public class List extends SExpression {
      * {@code Atom} is appended via a cell to this {@code list}.
      *
      * @param atom The {@code Atom} to append to this {@code List}.
+     * @return This {@code List} with the given {@code Atom} appended.
      */
-    public void add(final Atom atom) {
+    public List add(final Atom atom) {
         assert atom != null : "atom is null";
 
         if (root.isNil()) {
@@ -84,25 +97,55 @@ public class List extends SExpression {
             end.setRest(Cell.create(atom));
             end = (Cell)end.getRest();
         }
+
+        return this;
     }
 
     /**
-     * Extends this {@link List} with the given {@code List}. If this is an empty list, the
-     * {@code list} becomes the first element in this list (i.e. a sublist of this list).
-     * If this is not an empty list, the {@code List} is appended via a cell to this {@code list},
-     * effectively extending this list.
+     * Extends this {@link List} by adding a new cell (dotted pair) with the given {@code List} as
+     * the first element. E.g. adding (2 . (3 . NIL)) to (1 . NIL) yields (1 . ((2 . (3 . NIL)) . NIL)).
+     * If this is an empty list, the {@code list} becomes the first element in this list (i.e. a
+     * sublist of this list). If this is not an empty list, the {@code List} is appended via a cell
+     * to this {@code list}, effectively extending this list.
      *
-     * @param list The {@code List} to append to this {@code List}.
+     * @param list The {@code List} to add to this {@code List}.
+     * @return This {@code List} with the given {@code list} added.
      */
-    public void add(final List list) {
+    public List add(final List list) {
+        if (this.isEmpty()) {
+            root.setFirst(list.getRoot());
+            root.setRest(NIL);
+            end = root;
+        } else {
+            end.setRest(Cell.createAsList(list.getRoot()));
+            end = (Cell)end.getRest();
+        }
+
+        return this;
+    }
+
+    /**
+     * Extends this {@link List} by appending the cells represent the {@code list} to this {@code List}.
+     * For example, appending (2 . (3 . NIL)) to (1 . NIL) yields (1 . (2 . (3 . NIL))). If this is
+     * an empty list, the {@code list} becomes the first element in this list (i.e. a sublist of this
+     * list). If this is not an empty list, the {@code List} is appended via its root cell to this
+     * {@code list}.
+     *
+     * @param list The {@code List} to add to this {@code List}.
+     * @return This {@code List} with the given {@code list} appended.
+     */
+
+    public List append(final List list) {
         if (this.isEmpty()) {
             root.setFirst(list.getRoot());
             root.setRest(NIL);
             end = root;
         } else {
             end.setRest(list.getRoot());
-            end = (Cell)end.getRest();
+            end = list.end;
         }
+
+        return this;
     }
 
     /**
@@ -112,14 +155,6 @@ public class List extends SExpression {
     public boolean isEmpty() {
         final Ref first = this.root.getFirst();
         return (first == NIL);
-    }
-
-    /**
-     * Returns the {@link Cell} that is the root node of this {@link List}.
-     * @return The root node of this list.
-     */
-    public Cell getRoot() {
-        return root;
     }
 
     /**
@@ -163,7 +198,7 @@ public class List extends SExpression {
      * @return An {@link Atom} representing the number of atoms or lists that are direct members
      *         of this list.
      */
-    public SExpression length() {
+    public Atom length() {
         int count = 0;
         Ref curr = root;
 
@@ -172,7 +207,7 @@ public class List extends SExpression {
             curr = ((Cell)curr).getRest();
         }
 
-        return SExpression.create(Cell.createStorage(count));
+        return Atom.create(count);
     }
 
     /**
