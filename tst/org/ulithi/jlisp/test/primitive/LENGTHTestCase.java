@@ -46,4 +46,11 @@ public class LENGTHTestCase {
         assertEquals(4, atom.toI());
     }
 
+    @Test
+    public void testLengthOfAtomAndEmptyList() {
+        final String expression = "(Z ())";
+        final PTree pTree = parse(expression);
+        final Atom atom = (new LENGTH().apply(SExpression.create(pTree.root()))).toAtom();
+        assertEquals(2, atom.toI());
+    }
 }
