@@ -3,6 +3,7 @@ package org.ulithi.jlisp.primitive;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
+import org.ulithi.jlisp.exception.WrongArgumentCountException;
 
 import java.util.Arrays;
 
@@ -55,20 +56,26 @@ public class Lang implements FunctionProvider {
     }
 
     /**
-     * Implements the LISP {@code CONS} function. The {@code CAR} function accepts a list and returns
-     * the first element in the list. If the list is a single element list, {@code CDR} returns
-     * {@code NIL}.
+     * Implements the LISP {@code CONS} function. The {@code CONS} function accepts two arguments
+     * and returns a {@link List} such that the {@code CAR} of the list is the first argument and the
+     * {@code CDR} of the list is the second element.
      */
     public static class CONS extends AbstractFunction {
         public CONS() { super("CONS"); }
 
         @Override
         public SExpression apply(final SExpression sexp) {
-            if (!sexp.isList()) {
-                throw new EvaluationException("List argument expected");
-            }
+            if (!sexp.isList()) { throw new EvaluationException("List argument expected"); }
 
             List args = sexp.toList();
+
+            if (args.length().toAtom().toI() != 2) {
+                throw new WrongArgumentCountException("Expected 2 arguments: received " + args.length());
+            }
+
+            final SExpression first = args.car();
+            final SExpression rest = args.cdr();
+
             final List cons = List.create();
 
             do {
@@ -78,7 +85,7 @@ public class Lang implements FunctionProvider {
                 } else if (arg.isList()) {
                     final List list = arg.toList();
                     if (!list.isEmpty()) {
-                        cons.add(list);
+                        cons.append(list);
                     }
                 }
 

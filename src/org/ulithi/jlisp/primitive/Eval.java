@@ -123,7 +123,7 @@ public class Eval implements FunctionRegistrar {
         // Deal with the empty list first, maybe returning ... an empty list?!
         if (ref.isNil()) { return List.create(); }
         if (ref.isAtom()) { return Atom.create(ref); }
-        if (ref.isCell()) { return List.create(cell); }
+        if (ref.isCell()) { return List.create(cell.getFirst()); }
         throw new JLispRuntimeException("Don't know how to fetch CAR of ref: " + ref);
     }
 }
