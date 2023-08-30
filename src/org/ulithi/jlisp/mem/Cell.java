@@ -19,7 +19,7 @@ import static org.ulithi.jlisp.mem.NilReference.NIL;
  * <p>
  * Cells can also be used as "pure storage": as just a holder for a value. In a storage-only cell,
  * the {@code first} reference is the value; the {@code rest} reference is undefined (but typically
- * {@code NIL}.
+ * {@code NIL}).
  * <p>
  * The type of value held in a cell's {@code first} element can be determined by the {@code isAtom()},
  * {@code isList()} and {@code isNil()} methods.
@@ -227,7 +227,7 @@ public class Cell implements Ref {
      * @return This cell's {@code first} value as an {@link Atom}.
      */
     public Atom toAtom() {
-        return (Atom)Atom.create(first);
+        return Atom.create(first);
     }
 
     /**
