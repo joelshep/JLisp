@@ -1,42 +1,65 @@
 package org.ulithi.jlisp.test.primitive;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.ulithi.jlisp.lexer.Lexer;
-import org.ulithi.jlisp.mem.PTree;
-import org.ulithi.jlisp.parser.Parser;
-import org.ulithi.jlisp.primitive.Eval;
-
-import java.util.Arrays;
-import java.util.List;
+import org.ulithi.jlisp.core.SExpression;
+import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link org.ulithi.jlisp.primitive.Math}.
  */
 public class MathTestCase {
-    /** A parser, re-initialized with each test. */
-    private Parser parser;
 
-    /** An eval function, initialized once (shouldn't carry state over between invocations). */
-    private final Eval eval = new Eval();
-
-    /**
-     * Creates a new {@link Parser} instance before each test.
-     */
-    @Before
-    public void setUp() {
-        this.parser = new Parser();
+    @Test
+    public void testIsLessThan() {
+        final String expression = "(< 5 8)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        boolean foo = sexp.toAtom().toB();
+        assertTrue(expression, foo);
     }
 
-    /**
-     * De-allocates the {@link Parser} instance after each test.
-     */
-    @After
-    public void tearDown() {
-        this.parser = null;
+    @Test
+    public void testNotLessThan() {
+        final String expression = "(< 8 5)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        boolean foo = sexp.toAtom().toB();
+        assertFalse(expression, foo);
+    }
+
+    @Test
+    public void testEqualNotLessThan() {
+        final String expression = "(LESS 8 8)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        boolean foo = sexp.toAtom().toB();
+        assertFalse(expression, foo);
+    }
+
+
+    @Test
+    public void testIsGreaterThan() {
+        final String expression = "(GREATER 34 24)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        boolean foo = sexp.toAtom().toB();
+        assertTrue(expression, foo);
+    }
+
+    @Test
+    public void testNotGreaterThan() {
+        final String expression = "(> 63 102)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        boolean foo = sexp.toAtom().toB();
+        assertFalse(expression, foo);
+    }
+
+    @Test
+    public void testEqualNotGreaterThan() {
+        final String expression = "(GREATER 63 63)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        boolean foo = sexp.toAtom().toB();
+        assertFalse(expression, foo);
     }
 
     /**
@@ -44,12 +67,10 @@ public class MathTestCase {
      */
     @Test
     public void testAddTwoNumbers() {
-        final List<String> tokens = Arrays.asList("(", "+", "2", "3", ")");
-        PTree ptree = parser.parse(tokens);
-        System.out.println(ptree);
-        int foo = eval.apply(ptree.root()).toAtom().toI();
-        System.out.println("Eval returned " + foo);
-        assertEquals("(+ 2 3)", 5, foo);
+        final String expression = "(+ 2 3)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        int foo = sexp.toAtom().toI();
+        assertEquals(expression, 5, foo);
     }
 
     /**
@@ -57,12 +78,10 @@ public class MathTestCase {
      */
     @Test
     public void testAddFourNumbers() {
-        final List<String> tokens = Arrays.asList("(", "+", "2", "3", "4", "5", ")");
-        PTree ptree = parser.parse(tokens);
-        System.out.println(ptree);
-        int foo = eval.apply(ptree.root()).toAtom().toI();
-        System.out.println("Eval returned " + foo);
-        assertEquals("(+ 2 3 4 5)", 14, foo);
+        final String expression = "(+ 2 3 4 5)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        int foo = sexp.toAtom().toI();
+        assertEquals(expression, 14, foo);
     }
 
     /**
@@ -70,12 +89,10 @@ public class MathTestCase {
      */
     @Test
     public void testMultiplyThenAdd() {
-        final List<String> tokens = Arrays.asList("(", "+", "2", "(", "*", "2", "3", ")", ")");
-        PTree ptree = parser.parse(tokens);
-        System.out.println(ptree);
-        int foo = eval.apply(ptree.root()).toAtom().toI();
-        assertEquals("(+ 2 (* 2 3))", 8, foo);
-        System.out.println("Eval returned " + foo);
+        final String expression = "(+ 2 (* 2 3))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        int foo = sexp.toAtom().toI();
+        assertEquals(expression, 8, foo);
     }
 
     /**
@@ -84,12 +101,10 @@ public class MathTestCase {
      */
     @Test
     public void testMultiplyTwiceThenAdd() {
-        final List<String> tokens = Arrays.asList("(", "+", "(", "*", "4", "5", ")", "(", "*", "2", "3", ")", ")");
-        PTree ptree = parser.parse(tokens);
-        System.out.println(ptree);
-        int foo = eval.apply(ptree.root()).toAtom().toI();
-        assertEquals("(+ (* 4 5) (* 2 3))", 26, foo);
-        System.out.println("Eval returned " + foo);
+        final String expression = "(+ (* 4 5) (* 2 3))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        int foo = sexp.toAtom().toI();
+        assertEquals(expression, 26, foo);
     }
 
     /**
@@ -98,80 +113,57 @@ public class MathTestCase {
      */
     @Test
     public void testAddMultipleThenAdd() {
-        final String expr = "(+ (* 4 (+ 2 3)) (* 2 3))";
-        final List<String> tokens = (new Lexer(expr)).getTokens();
-        PTree ptree = parser.parse(tokens);
-        System.out.println(ptree);
-        int foo = eval.apply(ptree.root()).toAtom().toI();
-        assertEquals(expr, 26, foo);
-        System.out.println("Eval returned " + foo);
+        final String expression = "(+ (* 4 (+ 2 3)) (* 2 3))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        int foo = sexp.toAtom().toI();
+        assertEquals(expression, 26, foo);
     }
 
     @Test
     public void testSubtractTwoNumbers() {
-        final String expr = "(MINUS 11 5)";
-        final List<String> tokens = (new Lexer(expr)).getTokens();
-        PTree ptree = parser.parse(tokens);
-        System.out.println(ptree);
-        int foo = eval.apply(ptree.root()).toAtom().toI();
-        assertEquals(expr, 6, foo);
-        System.out.println("Eval returned " + foo);
+        final String expression = "(MINUS 11 5)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        int foo = sexp.toAtom().toI();
+        assertEquals(expression, 6, foo);
     }
 
     @Test
     public void testSubtractFromZero() {
-        final String expr = "(MINUS 0 12)";
-        final List<String> tokens = (new Lexer(expr)).getTokens();
-        PTree ptree = parser.parse(tokens);
-        System.out.println(ptree);
-        int foo = eval.apply(ptree.root()).toAtom().toI();
-        assertEquals(expr, -12, foo);
-        System.out.println("Eval returned " + foo);
+        final String expression = "(MINUS 0 12)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        int foo = sexp.toAtom().toI();
+        assertEquals(expression, -12, foo);
     }
 
     @Test
     public void testSubtractThreeNumbers() {
-        final String expr = "(MINUS 72 12 7)";
-        final List<String> tokens = (new Lexer(expr)).getTokens();
-        PTree ptree = parser.parse(tokens);
-        System.out.println(ptree);
-        int foo = eval.apply(ptree.root()).toAtom().toI();
-        assertEquals(expr, 53, foo);
-        System.out.println("Eval returned " + foo);
+        final String expression = "(MINUS 72 12 7)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        int foo = sexp.toAtom().toI();
+        assertEquals(expression, 53, foo);
     }
 
     @Test
     public void testSubtractSingleNumberNegates() {
-        final String expr = "(MINUS 40)";
-        final List<String> tokens = (new Lexer(expr)).getTokens();
-        PTree ptree = parser.parse(tokens);
-        System.out.println(ptree);
-        int foo = eval.apply(ptree.root()).toAtom().toI();
-        assertEquals(expr, -40, foo);
-        System.out.println("Eval returned " + foo);
+        final String expression = "(MINUS 47)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        int foo = sexp.toAtom().toI();
+        assertEquals(expression, -47, foo);
     }
 
     @Test
     public void testDivideTwoNumbers() {
-        final String expr = "(QUOTIENT 72 8)";
-        final List<String> tokens = (new Lexer(expr)).getTokens();
-        PTree ptree = parser.parse(tokens);
-        System.out.println(ptree);
-        int foo = eval.apply(ptree.root()).toAtom().toI();
-        assertEquals(expr, 9, foo);
-        System.out.println("Eval returned " + foo);
+        final String expression = "(QUOTIENT 72 8)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        int foo = sexp.toAtom().toI();
+        assertEquals(expression, 9, foo);
     }
 
     @Test
     public void testDivideFourNumbers() {
-        final String expr = "(QUOTIENT 200 4 5 5)";
-        final List<String> tokens = (new Lexer(expr)).getTokens();
-        PTree ptree = parser.parse(tokens);
-        System.out.println(ptree);
-        int foo = eval.apply(ptree.root()).toAtom().toI();
-        assertEquals(expr, 2, foo);
-        System.out.println("Eval returned " + foo);
+        final String expression = "(QUOTIENT 200 4 5 5)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        int foo = sexp.toAtom().toI();
+        assertEquals(expression, 2, foo);
     }
-
-
 }

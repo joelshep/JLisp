@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.test.suite;
 
+import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.lexer.Lexer;
 import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.parser.Parser;
@@ -11,14 +12,14 @@ import org.ulithi.jlisp.primitive.Eval;
 public class UnitTestUtilities {
     /**
      * Scans, parses, evaluates the given LISP {@code expression} and returns the result as a
-     * {@code String}.
+     * {@code SExpression}.
      * @param expression The LISP expression to evaluate.
-     * @return The result of the evaluation, as a {@code String}.
+     * @return The result of the evaluation, as an {@link SExpression}.
      */
-    public static String evaluate(final String expression) {
+    public static SExpression evaluate(final String expression) {
         final PTree ptree = parse(expression);
         final Eval eval = new Eval();
-        return String.valueOf(eval.apply(ptree.root()));
+        return eval.apply(ptree.root());
     }
 
     /**
