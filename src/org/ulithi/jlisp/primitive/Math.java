@@ -13,9 +13,7 @@ import java.util.Arrays;
  */
 public class Math implements FunctionProvider {
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public java.util.List<Function> getFunctions() {
         return Arrays.asList(new GREATER(),

@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.primitive;
 
+import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
@@ -72,9 +73,6 @@ public class Lang implements FunctionProvider {
             if (args.length().toAtom().toI() != 2) {
                 throw new WrongArgumentCountException("Expected 2 arguments: received " + args.length());
             }
-
-            final SExpression first = args.car();
-            final SExpression rest = args.cdr();
 
             final List cons = List.create();
 

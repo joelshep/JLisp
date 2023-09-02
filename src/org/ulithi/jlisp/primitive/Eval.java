@@ -56,6 +56,7 @@ public class Eval implements FunctionRegistrar {
      */
     public Eval() {
         new Lang().provideFunctions(this);
+        new Logic().provideFunctions(this);
         new Math().provideFunctions(this);
         new Util().provideFunctions(this);
     }
