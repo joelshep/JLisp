@@ -13,14 +13,11 @@ import org.ulithi.jlisp.test.mem.CellTestCase;
 import org.ulithi.jlisp.test.parser.GrammarTestCase;
 import org.ulithi.jlisp.test.parser.ParserTestCase;
 import org.ulithi.jlisp.test.parser.PrimitivesTestCase;
-import org.ulithi.jlisp.test.primitive.CARTestCase;
-import org.ulithi.jlisp.test.primitive.CDRTestCase;
-import org.ulithi.jlisp.test.primitive.CONSTestCase;
 import org.ulithi.jlisp.test.primitive.EvalTestCase;
 import org.ulithi.jlisp.test.primitive.LENGTHTestCase;
+import org.ulithi.jlisp.test.primitive.LangTestCase;
 import org.ulithi.jlisp.test.primitive.LogicTestCase;
 import org.ulithi.jlisp.test.primitive.MathTestCase;
-import org.ulithi.jlisp.test.primitive.QUOTETestCase;
 import org.ulithi.jlisp.test.smoke.SmokeTestCase;
 import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
 
@@ -30,12 +27,10 @@ import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         AtomTestCase.class,
-        CARTestCase.class,
-        CDRTestCase.class,
         CellTestCase.class,
-        CONSTestCase.class,
         EvalTestCase.class,
         GrammarTestCase.class,
+        LangTestCase.class,
         LENGTHTestCase.class,
         LexerTestCase.class,
         ListTestCase.class,
@@ -43,7 +38,6 @@ import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
         MathTestCase.class,
         ParserTestCase.class,
         PrimitivesTestCase.class,
-        QUOTETestCase.class,
         SExpressionTestCase.class,
         SmokeTestCase.class,
         StringUtilsTestCase.class
