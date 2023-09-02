@@ -138,6 +138,7 @@ ERROR
 
 ## References
 
+* http://www.lispworks.com/documentation/lw71/CLHS/Front/X_Master.htm - Dictionary of LISP functions.
 * https://stackoverflow.com/questions/16606172/is-an-empty-list-in-lisp-built-from-a-cons-cell - Good
 comments on NIL, atoms and lists
 * https://people.csail.mit.edu/jaffer/r5rs/Pairs-and-lists.html - Scheme manual
