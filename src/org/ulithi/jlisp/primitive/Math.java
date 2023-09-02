@@ -28,10 +28,7 @@ public class Math implements FunctionProvider {
      * The {@code LESS} function, a.k.a. {@code <}.
      */
     public static final class LESS extends AbstractFunction {
-        public LESS() { super("LESS"); }
-
-        @Override
-        public String[] synonyms() { return new String[]{ "<" }; }
+        public LESS() { super("<"); }
 
         private static final BinaryArithmeticOperator<Boolean> op =
                 (lhs, rhs) -> lhs < rhs;
@@ -47,10 +44,7 @@ public class Math implements FunctionProvider {
      * The {@code GREATER} function, a.k.a. {@code >}.
      */
     public static final class GREATER extends AbstractFunction {
-        public GREATER() { super("GREATER"); }
-
-        @Override
-        public String[] synonyms() { return new String[]{ ">" }; }
+        public GREATER() { super(">"); }
 
         private static final BinaryArithmeticOperator<Boolean> op =
                 (lhs, rhs) -> lhs > rhs;

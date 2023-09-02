@@ -31,7 +31,7 @@ public class MathTestCase {
 
     @Test
     public void testEqualNotLessThan() {
-        final String expression = "(LESS 8 8)";
+        final String expression = "(< 8 8)";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         boolean foo = sexp.toAtom().toB();
         assertFalse(expression, foo);
@@ -40,7 +40,7 @@ public class MathTestCase {
 
     @Test
     public void testIsGreaterThan() {
-        final String expression = "(GREATER 34 24)";
+        final String expression = "(> 34 24)";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         boolean foo = sexp.toAtom().toB();
         assertTrue(expression, foo);
@@ -56,7 +56,7 @@ public class MathTestCase {
 
     @Test
     public void testEqualNotGreaterThan() {
-        final String expression = "(GREATER 63 63)";
+        final String expression = "(> 63 63)";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         boolean foo = sexp.toAtom().toB();
         assertFalse(expression, foo);
