@@ -4,7 +4,6 @@ import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
-import org.ulithi.jlisp.exception.WrongArgumentCountException;
 
 import java.util.Arrays;
 
@@ -25,7 +24,8 @@ public class Math implements FunctionProvider {
     }
 
     /**
-     * The {@code LESS} function, a.k.a. {@code <}.
+     * The {@code LESS} function, a.k.a. {@code <}. The value of {@code <} is {@code T} (true) if
+     * the numbers are in strictly increasing order; otherwise it is {@code F} (false).
      */
     public static final class LESS extends AbstractFunction {
         public LESS() { super("<"); }
@@ -35,13 +35,25 @@ public class Math implements FunctionProvider {
 
         @Override
         public SExpression apply(final SExpression sexp) {
-            final boolean result = Math.applyBinaryOperator(toDuoList(sexp), op);
+            List it = toList(sexp);
+            int last = Integer.MIN_VALUE;
+            boolean result = true;
+
+            while (it.length().toI() > 0) {
+                final int next = it.car().toAtom().toI();
+                result = op.eval(last, next);
+                if (!result) { break; }
+                last = next;
+                it = it.cdr().toList();
+            }
+
             return Atom.create(result);
         }
     }
 
     /**
-     * The {@code GREATER} function, a.k.a. {@code >}.
+     * The {@code GREATER} function, a.k.a. {@code >}. The value of {@code >} is {@code T} (true)
+     * if the numbers are in strictly decreasing order; otherwise it is {@code F} (false).
      */
     public static final class GREATER extends AbstractFunction {
         public GREATER() { super(">"); }
@@ -51,7 +63,18 @@ public class Math implements FunctionProvider {
 
         @Override
         public SExpression apply(final SExpression sexp) {
-            final boolean result = Math.applyBinaryOperator(toDuoList(sexp), op);
+            List it = toList(sexp);
+            int last = Integer.MAX_VALUE;
+            boolean result = true;
+
+            while (it.length().toI() > 0) {
+                final int next = it.car().toAtom().toI();
+                result = op.eval(last, next);
+                if (!result) { break; }
+                last = next;
+                it = it.cdr().toList();
+            }
+
             return Atom.create(result);
         }
     }
@@ -70,7 +93,7 @@ public class Math implements FunctionProvider {
 
         @Override
         public SExpression apply(final SExpression sexp) {
-            final int result = Math.applyNumericXArgsOperator(toList(sexp), op);
+            final int result = Math.applyNumericVarArgsOperator(toList(sexp), op);
             return Atom.create(result);
         }
     }
@@ -97,7 +120,7 @@ public class Math implements FunctionProvider {
 
             if (args.endp()) { return Atom.create(-first); }
 
-            final int result = Math.applyNumericXArgsOperator(sexp.toList(), op);
+            final int result = Math.applyNumericVarArgsOperator(sexp.toList(), op);
             return Atom.create(result);
         }
     }
@@ -116,7 +139,7 @@ public class Math implements FunctionProvider {
 
         @Override
         public SExpression apply(final SExpression sexp) {
-            final int result = Math.applyNumericXArgsOperator(toList(sexp), op);
+            final int result = Math.applyNumericVarArgsOperator(toList(sexp), op);
             return Atom.create(result);
         }
     }
@@ -135,7 +158,7 @@ public class Math implements FunctionProvider {
 
         @Override
         public SExpression apply(final SExpression sexp) {
-            final int result = Math.applyNumericXArgsOperator(toList(sexp), op);
+            final int result = Math.applyNumericVarArgsOperator(toList(sexp), op);
             return Atom.create(result);
         }
     }
@@ -150,8 +173,8 @@ public class Math implements FunctionProvider {
      * @param op A binary operator to apply to the arguments.
      * @return The result of applying the operator to the arguments.
      */
-    private static int applyNumericXArgsOperator(final List args,
-                                                 final BinaryArithmeticOperator<Integer>  op) {
+    private static int applyNumericVarArgsOperator(final List args,
+                                                   final BinaryArithmeticOperator<Integer>  op) {
         List it = args;
         int result = it.car().toAtom().toI();
 
@@ -161,39 +184,6 @@ public class Math implements FunctionProvider {
         }
 
         return result;
-    }
-
-    /**
-     * Applies the given binary operator to the given arguments and returns the result.
-     *
-     * @param args A list of Atoms (presumably two): the arguments to the operator.
-     * @param op A binary operator to apply to the arguments.
-     * @return The result of applying the operator to the arguments.
-     * @param <T> The (Java) data type of the arguments and operator result.
-     */
-    private static <T> T applyBinaryOperator(final List args,
-                                             final BinaryArithmeticOperator<T> op)
-    {
-        final int lhs = args.car().toAtom().toI();
-        final int rhs = args.cdr().toList().car().toAtom().toI();
-
-        return op.eval(lhs, rhs);
-    }
-
-    /**
-     * Converts the given SExpression to a List and validates that it is of length two (2).
-     *
-     * @param sexp An SExpression.
-     * @return The given SExpression as a List with two members.
-     */
-    private static List toDuoList(final SExpression sexp) {
-        final List args = toList(sexp);
-
-        if (args.length().toAtom().toI() != 2) {
-            throw new WrongArgumentCountException("Expected 2 arguments: received " + args.length());
-        }
-
-        return args;
     }
 
     /**

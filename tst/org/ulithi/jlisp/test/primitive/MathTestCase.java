@@ -14,6 +14,14 @@ import static org.junit.Assert.assertTrue;
 public class MathTestCase {
 
     @Test
+    public void testSingleValueIsLessThan() {
+        final String expression = "(< -1)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        boolean foo = sexp.toAtom().toB();
+        assertTrue(expression, foo);
+    }
+
+    @Test
     public void testIsLessThan() {
         final String expression = "(< 5 8)";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
@@ -37,6 +45,37 @@ public class MathTestCase {
         assertFalse(expression, foo);
     }
 
+    @Test
+    public void testIncreasingOrderIsLessThan() {
+        final String expression = "(< -4 8 23 67 98 104)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        boolean foo = sexp.toAtom().toB();
+        assertTrue(expression, foo);
+    }
+
+    @Test
+    public void testNotIncreasingOrderIsNotLessThan() {
+        final String expression = "(< -4 8 23 67 48 104)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        boolean foo = sexp.toAtom().toB();
+        assertFalse(expression, foo);
+    }
+
+    @Test
+    public void testLastNotIncreasingOrderIsNotLessThan() {
+        final String expression = "(< -4 8 23 67 98 97)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        boolean foo = sexp.toAtom().toB();
+        assertFalse(expression, foo);
+    }
+
+    @Test
+    public void testSingleValueIsGreaterThan() {
+        final String expression = "(> -1000000)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        boolean foo = sexp.toAtom().toB();
+        assertTrue(expression, foo);
+    }
 
     @Test
     public void testIsGreaterThan() {
@@ -57,6 +96,22 @@ public class MathTestCase {
     @Test
     public void testEqualNotGreaterThan() {
         final String expression = "(> 63 63)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        boolean foo = sexp.toAtom().toB();
+        assertFalse(expression, foo);
+    }
+
+    @Test
+    public void testDecreasingOrderIsGreaterThan() {
+        final String expression = "(> 104 98 67 23 8 -4)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        boolean foo = sexp.toAtom().toB();
+        assertTrue(expression, foo);
+    }
+
+    @Test
+    public void testLastNotDecreasingOrderIsNotGreaterThan() {
+        final String expression = "(> 104 98 67 23 8 8)";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         boolean foo = sexp.toAtom().toB();
         assertFalse(expression, foo);
