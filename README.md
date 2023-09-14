@@ -136,6 +136,46 @@ ERROR
 
 )
 
+## The Environment
+
+The _environment_ is a set of _bindings_. A _binding_ associates a _name_ -- e.g., a function
+name, a variable name, a symbol name, etc. -- with the "meaning" associated with the name. For
+a function, the meaning is the implementation, for a variable it is the variable's current
+value, and for a symbol it is the associated enumerated value (e.g. the symbol ```T``` means, or
+evaluates to _true_).
+
+The JLISP environment has three main sections. The "core" section holds bindings created by the core
+(built-in) JLISP language. These bindings are created automatically when the interpreter starts and
+cannot be changed or shadowed (ie, you can't create a new binding with the same name as is used in
+an existing binding in the core language).
+
+The "extension" section allows for additional bindings defined in customer-specified namespaces.
+This includes bindings loaded from function "packages".
+
+"Core" and "extension" bindings are both global in scope.
+
+Finally, the "dynamic" section is where dynamically-scoped bindings are created at run-time.
+Bindings in the "dynamic" section can shadow other bindings in the "dynamic" and "extension"
+sections for as long as the related dynamic scope is active.
+
+Implementation-wise, the environment is a list of maps. The outer-most list contains
+the "core" section, any "extension" sub-environments in the order in which they are registered, and
+then the dynamic sub-environments. Every function invocation results in a new sub-environment being
+appended to the list -- for symbols defined in the dynamic scope of the function -- which is removed
+when the function completes.
+
+Each sub-environment corresponds to a map which is keyed by the symbol's lexeme (character
+representation), and whose values are the currently bound "meanings".
+
+Resolving a name entails traversing the maps from the tail of the list (the most recently added,
+representing the locally bound names for the function currently being evaluated) to the head of
+the list (the "core" section): the first sub-environment with a binding for the name "wins".
+
+At this time, contextual information about bindings is not maintained: e.g., it is not possible to
+distinguish between a function named "foo" and a variable named "foo". Within the same local scope,
+however, a name may only be bound once: attempting to bind a name twice within the same local scope
+results in an error.
+
 ## References
 
 * http://www.lispworks.com/documentation/lw71/CLHS/Front/X_Master.htm - Dictionary of LISP functions.

@@ -9,7 +9,7 @@ import org.ulithi.jlisp.core.SExpression;
  * "special" functions: most functions are not special and their arguments are recursively
  * evaluated before the function itself is invoked.
  */
-public interface Function {
+public interface Function extends Bindable {
 
     /** Single instance of an empty {@code String} array. */
     String[] EMPTY_SYNONYMS = new String[]{ };
