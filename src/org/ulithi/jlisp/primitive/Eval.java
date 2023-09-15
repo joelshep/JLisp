@@ -47,8 +47,6 @@ public class Eval {
         // is and otherwise throw because we don't know what to do.
         final Function func = (Function) env.getBinding(car.toString());
 
-        //if (func == null) { func = (Function) env.get(car.toString()); }
-
         if (func == null) {
             if (car.isAtom() && (car.toAtom()).isLiteral()) { return car; }
             throw new UndefinedSymbolException("Unknown symbol: " + car);
@@ -57,7 +55,7 @@ public class Eval {
         Ref rest = cell.getRest();
 
         if (func.isSpecial()) {
-            return func.apply(SExpression.create(rest));
+            return invokeFunction(func, SExpression.create(rest), env);
         } else {
             // Iterate over 'rest', evaluate each element, accumulate the results in a
             // sexpr/cell/list, and then invoke the function at the end.
@@ -73,7 +71,28 @@ public class Eval {
                 rest = ((Cell) rest).getRest();
             }
 
+            return invokeFunction(func, args, env);
+        }
+    }
+
+    /**
+     * Invokes the given function on the specified arguments, using bindings in the current
+     * environment plus any bindings created by the function itself.
+     *
+     * @param func The function to be evaluated.
+     * @param args The arguments to the function.
+     * @param env The current environment.
+     * @return The result of applying the function to the arguments.
+     */
+    private static SExpression invokeFunction(final Function func,
+                                              final SExpression args,
+                                              final Environment env) {
+        env.startScope();
+
+        try {
             return func.apply(args);
+        } finally {
+            env.endScope();
         }
     }
 
