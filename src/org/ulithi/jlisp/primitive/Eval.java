@@ -1,15 +1,13 @@
 package org.ulithi.jlisp.primitive;
 
 import org.ulithi.jlisp.core.Atom;
+import org.ulithi.jlisp.core.Environment;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.JLispRuntimeException;
 import org.ulithi.jlisp.exception.UndefinedSymbolException;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.Ref;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Implements the LISP {@code eval} function. The {@code eval} function accepts a "form" -- a list
@@ -19,47 +17,10 @@ import java.util.Map;
  * This is currently a very crude albeit functional implementation, that can only handle simple
  * arithmetic expressions. It does, however, correctly implement recursive evaluation.
  */
-public class Eval implements FunctionRegistrar {
+public class Eval {
 
-    /**
-     * This is probably short-term. For now, it is a map from primitive function names/symbols
-     * to their implementation.
-     */
-    private final Map<String, Function> primitives = new HashMap<>();
-
-    /**
-     * Adds the named function to the primitives map, and warms if a function definition
-     * is being overwritten.
-     * @param name The programmatic name to associate with the function.
-     * @param function The function.
-     */
-    private void putFunction(final String name, final Function function) {
-        if (primitives.put(name, function) != null) {
-            System.err.println("WARNING: Function '" + name + "' definition overwritten");
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void registerFunction(final Function function) {
-        putFunction(function.name(), function);
-
-        for (final String synonym: function.synonyms() ) {
-            putFunction(synonym, function);
-        }
-    }
-
-    /**
-     * Constructs a new instance of {@link Eval}, and registers system-defined functions.
-     */
-    public Eval() {
-        new Lang().provideFunctions(this);
-        new Logic().provideFunctions(this);
-        new Math().provideFunctions(this);
-        new Util().provideFunctions(this);
-    }
+    /** Function, variable and other bindings for this eval instance. */
+    private final Environment env = new Environment();
 
     /**
      * Given the root {@link Cell} of a parsed JLISP expression, evaluates the expression and
@@ -84,7 +45,9 @@ public class Eval implements FunctionRegistrar {
         // See if the car referee is a defined function. If so, we'll use it below,
         // but if not then finally check to see if it's a literal: return it if it
         // is and otherwise throw because we don't know what to do.
-        final Function func = primitives.get(car.toString());
+        final Function func = (Function) env.getBinding(car.toString());
+
+        //if (func == null) { func = (Function) env.get(car.toString()); }
 
         if (func == null) {
             if (car.isAtom() && (car.toAtom()).isLiteral()) { return car; }
