@@ -10,11 +10,11 @@ import java.util.Arrays;
 /**
  * A collection of integer math functions.
  */
-public class Math implements FunctionProvider {
+public class Math implements BindingProvider {
 
     /** {@inheritDoc} */
     @Override
-    public java.util.List<Function> getFunctions() {
+    public java.util.List<Bindable> getBindings() {
         return Arrays.asList(new GREATER(),
                              new LESS(),
                              new MINUS(),

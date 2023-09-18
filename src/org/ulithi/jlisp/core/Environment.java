@@ -2,8 +2,7 @@ package org.ulithi.jlisp.core;
 
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.primitive.Bindable;
-import org.ulithi.jlisp.primitive.Function;
-import org.ulithi.jlisp.primitive.FunctionRegistrar;
+import org.ulithi.jlisp.primitive.BindingRegistrar;
 import org.ulithi.jlisp.primitive.Lang;
 import org.ulithi.jlisp.primitive.Logic;
 import org.ulithi.jlisp.primitive.Math;
@@ -20,7 +19,7 @@ import java.util.Map;
  * during the lifetime of the invocation, where new bindings (e.g. variables) can be created. The
  * scope is released when the function returns.
  */
-public final class Environment implements FunctionRegistrar {
+public final class Environment implements BindingRegistrar {
 
     /**
      * The index of the "core" package in the "bindings" list.
@@ -53,10 +52,10 @@ public final class Environment implements FunctionRegistrar {
 	public Environment() {
 		bindings = new ArrayList<>();
 		bindings.add(new HashMap<>());
-		new Lang().provideFunctions(this);
-		new Logic().provideFunctions(this);
-		new Math().provideFunctions(this);
-		new Util().provideFunctions(this);
+		new Lang().provideBindings(this);
+		new Logic().provideBindings(this);
+		new Math().provideBindings(this);
+		new Util().provideBindings(this);
 		packageCount++;
 	}
 
@@ -64,13 +63,13 @@ public final class Environment implements FunctionRegistrar {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void registerFunction(final Function function) {
+	public void register(final Bindable binding) {
 		final Map<String, Bindable> core = bindings.get(CORE_ENV_INDEX);
 
-		addBinding(function.name(), function, core);
+		addBinding(binding.name(), binding, core);
 
-		for (final String synonym: function.synonyms() ) {
-			addBinding(synonym, function, core);
+		for (final String synonym: binding.synonyms() ) {
+			addBinding(synonym, binding, core);
 		}
 	}
 

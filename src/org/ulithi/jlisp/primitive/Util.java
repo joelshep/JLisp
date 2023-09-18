@@ -9,12 +9,12 @@ import java.util.Arrays;
 /**
  * A collection of general utility functions.
  */
-public class Util implements FunctionProvider {
+public class Util implements BindingProvider {
     /**
      * {@inheritDoc}
      */
     @Override
-    public java.util.List<Function> getFunctions() {
+    public java.util.List<Bindable> getBindings() {
         return Arrays.asList(new LENGTH());
     }
 

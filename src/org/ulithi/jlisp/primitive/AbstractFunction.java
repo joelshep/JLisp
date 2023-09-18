@@ -8,8 +8,7 @@ public abstract class AbstractFunction implements Function {
     private final String name;
 
     /**
-     * Constructs a new {@link AbstractFunction} for a function with the specified
-     * programmatic {@code name}.
+     * Constructs a new {@link AbstractFunction} with the specified programmatic {@code name}.
      * @param name The programmatic name of the function: e.g., "CAR", "PLUS", etc.
      */
     public AbstractFunction(final String name) {

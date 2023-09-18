@@ -42,12 +42,18 @@ public class Eval {
         // If the referee is a number, return it.
         if (car.isAtom() && ((Atom)car).isNumber()) { return car; }
 
-        // See if the car referee is a defined function. If so, we'll use it below,
+        final String lexeme = car.toString();
+
+        // See if the car referee is a defined function. If so, we'll use it below.
+        final Function func = resolveIfFunction(lexeme);
+
         // but if not then finally check to see if it's a literal: return it if it
         // is and otherwise throw because we don't know what to do.
-        final Function func = (Function) env.getBinding(car.toString());
-
         if (func == null) {
+            // If the car referee is a bound symbol, return its value.
+            final SExpression val = resolveIfSymbol(lexeme);
+
+            if (val != null) { return val; }
             if (car.isAtom() && (car.toAtom()).isLiteral()) { return car; }
             throw new UndefinedSymbolException("Unknown symbol: " + car);
         }
@@ -74,6 +80,41 @@ public class Eval {
             return invokeFunction(func, args, env);
         }
     }
+
+    /**
+     * Attempts to resolve the binding in the current environment for the given name as a function.
+     *
+     * @param name The programmatic name to resolve.
+     * @return Returns the function bound to the given name or null if a binding doesn't exist or
+     *         is not a function binding.
+     */
+    private Function resolveIfFunction(final String name) {
+        final Bindable binding = env.getBinding(name);
+
+        if ((binding instanceof Function)) {
+            return (Function) binding;
+        }
+
+        return null;
+    }
+
+    /**
+     * Attempts to resolve the binding in the current environment for the given name as a symbol.
+     *
+     * @param name The programmatic name to resolve.
+     * @return Returns the value of bound via a symbol definition to the given name or null if a
+     *         binding doesn't exist or is not a symbol binding.
+     */
+    private SExpression resolveIfSymbol(final String name) {
+        final Bindable binding = env.getBinding(name);
+
+        if ((binding instanceof Symbol)) {
+            return ((Symbol) binding).eval();
+        }
+
+        return null;
+    }
+
 
     /**
      * Invokes the given function on the specified arguments, using bindings in the current

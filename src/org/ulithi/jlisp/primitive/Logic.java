@@ -2,43 +2,34 @@ package org.ulithi.jlisp.primitive;
 
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.SExpression;
-import org.ulithi.jlisp.exception.EvaluationException;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * A collection of Boolean and logical functions.
  */
-public class Logic implements FunctionProvider {
+public class Logic implements BindingProvider {
 
     /** {@inheritDoc} */
     @Override
-    public java.util.List<Function> getFunctions() {
-        return Arrays.asList(new Logic.T(),
-                             new Logic.F());
+    public List<Bindable> getBindings() {
+        return Arrays.asList(new Logic.T(), new Logic.F());
     }
 
-    public static class T extends AbstractFunction {
+    public static class T extends AbstractSymbol {
         public T() { super("T"); }
 
         /** {@inheritDoc} */
-        public SExpression apply(final SExpression sexp) {
-            if (sexp.isList() && sexp.toList().isEmpty()) {
-                return Atom.T;
-            }
-            throw new EvaluationException("No arguments expected");
-        }
+        @Override
+        public SExpression eval() { return Atom.T; }
     }
 
-    public static class F extends AbstractFunction {
+    public static class F extends AbstractSymbol {
         public F() { super("F"); }
 
         /** {@inheritDoc} */
-        public SExpression apply(final SExpression sexp) {
-            if (sexp.isList() && sexp.toList().isEmpty()) {
-                return Atom.F;
-            }
-            throw new EvaluationException("No arguments expected");
-        }
+        @Override
+        public SExpression eval() { return Atom.F; }
     }
 }

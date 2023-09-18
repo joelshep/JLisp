@@ -10,25 +10,6 @@ import org.ulithi.jlisp.core.SExpression;
  * evaluated before the function itself is invoked.
  */
 public interface Function extends Bindable {
-
-    /** Single instance of an empty {@code String} array. */
-    String[] EMPTY_SYNONYMS = new String[]{ };
-
-    /**
-     * Returns the programmatic name for this {@link Function}.
-     * @return The programmatic name for this {@code Function}.
-     */
-    String name();
-
-    /**
-     * Returns synonyms for this {@link Function}: alternate programmatic names. Most
-     * functions do not have synonyms.
-     *
-     * @return An array of alternate programmatic names for this {@code Function}, or an
-     *         empty array if there are none.
-     */
-    default String[] synonyms() { return EMPTY_SYNONYMS; }
-
     /**
      * Applies this {@link Function} the given {@link SExpression} and returns the result as
      * a new {@link SExpression}. The elements of the given {@code sexp} is assumed to have been

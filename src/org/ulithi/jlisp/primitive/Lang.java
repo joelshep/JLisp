@@ -1,6 +1,5 @@
 package org.ulithi.jlisp.primitive;
 
-import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
@@ -11,13 +10,13 @@ import java.util.Arrays;
 /**
  * Contains core LISP language functions.
  */
-public class Lang implements FunctionProvider {
+public class Lang implements BindingProvider {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public java.util.List<Function> getFunctions() {
+    public java.util.List<Bindable> getBindings() {
         return Arrays.asList(new Lang.CAR(),
                              new Lang.CDR(),
                              new Lang.CONS(),
