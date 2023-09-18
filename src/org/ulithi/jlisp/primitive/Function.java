@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.primitive;
 
+import org.ulithi.jlisp.core.Bindable;
 import org.ulithi.jlisp.core.SExpression;
 
 /**

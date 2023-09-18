@@ -1,4 +1,4 @@
-package org.ulithi.jlisp.primitive;
+package org.ulithi.jlisp.core;
 
 /**
  * A {@link BindingRegistrar} is a registry for function, symbol and other bindings provided by a

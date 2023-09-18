@@ -1,4 +1,4 @@
-package org.ulithi.jlisp.primitive;
+package org.ulithi.jlisp.core;
 
 /**
  * A {@link Bindable is something that can be bound in an environment: functions, variables and

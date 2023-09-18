@@ -1,8 +1,6 @@
 package org.ulithi.jlisp.core;
 
 import org.ulithi.jlisp.exception.EvaluationException;
-import org.ulithi.jlisp.primitive.Bindable;
-import org.ulithi.jlisp.primitive.BindingRegistrar;
 import org.ulithi.jlisp.primitive.Lang;
 import org.ulithi.jlisp.primitive.Logic;
 import org.ulithi.jlisp.primitive.Math;

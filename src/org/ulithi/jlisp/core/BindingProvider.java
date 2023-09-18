@@ -1,4 +1,4 @@
-package org.ulithi.jlisp.primitive;
+package org.ulithi.jlisp.core;
 
 import java.util.Collections;
 import java.util.List;

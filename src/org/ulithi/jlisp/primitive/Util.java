@@ -1,5 +1,7 @@
 package org.ulithi.jlisp.primitive;
 
+import org.ulithi.jlisp.core.Bindable;
+import org.ulithi.jlisp.core.BindingProvider;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;

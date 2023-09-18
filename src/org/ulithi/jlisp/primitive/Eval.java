@@ -1,6 +1,7 @@
 package org.ulithi.jlisp.primitive;
 
 import org.ulithi.jlisp.core.Atom;
+import org.ulithi.jlisp.core.Bindable;
 import org.ulithi.jlisp.core.Environment;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
