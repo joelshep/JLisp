@@ -1,13 +1,9 @@
 package org.ulithi.jlisp.test.smoke;
 
 import org.junit.Test;
-import org.ulithi.jlisp.core.SExpression;
-import org.ulithi.jlisp.lexer.Lexer;
-import org.ulithi.jlisp.mem.PTree;
-import org.ulithi.jlisp.parser.Parser;
-import org.ulithi.jlisp.primitive.Eval;
 
 import static org.junit.Assert.assertEquals;
+import static org.ulithi.jlisp.test.suite.UnitTestUtilities.evaluate;
 
 /**
  * Unit test that drives several simple LISP expressions through the interpreter and validates the
@@ -31,16 +27,8 @@ public class SmokeTestCase {
 
     @Test
     public void evaluateCarCdrExpression() {
-        final String expression = "(CDR (CAR ((1 2 3) (4 5 6)) ) )";
+        final String expression = "(CDR (CAR (QUOTE ((1 2 3) (4 5 6)) ) )";
         final String result = evaluate(expression).toString();
-        assertEquals("(2 3)", result);
-    }
-
-    private static SExpression evaluate(final String expression){
-        final Lexer lexer = new Lexer(expression);
-        final Parser p = new Parser();
-        final PTree pTree = p.parse(lexer.getTokens());
-        final Eval eval = new Eval();
-        return eval.apply(pTree.root());
+        assertEquals("(2 . (3 . NIL))", result);
     }
 }
