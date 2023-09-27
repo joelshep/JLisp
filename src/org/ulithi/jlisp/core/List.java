@@ -176,6 +176,10 @@ public class List extends SExpression {
      *         of this list.
      */
     public Atom length() {
+        return Atom.create(lengthAsInt());
+    }
+
+    public int lengthAsInt() {
         int count = 0;
         Ref curr = root;
 
@@ -184,7 +188,7 @@ public class List extends SExpression {
             curr = ((Cell)curr).getRest();
         }
 
-        return Atom.create(count);
+        return count;
     }
 
     /**

@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.primitive;
 
+import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Bindable;
 import org.ulithi.jlisp.core.BindingProvider;
 import org.ulithi.jlisp.core.List;
@@ -19,25 +20,45 @@ public class Lang implements BindingProvider {
      */
     @Override
     public java.util.List<Bindable> getBindings() {
-        return Arrays.asList(new Lang.CAR(),
+        return Arrays.asList(new Lang.ATOM(),
+                             new Lang.CAR(),
                              new Lang.CDR(),
                              new Lang.CONS(),
                              new Lang.QUOTE());
     }
 
     /**
+     * Implements the LISP {@code ATOM} function. The {@code ATOM} function accepts a value and
+     * returns true if the value is an atom, false otherwise.
+      */
+    public static class ATOM extends AbstractFunction {
+        public ATOM() { super("ATOM"); }
+        @Override
+        public SExpression apply(final SExpression sexp) {
+            if (sexp.isAtom()) { return Atom.T; }
+            if (sexp.isList() && sexp.toList().length().toI() == 1 && sexp.toList().car().isAtom()) {
+                return Atom.T;
+            }
+
+            return Atom.F;
+        }
+    }
+
+    /**
      * Implements the LISP {@code CAR} function. The {@code CAR} function accepts a list and returns
-     * the first element in the list. If the list is a single element list, {@code CDR} returns
-     * {@code NIL}.
+     * the first element in the list.
      */
     public static class CAR extends AbstractFunction {
         public CAR() { super("CAR"); }
         @Override
         public SExpression apply(final SExpression sexp) {
-            if (sexp.isList()) {
-                return sexp.toList().car();
+            final List arg = sexp.toList();
+
+            if (arg.lengthAsInt() != 1 || !arg.car().isList()) {
+                throw new EvaluationException("Argument to CAR must be a list");
             }
-            throw new EvaluationException("Argument to CAR must be a list");
+
+            return arg.car().toList().car();
         }
     }
 
@@ -50,10 +71,13 @@ public class Lang implements BindingProvider {
         public CDR() { super("CDR"); }
         @Override
         public SExpression apply(final SExpression sexp) {
-            if (sexp.isList()) {
-                return sexp.toList().cdr();
+            final List arg = sexp.toList();
+
+            if (arg.lengthAsInt() != 1 || !arg.car().isList()) {
+                throw new EvaluationException("Argument to CAR must be a list");
             }
-            throw new EvaluationException("Argument to CDR must be a list");
+
+            return arg.car().toList().cdr();
         }
     }
 
