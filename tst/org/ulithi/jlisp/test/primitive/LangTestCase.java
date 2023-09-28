@@ -1,7 +1,6 @@
 package org.ulithi.jlisp.test.primitive;
 
 import org.junit.Test;
-import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
@@ -18,27 +17,6 @@ import static org.ulithi.jlisp.test.suite.UnitTestUtilities.parse;
  * Unit tests for {@link org.ulithi.jlisp.primitive.Lang}.
  */
 public class LangTestCase {
-
-    @Test
-    public void testNumericLiteralIsAtom() {
-        final String expression = "(ATOM (QUOTE 3))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
-        assertEquals(Atom.T, sexp);
-    }
-
-    @Test
-    public void testListOfNumbersIsNotAtom() {
-        final String expression = "(ATOM (QUOTE (1 2 3)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
-        assertEquals(Atom.F, sexp);
-    }
-
-    @Test
-    public void testStringLiteralIsAtom() {
-        final String expression = "(ATOM (QUOTE HELLO))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
-        assertEquals(Atom.T, sexp);
-    }
 
     @Test
     public void testCAROfLiteral() {

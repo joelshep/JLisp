@@ -4,6 +4,7 @@ import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.primitive.Lang;
 import org.ulithi.jlisp.primitive.Logic;
 import org.ulithi.jlisp.primitive.Math;
+import org.ulithi.jlisp.primitive.Predicate;
 import org.ulithi.jlisp.primitive.Util;
 
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public final class Environment implements BindingRegistrar {
 		new Lang().provideBindings(this);
 		new Logic().provideBindings(this);
 		new Math().provideBindings(this);
+		new Predicate().provideBindings(this);
 		new Util().provideBindings(this);
 		packageCount++;
 	}

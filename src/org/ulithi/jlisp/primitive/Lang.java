@@ -1,6 +1,5 @@
 package org.ulithi.jlisp.primitive;
 
-import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Bindable;
 import org.ulithi.jlisp.core.BindingProvider;
 import org.ulithi.jlisp.core.List;
@@ -20,28 +19,10 @@ public class Lang implements BindingProvider {
      */
     @Override
     public java.util.List<Bindable> getBindings() {
-        return Arrays.asList(new Lang.ATOM(),
-                             new Lang.CAR(),
+        return Arrays.asList(new Lang.CAR(),
                              new Lang.CDR(),
                              new Lang.CONS(),
                              new Lang.QUOTE());
-    }
-
-    /**
-     * Implements the LISP {@code ATOM} function. The {@code ATOM} function accepts a value and
-     * returns true if the value is an atom, false otherwise.
-      */
-    public static class ATOM extends AbstractFunction {
-        public ATOM() { super("ATOM"); }
-        @Override
-        public SExpression apply(final SExpression sexp) {
-            if (sexp.isAtom()) { return Atom.T; }
-            if (sexp.isList() && sexp.toList().length().toI() == 1 && sexp.toList().car().isAtom()) {
-                return Atom.T;
-            }
-
-            return Atom.F;
-        }
     }
 
     /**
