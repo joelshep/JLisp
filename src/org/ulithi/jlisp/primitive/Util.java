@@ -32,7 +32,8 @@ public class Util implements BindingProvider {
          */
         @Override
         public SExpression apply(final SExpression sexp) {
-            if (sexp.isList()) { return ((List)sexp).length(); }
+            final List args = sexp.toList();
+            if (args.car().isList()) { return args.car().toList().length(); }
             throw new EvaluationException("Argument to LENGTH must be a list");
         }
     }
