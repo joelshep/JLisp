@@ -29,8 +29,9 @@ public class Predicate implements BindingProvider {
         public ATOM() { super("ATOM"); }
         @Override
         public SExpression apply(final SExpression sexp) {
-            if (sexp.isAtom()) { return Atom.T; }
-            if (sexp.isList() && sexp.toList().length().toI() == 1 && sexp.toList().car().isAtom()) {
+            final List args = sexp.toList();
+
+            if (args.length().toI() == 1 && args.car().isAtom()) {
                 return Atom.T;
             }
 
@@ -46,14 +47,12 @@ public class Predicate implements BindingProvider {
         public INTEGERP() { super("INTEGERP"); }
         @Override
         public SExpression apply(final SExpression sexp) {
-            if (sexp.isAtom() && sexp.toAtom().isNumber()) { return Atom.T; }
-            if (sexp.isList()) {
-                final List args = sexp.toList();
-                if (args.length().toI() == 1 &&
-                    args.car().isAtom() &&
-                    args.car().toAtom().isNumber()) {
-                    return Atom.T;
-                }
+            final List args = sexp.toList();
+
+            if (args.length().toI() == 1 &&
+                args.car().isAtom() &&
+                args.car().toAtom().isNumber()) {
+                return Atom.T;
             }
 
             return Atom.F;
