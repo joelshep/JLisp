@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.core;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.ulithi.jlisp.exception.TypeConversionException;
 import org.ulithi.jlisp.mem.NilReference;
 import org.ulithi.jlisp.mem.Ref;
@@ -183,5 +184,20 @@ public class Atom extends SExpression implements Ref {
     public final String toString() {
         if (this.type == Type.Boolean) { return ((Boolean)value) ? Grammar.T : Grammar.F; }
         return String.valueOf(value);
+    }
+
+    /**
+     * Indicates if this {@link Atom} is value-equal to the given {@code Atom}. Value-equal means
+     * the two {@code Atoms} are the same {@code type} and have the same value. The {@code eql}
+     * method does not dynamically cast types: e.g. comparing an {@code Atom} representing the
+     * number zero (0) and Atom.F will return {@code false}, even though {@code toB()} treats them
+     * as the same.
+     *
+     * @param rhs The {@code Atom} to compare to.
+     * @return True if this {@code Atom} and the given {@code Atom} are value-equal, false otherwise.
+     */
+    public boolean eql(final Atom rhs) {
+        return (this.type == rhs.type &&
+                ObjectUtils.equals(this.value, rhs.value));
     }
 }

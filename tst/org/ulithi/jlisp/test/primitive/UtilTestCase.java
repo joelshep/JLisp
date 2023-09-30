@@ -1,15 +1,12 @@
 package org.ulithi.jlisp.test.primitive;
 
 import org.junit.Test;
-import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.SExpression;
-import org.ulithi.jlisp.mem.PTree;
-import org.ulithi.jlisp.primitive.Util.LENGTH;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.ulithi.jlisp.test.suite.UnitTestUtilities.parse;
 
 /**
  * Unit tests for {@link org.ulithi.jlisp.primitive.Util}.
@@ -54,5 +51,85 @@ public class UtilTestCase {
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isAtom());
         assertEquals(2, sexp.toAtom().toI());
+    }
+
+    @Test
+    public void testAtomsAreEqual() {
+        final String expression = "(EQUAL (QUOTE FOO) (QUOTE FOO))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertTrue(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testEqualIsNotCaseSensitive() {
+        final String expression = "(EQUAL (QUOTE FOO) (QUOTE Foo))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertFalse(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testDifferentAtomsAreNotEqual() {
+        final String expression = "(EQUAL (QUOTE FOO) (QUOTE BAR))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertFalse(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testListsAreEqual() {
+        final String expression = "(EQUAL (QUOTE (1 2 3)) (QUOTE (1 2 3)))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertTrue(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testEmptyListsAreEqual() {
+        final String expression = "(EQUAL (QUOTE ()) (QUOTE ()))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertTrue(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testListsOfDifferentSizeNotEqual() {
+        final String expression = "(EQUAL (QUOTE (1 2 3)) (QUOTE (1 2)))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertFalse(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testListsOfDifferentSizeNotEqual2() {
+        final String expression = "(EQUAL (QUOTE (2 3)) (QUOTE (1 2 3)))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertFalse(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testNestedListsAreEqual() {
+        final String expression = "(EQUAL (QUOTE (1 2 (4 5) 3)) (QUOTE (1 2 (4 5) 3)))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertTrue(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testMultipleListsAreEqual() {
+        final String expression = "(EQUAL (QUOTE (1 2 3)) (QUOTE (1 2 3)) (QUOTE (1 2 3)) (QUOTE (1 2 3)))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertTrue(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testMultipleUnequalLists() {
+        final String expression = "(EQUAL (QUOTE (1 2 3)) (QUOTE (1 2 3)) (QUOTE (1 2)) (QUOTE (1 2 3)))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertFalse(sexp.toAtom().toB());
     }
 }
