@@ -76,7 +76,7 @@ public class Lang implements BindingProvider {
 
             List args = sexp.toList();
 
-            if (args.length().toAtom().toI() != 2) {
+            if (args.lengthAsInt() != 2) {
                 throw new WrongArgumentCountException("Expected 2 arguments: received " + args.length());
             }
 
