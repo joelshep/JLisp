@@ -19,8 +19,46 @@ public class Util implements BindingProvider {
      */
     @Override
     public java.util.List<Bindable> getBindings() {
-        return Arrays.asList(new Util.EQUAL(),
+        return Arrays.asList(new EQL(),
+                             new Util.EQUAL(),
                              new Util.LENGTH());
+    }
+
+    /**
+     * Implements the LISP {@code EQL} function, which is essentially the same as the Java
+     * {@code equals()} operator: literal elements are equal if they are the same type of value,
+     * other elements are equal if they occupy the same memory, and otherwise they are not
+     * equal.
+     */
+    public static class EQL extends AbstractFunction {
+        public EQL() { super("EQL"); }
+
+        /** {@inheritDoc} */
+        @Override
+        public SExpression apply(final SExpression sexp) {
+            List it = sexp.toList();
+
+            if (it.lengthAsInt() < 2) {
+                throw new WrongArgumentCountException("Expected 2 or more arguments: received " + it.length());
+            }
+
+            boolean result = false;
+            final SExpression lhs = it.car();
+
+            while (!it.endp()) {
+                it = it.cdr().toList();
+                final SExpression rhs = it.car();
+                if (lhs.isAtom() && rhs.isAtom()) {
+                    result = lhs.toAtom().eql(rhs.toAtom());
+                } else {
+                    result = (lhs == it.car());
+                }
+
+                if (!result) { break; }
+            }
+
+            return Atom.create(result);
+        }
     }
 
     /**

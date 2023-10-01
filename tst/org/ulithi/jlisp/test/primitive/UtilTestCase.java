@@ -14,43 +14,46 @@ import static org.junit.Assert.assertTrue;
 public class UtilTestCase {
 
     @Test
-    public void testLengthOfEmptyList() {
-        final String expression = "(LENGTH (QUOTE ()))";
+    public void testAtomsAreEq() {
+        final String expression = "(EQL (QUOTE FOO) (QUOTE FOO))";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isAtom());
-        assertEquals(0, sexp.toAtom().toI());
+        assertTrue(sexp.toAtom().toB());
     }
 
     @Test
-    public void testLengthOfSimpleList() {
-        final String expression = "(LENGTH (QUOTE (1 2 3)))";
+    public void testEqlIsCaseSensitive() {
+        final String expression = "(EQL (QUOTE FOO) (QUOTE Foo))";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isAtom());
-        assertEquals(3, sexp.toAtom().toI());
+        assertFalse(sexp.toAtom().toB());
     }
 
     @Test
-    public void testLengthOfNestedList() {
-        final String expression = "(LENGTH (QUOTE (1 (A B C) 3 (DEF))))";
+    public void testDifferentAtomsAreNotEql() {
+        final String expression = "(EQL (QUOTE FOO) (QUOTE BAR))";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isAtom());
-        assertEquals(4, sexp.toAtom().toI());
+        assertFalse(sexp.toAtom().toB());
     }
 
     @Test
-    public void testLengthOfNestedList2() {
-        final String expression = "(LENGTH (QUOTE ((A B C) 1 (DEF) 3)))";
+    public void testEqualListsAreNotEql() {
+        final String expression = "(EQL (QUOTE (1 2 3)) (QUOTE (1 2 3)))";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isAtom());
-        assertEquals(4, sexp.toAtom().toI());
+        assertFalse(sexp.toAtom().toB());
     }
 
+    /**
+     * TODO - This test probably should pass. Need to figure out how to memoize an empty list.
+     */
     @Test
-    public void testLengthOfAtomAndEmptyList() {
-        final String expression = "(LENGTH (QUOTE (Z ())))";
+    public void testEmptyListsAreEql() {
+        final String expression = "(EQL (QUOTE ()) (QUOTE ()))";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isAtom());
-        assertEquals(2, sexp.toAtom().toI());
+        assertTrue(sexp.toAtom().toB());
     }
 
     @Test
@@ -62,7 +65,7 @@ public class UtilTestCase {
     }
 
     @Test
-    public void testEqualIsNotCaseSensitive() {
+    public void testEqualIsCaseSensitive() {
         final String expression = "(EQUAL (QUOTE FOO) (QUOTE Foo))";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isAtom());
@@ -131,5 +134,46 @@ public class UtilTestCase {
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isAtom());
         assertFalse(sexp.toAtom().toB());
+    }
+
+
+    @Test
+    public void testLengthOfEmptyList() {
+        final String expression = "(LENGTH (QUOTE ()))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertEquals(0, sexp.toAtom().toI());
+    }
+
+    @Test
+    public void testLengthOfSimpleList() {
+        final String expression = "(LENGTH (QUOTE (1 2 3)))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertEquals(3, sexp.toAtom().toI());
+    }
+
+    @Test
+    public void testLengthOfNestedList() {
+        final String expression = "(LENGTH (QUOTE (1 (A B C) 3 (DEF))))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertEquals(4, sexp.toAtom().toI());
+    }
+
+    @Test
+    public void testLengthOfNestedList2() {
+        final String expression = "(LENGTH (QUOTE ((A B C) 1 (DEF) 3)))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertEquals(4, sexp.toAtom().toI());
+    }
+
+    @Test
+    public void testLengthOfAtomAndEmptyList() {
+        final String expression = "(LENGTH (QUOTE (Z ())))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertEquals(2, sexp.toAtom().toI());
     }
 }
