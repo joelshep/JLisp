@@ -2,11 +2,13 @@ package org.ulithi.jlisp.test.primitive;
 
 import org.junit.Test;
 import org.ulithi.jlisp.core.SExpression;
+import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Unit tests for {@link org.ulithi.jlisp.primitive.Math}.
@@ -220,5 +222,41 @@ public class MathTestCase {
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         int foo = sexp.toAtom().toI();
         assertEquals(expression, 2, foo);
+    }
+
+    @Test
+    public void testDivideByZero() {
+        final String expression = "(QUOTIENT 7 0)";
+
+        try {
+            UnitTestUtilities.evaluate(expression);
+            fail("Expected EvaluationException");
+        } catch (final EvaluationException e) {
+            // Expected.
+        }
+    }
+
+    @Test
+    public void testRemainderOfTwoNumbers() {
+        final String expression = "(REMAINDER 77 8)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        int foo = sexp.toAtom().toI();
+        assertEquals(expression, 5, foo);
+    }
+
+    @Test
+    public void testRemainderOfThreeNumbers() {
+        final String expression = "(REMAINDER 77 8 3)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        int foo = sexp.toAtom().toI();
+        assertEquals(expression, 2, foo);
+    }
+
+    @Test
+    public void testRemainderWithLargerDivisor() {
+        final String expression = "(REMAINDER 8 77)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        int foo = sexp.toAtom().toI();
+        assertEquals(expression, 8, foo);
     }
 }

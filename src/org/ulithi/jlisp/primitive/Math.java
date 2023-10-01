@@ -22,6 +22,7 @@ public class Math implements BindingProvider {
                              new MINUS(),
                              new PLUS(),
                              new QUOTIENT(),
+                             new REMAINDER(),
                              new TIMES());
     }
 
@@ -166,6 +167,25 @@ public class Math implements BindingProvider {
     }
 
     /**
+     * The {@code REMAINDER} function, a.k.a. modulo.
+     */
+    public static class REMAINDER extends AbstractFunction {
+        public REMAINDER() { super("REMAINDER"); }
+
+        @Override
+        public String[] synonyms() { return new String[]{ "%" }; }
+
+        private static final BinaryArithmeticOperator<Integer> op =
+                (lhs, rhs) -> lhs % rhs;
+
+        @Override
+        public SExpression apply(final SExpression sexp) {
+            final int result = Math.applyNumericVarArgsOperator(toList(sexp), op);
+            return Atom.create(result);
+        }
+    }
+
+    /**
      * Applies the given binary operator to the given arguments and returns the result. The
      * operator is applied to arguments from the beginning of the list to the end. The first
      * evaluation is simply the value of the first element in the list. Successive evaluations
@@ -178,14 +198,19 @@ public class Math implements BindingProvider {
     private static int applyNumericVarArgsOperator(final List args,
                                                    final BinaryArithmeticOperator<Integer>  op) {
         List it = args;
-        int result = it.car().toAtom().toI();
 
-        while (!it.endp()) {
-            it = it.cdr().toList();
-            result = op.eval(result, it.car().toAtom().toI());
+        try {
+            int result = it.car().toAtom().toI();
+
+            while (!it.endp()) {
+                it = it.cdr().toList();
+                result = op.eval(result, it.car().toAtom().toI());
+            }
+
+            return result;
+        } catch (final ArithmeticException e) {
+            throw new EvaluationException("Arithmetic exception: " + e.getMessage());
         }
-
-        return result;
     }
 
     /**
