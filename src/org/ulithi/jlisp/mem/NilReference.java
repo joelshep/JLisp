@@ -12,16 +12,16 @@ public final class NilReference implements Ref {
     public static final Ref NIL = new NilReference();
 
     @Override
-    public final boolean isAtom() { return false; }
+    public boolean isAtom() { return false; }
 
     @Override
-    public final boolean isCell() { return false; }
+    public boolean isCell() { return false; }
 
     @Override
-    public final boolean isList() { return true; }
+    public boolean isList() { return true; }
 
     @Override
-    public final boolean isNil() { return true; }
+    public boolean isNil() { return true; }
 
     @Override
     public String toString() { return "NIL"; }
