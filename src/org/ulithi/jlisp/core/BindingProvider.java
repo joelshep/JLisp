@@ -10,12 +10,12 @@ import java.util.List;
  */
 public interface BindingProvider {
     /**
-     * Returns the list of {@link Bindable bindings} provided by this {@link BindingProvider}. The
+     * Returns the list of {@link Binding bindings} provided by this {@link BindingProvider}. The
      * default implementation simply returns an empty list.
      *
-     * @return The list of {@code Bindable bindings} provided by this {@code BindingProvider}.
+     * @return The list of bindings provided by this {@code BindingProvider}.
      */
-    default List<Bindable> getBindings() { return Collections.emptyList(); }
+    default List<Binding> getBindings() { return Collections.emptyList(); }
 
     /**
      * Requests that the {@link BindingProvider} provide bindings to the given
@@ -26,7 +26,7 @@ public interface BindingProvider {
      * @param registrar The {@code BindingRegistrar} that is requesting bindings from this provider.
      */
     default void provideBindings(final BindingRegistrar registrar) {
-        for (final Bindable binding: getBindings()) {
+        for (final Binding binding: getBindings()) {
             registrar.register(binding);
         }
     }

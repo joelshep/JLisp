@@ -14,9 +14,10 @@ import java.util.Map;
 
 /**
  * The JLISP {@link Environment}. The {@code Environment} is initialized with a core package of
- * built-in LISP functions and symbols. A function invocation creates a "scope" that is effective
- * during the lifetime of the invocation, where new bindings (e.g. variables) can be created. The
- * scope is released when the function returns.
+ * built-in LISP functions and symbols, and an empty package for user-defined functions and symbols
+ * with global scope. A function invocation creates a "scope" that is effective during the lifetime
+ * of the invocation, where new bindings (e.g. variables) can be created. The scope is released when
+ * the function returns.
  */
 public final class Environment implements BindingRegistrar {
 
@@ -24,6 +25,11 @@ public final class Environment implements BindingRegistrar {
      * The index of the "core" package in the "bindings" list.
      */
     private static final int CORE_ENV_INDEX = 0;
+
+	/**
+	 * The index of the (initially empty) "user" package in the "bindings" list.
+	 */
+	private static final int GLOBAL_ENV_INDEX = 1;
 
     /**
      * The number of packages (whose symbols can't be redefined) currently loaded in this
@@ -56,21 +62,34 @@ public final class Environment implements BindingRegistrar {
 		new Math().provideBindings(this);
 		new Predicate().provideBindings(this);
 		new Util().provideBindings(this);
-		packageCount++;
+
+		// Add the "user" package.
+		bindings.add(new HashMap<>());
+
+		packageCount = bindings.size();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void register(final Bindable binding) {
+	public void register(final Binding binding) {
 		final Map<String, Bindable> core = bindings.get(CORE_ENV_INDEX);
 
-		addBinding(binding.name(), binding, core);
+		addBinding(binding.name(), binding.bindable(), core);
 
 		for (final String synonym: binding.synonyms() ) {
-			addBinding(synonym, binding, core);
+			addBinding(synonym, binding.bindable(), core);
 		}
+	}
+
+	public void addGlobalBinding(final Binding binding) {
+		final String name = binding.name();
+		if (isDefined(name, GLOBAL_ENV_INDEX)) {
+			throw new EvaluationException("Binding '" + name + "' already defined");
+		}
+
+		bindings.get(GLOBAL_ENV_INDEX).put(name.toLowerCase(), binding.bindable());
 	}
 
 	/**

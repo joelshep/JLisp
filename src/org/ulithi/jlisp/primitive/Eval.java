@@ -48,7 +48,7 @@ public class Eval {
         // See if the car referee is a defined function. If so, we'll use it below.
         final Function func = resolveIfFunction(lexeme);
 
-        // but if not then finally check to see if it's a literal: return it if it
+        // But if not then finally check to see if it's a literal: return it if it
         // is and otherwise throw because we don't know what to do.
         if (func == null) {
             // If the car referee is a bound symbol, return its value.
@@ -126,9 +126,9 @@ public class Eval {
      * @param env The current environment.
      * @return The result of applying the function to the arguments.
      */
-    private static SExpression invokeFunction(final Function func,
-                                              final SExpression args,
-                                              final Environment env) {
+    private SExpression invokeFunction(final Function func,
+                                       final SExpression args,
+                                       final Environment env) {
         env.startScope();
 
         try {

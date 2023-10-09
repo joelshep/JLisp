@@ -1,7 +1,7 @@
 package org.ulithi.jlisp.primitive;
 
 import org.ulithi.jlisp.core.Atom;
-import org.ulithi.jlisp.core.Bindable;
+import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
@@ -16,14 +16,14 @@ public class Math implements BindingProvider {
 
     /** {@inheritDoc} */
     @Override
-    public java.util.List<Bindable> getBindings() {
-        return Arrays.asList(new GREATER(),
-                             new LESS(),
-                             new MINUS(),
-                             new PLUS(),
-                             new QUOTIENT(),
-                             new REMAINDER(),
-                             new TIMES());
+    public java.util.List<Binding> getBindings() {
+        return Arrays.asList(new Binding(new GREATER()),
+                             new Binding(new LESS()),
+                             new Binding(new MINUS()),
+                             new Binding(new PLUS()),
+                             new Binding(new QUOTIENT()),
+                             new Binding(new REMAINDER()),
+                             new Binding(new TIMES()));
     }
 
     /**

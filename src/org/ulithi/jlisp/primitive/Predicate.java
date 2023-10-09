@@ -1,7 +1,7 @@
 package org.ulithi.jlisp.primitive;
 
 import org.ulithi.jlisp.core.Atom;
-import org.ulithi.jlisp.core.Bindable;
+import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
@@ -16,9 +16,9 @@ public class Predicate implements BindingProvider {
      * {@inheritDoc}
      */
     @Override
-    public java.util.List<Bindable> getBindings() {
-        return Arrays.asList(new Predicate.ATOM(),
-                             new Predicate.INTEGERP());
+    public java.util.List<Binding> getBindings() {
+        return Arrays.asList(new Binding(new Predicate.ATOM()),
+                             new Binding(new Predicate.INTEGERP()));
     }
 
     /**

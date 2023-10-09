@@ -1,7 +1,7 @@
 package org.ulithi.jlisp.primitive;
 
 import org.ulithi.jlisp.core.Atom;
-import org.ulithi.jlisp.core.Bindable;
+import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
@@ -18,10 +18,10 @@ public class Util implements BindingProvider {
      * {@inheritDoc}
      */
     @Override
-    public java.util.List<Bindable> getBindings() {
-        return Arrays.asList(new EQL(),
-                             new Util.EQUAL(),
-                             new Util.LENGTH());
+    public java.util.List<Binding> getBindings() {
+        return Arrays.asList(new Binding(new EQL()),
+                             new Binding(new Util.EQUAL()),
+                             new Binding(new Util.LENGTH()));
     }
 
     /**
