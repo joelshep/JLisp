@@ -175,6 +175,66 @@ public class LangTestCase {
         assertEquals(3, sexp.toList().length().toAtom().toI());
     }
 
+    /**
+     * Simple test of the DEFUN function. First defines an "average" function, then invokes it.
+     * This is a bit hacked up because it needs to retain the same eval instance, so it references
+     * the same environment when defining the function and when applying it.
+     */
+    @Test
+    public void testSimpleDefun() {
+        // Evaluate defun, which should create the 'average' function and return its name.
+        final Eval eval = new Eval();
+        final String defun = "(defun average (x y) (QUOTIENT (PLUS x y) 2))";
+        final SExpression defunResult = eval.apply(parse(defun).root());
+        assertEquals("average", defunResult.toString());
+
+        // Now evaluate the 'average' function that we just created.
+        final SExpression avg = eval.apply(parse("(average 7 5)").root());
+        assertEquals(6, avg.toAtom().toI());
+    }
+
+    /**
+     * Creates a user function that takes zero arguments, invokes it and validates the result.
+     */
+    @Test
+    public void testZeroArgDefun() {
+        final Eval eval = new Eval();
+        final String defun = "(defun eleven () (QUOTE 11))";
+        final SExpression defunResult = eval.apply(parse(defun).root());
+        assertEquals("eleven", defunResult.toString());
+
+        // Now evaluate the 'average' function that we just created.
+        final SExpression avg = eval.apply(parse("(eleven)").root());
+        assertEquals(11, avg.toAtom().toI());
+    }
+
+    /**
+     * Creates a user function that takes two arguments, invokes it with one and three arguments,
+     * and verifies that both cause an EvaluationException to be thrown.
+     */
+    @Test
+    public void testDefunParameterCountMismatch() {
+        // Evaluate defun, which should create the 'average' function and return its name.
+        final Eval eval = new Eval();
+        final String defun = "(defun average (x y) (QUOTIENT (PLUS x y) 2))";
+        final SExpression defunResult = eval.apply(parse(defun).root());
+        assertEquals("average", defunResult.toString());
+
+        try {
+            eval.apply(parse("(average 7)").root());
+            fail("Expected EvaluationException");
+        } catch (final EvaluationException e) {
+            assertTrue(e.getMessage().startsWith("Expected 2"));
+        }
+
+        try {
+            eval.apply(parse("(average 7 5 3)").root());
+            fail("Expected EvaluationException");
+        } catch (final EvaluationException e) {
+            assertTrue(e.getMessage().startsWith("Expected 2"));
+        }
+    }
+
     @Test
     public void testQuoteStringLiteral() {
         //(QUOTE FOO) => FOO

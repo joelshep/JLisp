@@ -1,131 +1,185 @@
 package org.ulithi.jlisp.core;
 
 import org.ulithi.jlisp.exception.EvaluationException;
-import org.ulithi.jlisp.exception.ParseException;
 import org.ulithi.jlisp.parser.Grammar;
-import org.ulithi.jlisp.mem.TreeNode;
+import org.ulithi.jlisp.primitive.Function;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * This is the data structure which represents user-defined Lisp functions.
+ * Represents a user-defined function: e.g., a function created by the {@code DEFUN} procedure.
  */
-class UserFunction {
+public class UserFunction implements Function {
 
-	protected String name;
-	protected List<String> formals;
-	protected TreeNode body;
+	/** The programmatic name of this function. **/
+	private final String name;
+
+	/** The formal parameters for this function. **/
+	private final List<String> formals;
+
+	/** The parsed source code of the function implementation. **/
+	private final SExpression body;
 
 	/**
-	 * Creates a user-defined function with the specified name, list of formal parameters,
-	 * and body.
+	 * Creates a user-defined function with the specified name, formal parameters, and body.
 	 *
-	 * @todo: allow the body to be a non-list
-	 *
-	 * @param n The name of the function
-	 * @param f The list of formals - can be ()
-	 * @param b The body of the function
+	 * @param name The name of the function.
+	 * @param formals A list of formal parameters to the function. It may be an empty list, but
+	 *                otherwise must be a list of valid symbol names.
+	 * @param body The parsed implementation of the function.
 	 */
-	public UserFunction(final String n, final TreeNode f, final TreeNode b) {
-		name = n;
-		if ((!f.isList() && !f.toString().matches("NIL") ) || ( !b.isList() && !b.toString().matches("NIL"))) {
-			throw new ParseException("Invalid function parameters or body.\n" + f + "\n" + b);
+	public UserFunction(final String name, final SExpression formals, final SExpression body) {
+		if (!formals.isList()) {
+			throw new EvaluationException("Formal parameters to a function must be a list");
 		}
 
-		final String formalString = f.toString();
-		formals = splitParamList(formalString);
-		body = b;
-	}
-
-	/**
-	 * This carries out the basic evaluation of a custom function by
-	 * invoking the body with the passed actual parameters.
-	 *
-	 * @param actuals The list (possible NIL) of actual parameters
-	 * @return The result of evaluating the body
-	 */
-	protected TreeNode evaluate(final TreeNode actuals) throws EvaluationException {
-		final Map<String, TreeNode> bindings = bind(actuals);
-		// Environment.vars.putAll(bindings);
-		// Iterator it = bindings.entrySet().iterator();
-		// int i = 0;
-		// TreeNode tmp = TreeNode.create(body.tokens);
-		// while ( it.hasNext() ){
-		// 	Map.Entry pair = (Map.Entry) it.next();
-		// 	tmp.replace(formals.get(i), pair.getValue().toString());
-		// 	it.remove();
-		// 	i++;
-		// }
-		return body.evaluate(true, bindings);
-	}
-
-	/**
-	 * This is a private helper function to create a vector of parameters
-	 * from a string. It also checks for distinct parameters and legal
-	 * parameter names.
-	 *
-	 * @param s The string of parameters
-	 * @return A string vector of parameter names
-	 */
-	private static List<String> splitParamList(final String s) {
-		String[] chunks = s.substring(1, s.length()-1).split("\\s");
-		List<String> rtn = new ArrayList<>();
-
-		for (int i = 0; i < chunks.length; i++) {
-			if (chunks[i].matches(Grammar.FUNCTION_NAME)) {
-				if (!rtn.contains(chunks[i])) {
-					rtn.add(chunks[i]);
-				} else {
-					throw new ParseException("Error! Formal parameter names must be distinct.");
-				}
-			} else {
-				throw new ParseException("Error! Invalid parameter name: " + chunks[i]);
-			}
+		if (!body.isList()) {
+			throw new EvaluationException("Function body must be a list");
 		}
-		return rtn;
+
+		if (!Grammar.isFunctionName(name)) {
+			throw new EvaluationException("'" + name + "' is not a legal function name");
+		}
+
+		this.name = name;
+		this.formals = parseFormals(formals);
+		this.body = body;
 	}
 
 	/**
-	 * Creates a hashtable representing the bound values of
-	 * formal parameters to actual parameters.
+	 * Simple transforms the given SExpression representing a list of formal parameters, to a
+	 * Java list of strings with those same formal parameters, preserving order.
+	 *
+	 * @param formals An SExpression representing a (possibly empty) list of formal function
+	 *                parameters.
+	 * @return An ordered list of the formals' names.
+	 */
+	private static List<String> parseFormals(final SExpression formals) {
+		org.ulithi.jlisp.core.List it = formals.toList();
+
+		if (it.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final List<String> params = new ArrayList<>(it.lengthAsInt());
+
+		addFormal(params, it.car().toAtom().toS());
+
+		while (!it.endp()) {
+			it = it.cdr().toList();
+			addFormal(params, it.car().toAtom().toS());
+		}
+
+		return params;
+	}
+
+	/**
+	 * Validates the given formal name, and then appends it to the given list.
+	 * @param params A partial list of formal parameters defined for this function.
+	 * @param formal A formal parameter to add to the list.
+	 */
+	private static void addFormal(final List<String> params, final String formal) {
+		if (!Grammar.isFunctionName(formal)) {
+			throw new EvaluationException("'" + formal + "' is not a legal parameter name");
+		}
+
+		if (params.contains(formal)) {
+			throw new EvaluationException("Duplicate parameter name: " + formal);
+		}
+
+		params.add(formal);
+	}
+
+	/**
+	 * Binds the given function invocation arguments to this function's formal parameters and
+	 * returns the bindings as a {@code Map}.
+	 *
+	 * @param args The function arguments list as prepared by {@code Eval}.
+	 * @return A map of this function's formal parameter names to the arguments for this
+	 *         specific invocation.
+	 */
+	private Map<String, SExpression> bindFormals(final SExpression args) throws EvaluationException {
+		org.ulithi.jlisp.core.List it = args.toList();
+
+		if (it.lengthAsInt() != formals.size()) {
+			throw new EvaluationException("Expected " + formals.size() +
+										  " arguments: got " + it.lengthAsInt());
+		}
+
+		if (it.isEmpty()) { return Collections.emptyMap(); }
+
+		final Map<String, SExpression> context = new HashMap<>(it.lengthAsInt());
+
+		int index = 0;
+
+		context.put(formals.get(index), it.car());
+
+		while (!it.endp()) {
+			it = it.cdr().toList();
+			index++;
+			context.put(formals.get(index), it.car());
+		}
+
+		if (!(it.endp() && context.size() == formals.size()) ) {
+			throw new EvaluationException("Count of arguments didn't match number of formals");
+		}
+
+		return context;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public String name() {
+		return this.name;
+	}
+
+	/**
+	 * Not implemented in {@link UserFunction}. A {@code UserFunction} invocation requires both
+	 * arguments and a reference to the current {@link Environment}.
 	 * <p>
-	 * Also provides some checking to make sure the number of
-	 * actuals matches the number of formals.
-	 *
-	 * @param s The TreeNode object representing the actual paramters
-	 * @return A Hashtable of bindings
+	 * {@inheritDoc}
 	 */
-	private Map<String, TreeNode> bind(final TreeNode s) throws EvaluationException {
-		if (! s.isList() && !s.toString().matches("NIL")) {
-			throw new EvaluationException("Error! Invalid parameters to function: " + name);
-		}
-
-		Map<String, TreeNode> env = new HashMap<>();
-
-		if (!s.isList()) {
-			return env;
-		}
-
-		SExpressionOld tmp = new SExpressionOld(s);
-		int i;
-		for (i = 0; i < formals.size(); i++) {
-			env.put(formals.get(i), tmp.address.evaluate());
-			try {
-				tmp = new SExpressionOld(tmp.dataTokens);
-			} catch (Exception e) {
-				break;
-			}
-		}
-
-		if (i < formals.size() - 1) {
-			throw new EvaluationException("Error! Too few arguments for: " + name);
-		} else if (!tmp.data.evaluate().toString().matches("NIL")) {
-			throw new EvaluationException("Error! Too many arguments for: " + name);
-		}
-
-		return env;
+	@Override
+	public SExpression apply(final SExpression sexp) {
+		throw new EvaluationException("Not implemented in UserFunction");
 	}
+
+	/**
+	 * Updates the given {@link Environment} with formals bound to the arguments in the given
+	 * {@link SExpression} list, and returns the body of this user function for evaluation.
+	 *
+	 * @param sexp An {@link SExpression} representing the arguments to this {@link Function}.
+	 * @param environment Reference to the current runtime {@code Environment}.
+	 * @return The body of this user function, to be evaluated against the updated environment.
+	 */
+	@Override
+	public SExpression apply(final SExpression sexp, final Environment environment) {
+		final Map<String, SExpression> locals = bindFormals(sexp);
+
+		for (final Map.Entry<String, SExpression> entry : locals.entrySet()) {
+			environment.addBinding(entry.getKey(), entry.getValue());
+		}
+
+		return body;
+	}
+
+	/**
+	 * Indicates that this {@code UserFunction} needs its {@code apply()} method to be invoked
+	 * with the current runtime environment.
+	 * @return True.
+	 */
+	@Override
+	public boolean needsEnv() { return true; }
+
+	/**
+	 * Indicates this {@code UserFunction} is not a primitive function (i.e., is implemented in
+	 * terms of LISP code to be evaluated).
+	 * @return False.
+	 */
+	@Override
+	public boolean isPrimitive() { return false; }
 }

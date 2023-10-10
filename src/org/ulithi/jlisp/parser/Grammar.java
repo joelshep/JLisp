@@ -36,11 +36,13 @@ public class Grammar {
     /** Regular expression for a function name. */
     public static final String FUNCTION_NAME = "[a-zA-Z][a-zA-Z0-9]*";
 
+    private static final Pattern FUNCTION_NAME_PATTERN = Pattern.compile(FUNCTION_NAME);
+
     /** Regular expression for the start of a number (integer). */
     public static final String NUMERIC_LITERAL_START = "[\\d\\+\\-]";
 
     /** Regular expression for a number (integer). */
-    public static final String NUMERIC_LITERAL = "[\\+\\-]?[\\d]+";
+    public static final String NUMERIC_LITERAL = "[+\\-]?\\d+";
 
     /** Pre-compiled Pattern for matching on the NUMERIC_LITERAL regex. */
     private static final Pattern NUMERIC_LITERAL_PATTERN = Pattern.compile(NUMERIC_LITERAL);
@@ -76,6 +78,16 @@ public class Grammar {
      */
     public static boolean isAlphanumeric(final String token) {
         return ALPHA_LITERAL_PATTERN.matcher(token).matches();
+    }
+
+    /**
+     * Indicates if the given token is a syntactically valid function name. Does <em>not</em>
+     * indicate if a function with that name actually exists!
+     * @param token The token to evaluate.
+     * @return True if {@code token} is a syntactically valid function name,  false otherwise.
+     */
+    public static boolean isFunctionName(final String token) {
+        return FUNCTION_NAME_PATTERN.matcher(token).matches();
     }
 
     /**

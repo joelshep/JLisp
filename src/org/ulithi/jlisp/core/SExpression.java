@@ -7,7 +7,7 @@ import org.ulithi.jlisp.mem.Ref;
  * An {@link SExpression} is the fundamental LISP language element, the basis for both
  * {@link Atom Atoms} (literals and symbols) and {@link List Lists}.
  */
-public abstract class SExpression {
+public abstract class SExpression implements Bindable {
 
     /**
      * Creates and returns a new {@link SExpression}. The subtype depends on the given

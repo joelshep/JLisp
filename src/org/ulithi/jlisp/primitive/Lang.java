@@ -1,9 +1,11 @@
 package org.ulithi.jlisp.primitive;
 
-import org.ulithi.jlisp.core.Bindable;
+import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;
+import org.ulithi.jlisp.core.Environment;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
+import org.ulithi.jlisp.core.UserFunction;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
 
@@ -18,11 +20,12 @@ public class Lang implements BindingProvider {
      * {@inheritDoc}
      */
     @Override
-    public java.util.List<Bindable> getBindings() {
-        return Arrays.asList(new Lang.CAR(),
-                             new Lang.CDR(),
-                             new Lang.CONS(),
-                             new Lang.QUOTE());
+    public java.util.List<Binding> getBindings() {
+        return Arrays.asList(new Binding(new Lang.CAR()),
+                             new Binding(new Lang.CDR()),
+                             new Binding(new Lang.CONS()),
+                             new Binding(new Lang.DEFUN()),
+                             new Binding(new Lang.QUOTE()));
     }
 
     /**
@@ -102,12 +105,48 @@ public class Lang implements BindingProvider {
     }
 
     /**
+     * Implements the LISP {@code DEFUN} function. Returns a literal {@code Atom} representing
+     * the name of the newly created function.
+     */
+    public static class DEFUN extends AbstractFunction {
+        public DEFUN() { super("DEFUN"); }
+
+        @Override
+        public boolean isSpecial() { return true; }
+
+        @Override
+        public boolean needsEnv() { return true; }
+
+        /** {@inheritDoc} **/
+        @Override
+        public SExpression apply(final SExpression sexp) {
+            throw new EvaluationException("Defining function invoked without environment reference");
+        }
+
+        /** {@inheritDoc} **/
+        @Override
+        public SExpression apply(final SExpression sexp, final Environment env) {
+            final List args = sexp.toList();
+
+            final SExpression name = args.car();
+            final SExpression arguments = args.cdr().toList().car();
+            final SExpression definition = args.cdr().toList().cdr().toList().car();
+            final UserFunction function = new UserFunction(name.toString(), arguments, definition);
+
+            env.addGlobalBinding(new Binding(name.toAtom().toS(), function));
+
+            return name;
+        }
+    }
+
+    /**
      * Implements the LISP {@code QUOTE} function. The {@code QUOTE} returns its arguments as-is, and is
      * therefore a "special" function. In modern LISP, the {@code '} token is shorthand for
      * {@code QUOTE}, but implementing it will require changes to the lexer, which I haven't done yet.
      */
     public static class QUOTE extends AbstractFunction {
-        public QUOTE() { super("QUOTE");}
+        public QUOTE() { super("QUOTE"); }
+
         /** {@inheritDoc} */
         @Override
         public SExpression apply(final SExpression sexp) {

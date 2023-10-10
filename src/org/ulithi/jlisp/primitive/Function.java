@@ -57,6 +57,16 @@ public interface Function extends Bindable {
     default SExpression apply(SExpression sexp, Environment environment) { return null; }
 
     /**
+     * Indicates if this {@link Function} is a primitive function. Primitive functions are built
+     * in to the interpreter and do not involve re-entry to the eval() function. Non-primitive
+     * functions are generally user-defined and do require re-entry to the eval() function for
+     * application.
+     *
+     * @return True if this is a primitive function, false otherwise.
+     */
+    default boolean isPrimitive() { return true; }
+
+    /**
      * Indicates if this {@link Function} is a LISP "special" function, meaning that its arguments
      * should not be evaluated before the function is invoked, but passed in as-is to the function
      * to handle as needed.

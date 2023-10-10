@@ -24,6 +24,16 @@ public class Eval {
     private final Environment env = new Environment();
 
     /**
+     * Given a "form" as an {@link SExpression}, evaluates the form and returns the result.
+     *
+     * @param sexp An {@code SExpression} representing the LISP form to evaliate.
+     * @return The resulting value of the evaluation.
+     */
+    public SExpression apply(final SExpression sexp) {
+        return apply(sexp.toList().getRoot());
+    }
+
+    /**
      * Given the root {@link Cell} of a parsed JLISP expression, evaluates the expression and
      * returns the result.
      *
@@ -52,9 +62,12 @@ public class Eval {
         // is and otherwise throw because we don't know what to do.
         if (func == null) {
             // If the car referee is a bound symbol, return its value.
-            final SExpression val = resolveIfSymbol(lexeme);
-
+            SExpression val = resolveIfSymbol(lexeme);
             if (val != null) { return val; }
+
+            val = resolveIfVariable(lexeme);
+            if (val != null) { return val; }
+
             if (car.isAtom() && (car.toAtom()).isLiteral()) { return car; }
             throw new UndefinedSymbolException("Unknown symbol: " + car);
         }
@@ -116,6 +129,22 @@ public class Eval {
         return null;
     }
 
+    /**
+     * Attempts to resolve the binding in the current environment for the given name as a variable.
+     *
+     * @param name The programmatic name to resolve.
+     * @return Returns the value bound to the given name or null if a binding doesn't exist or
+     *         is not a variable binding.
+     */
+    private SExpression resolveIfVariable(final String name) {
+        final Bindable binding = env.getBinding(name);
+
+        if (binding instanceof SExpression) {
+            return (SExpression) binding;
+        }
+
+        return null;
+    }
 
     /**
      * Invokes the given function on the specified arguments, using bindings in the current
@@ -132,7 +161,8 @@ public class Eval {
         env.startScope();
 
         try {
-            return func.apply(args);
+            if (func.isPrimitive()) { return func.needsEnv() ? func.apply(args, env) : func.apply(args); };
+            return apply(func.apply(args, env));
         } finally {
             env.endScope();
         }
