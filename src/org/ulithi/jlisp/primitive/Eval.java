@@ -161,8 +161,11 @@ public class Eval {
         env.startScope();
 
         try {
-            if (func.isPrimitive()) { return func.needsEnv() ? func.apply(args, env) : func.apply(args); };
-            return apply(func.apply(args, env));
+            if (func.isReentrant()) {
+                return func.apply(args, env, this);
+            } else {
+                return func.isDefining() ? func.apply(args, env) : func.apply(args);
+            }
         } finally {
             env.endScope();
         }

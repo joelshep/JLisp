@@ -2,6 +2,7 @@ package org.ulithi.jlisp.core;
 
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.parser.Grammar;
+import org.ulithi.jlisp.primitive.Eval;
 import org.ulithi.jlisp.primitive.Function;
 
 import java.util.ArrayList;
@@ -157,14 +158,14 @@ public class UserFunction implements Function {
 	 * @return The body of this user function, to be evaluated against the updated environment.
 	 */
 	@Override
-	public SExpression apply(final SExpression sexp, final Environment environment) {
+	public SExpression apply(final SExpression sexp, final Environment environment, final Eval eval) {
 		final Map<String, SExpression> locals = bindFormals(sexp);
 
 		for (final Map.Entry<String, SExpression> entry : locals.entrySet()) {
 			environment.addBinding(entry.getKey(), entry.getValue());
 		}
 
-		return body;
+		return eval.apply(body);
 	}
 
 	/**
@@ -173,13 +174,5 @@ public class UserFunction implements Function {
 	 * @return True.
 	 */
 	@Override
-	public boolean needsEnv() { return true; }
-
-	/**
-	 * Indicates this {@code UserFunction} is not a primitive function (i.e., is implemented in
-	 * terms of LISP code to be evaluated).
-	 * @return False.
-	 */
-	@Override
-	public boolean isPrimitive() { return false; }
+	public boolean isReentrant() { return true; }
 }

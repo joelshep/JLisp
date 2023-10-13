@@ -11,6 +11,7 @@ import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.ulithi.jlisp.test.suite.UnitTestUtilities.evaluate;
 import static org.ulithi.jlisp.test.suite.UnitTestUtilities.parse;
 
 /**
@@ -217,8 +218,8 @@ public class LangTestCase {
         // Evaluate defun, which should create the 'average' function and return its name.
         final Eval eval = new Eval();
         final String defun = "(defun average (x y) (QUOTIENT (PLUS x y) 2))";
-        final SExpression defunResult = eval.apply(parse(defun).root());
-        assertEquals("average", defunResult.toString());
+        final SExpression result = eval.apply(parse(defun).root());
+        assertEquals("average", result.toString());
 
         try {
             eval.apply(parse("(average 7)").root());
@@ -233,6 +234,15 @@ public class LangTestCase {
         } catch (final EvaluationException e) {
             assertTrue(e.getMessage().startsWith("Expected 2"));
         }
+    }
+
+    @Test
+    public void testSimpleConditional() {
+        final String expression = "(IF (> 1 2) (QUOTE BAZ) (QUOTE FOO) )";
+
+        final SExpression result = evaluate(expression);
+
+        assertEquals("FOO", result.toString());
     }
 
     @Test

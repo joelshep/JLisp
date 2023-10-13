@@ -25,6 +25,7 @@ public class Lang implements BindingProvider {
                              new Binding(new Lang.CDR()),
                              new Binding(new Lang.CONS()),
                              new Binding(new Lang.DEFUN()),
+                             new Binding(new Lang.IF()),
                              new Binding(new Lang.QUOTE()));
     }
 
@@ -115,9 +116,9 @@ public class Lang implements BindingProvider {
         public boolean isSpecial() { return true; }
 
         @Override
-        public boolean needsEnv() { return true; }
+        public boolean isDefining() { return true; }
 
-        /** {@inheritDoc} **/
+        /** {@inheritDoc} */
         @Override
         public SExpression apply(final SExpression sexp) {
             throw new EvaluationException("Defining function invoked without environment reference");
@@ -136,6 +137,48 @@ public class Lang implements BindingProvider {
             env.addGlobalBinding(new Binding(name.toAtom().toS(), function));
 
             return name;
+        }
+    }
+
+    /**
+     * Implements the LISP {@code IF} special function. {@code IF} takes two or three
+     * {@link SExpression SExpressions}:<pre>
+     *     (IF (test-sexp) (then-sexp) (else-sexp) )</pre>
+     * It evaluates the {@code test-sexp}. If the {@code text-sexp} evaluates to a non-false value,
+     * then {@code IF} evaluates {@code then-sexp} and returns the resulting value. Otherwise, it
+     * evaluates {@code else-sexp} and returns that value, or returns {@code F} if {@code else-sexp}
+     * isn't provided. {@code IF} evaluates {@code then-sexp} and {@code else-sexp} lazily: only
+     * one will be evaluated when the {@code IF} function is invoked, depending on the value of
+     * {@code test-sexp}.
+     */
+    public static class IF extends AbstractFunction {
+        public IF() { super("IF"); }
+
+        @Override
+        public boolean isSpecial() { return true; }
+
+        @Override
+        public boolean isReentrant() { return true; }
+
+        /** {@inheritDoc */
+        @Override
+        public SExpression apply(final SExpression sexp, final Environment env, final Eval eval) {
+            final List args = sexp.toList();
+
+            if (args.lengthAsInt() < 2 || args.lengthAsInt() > 3) {
+                throw new WrongArgumentCountException("IF expects two or three arguments");
+            }
+
+            final SExpression testSexp = eval.apply(args.car());
+
+            final boolean condition = (testSexp.isList() && !testSexp.toList().isEmpty()) ||
+                                      (testSexp.isAtom() && testSexp.toAtom().toB());
+
+            if (condition) {
+                return eval.apply(args.cdr().toList().car());
+            } else {
+                return eval.apply(args.cdr().toList().cdr());
+            }
         }
     }
 

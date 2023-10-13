@@ -38,7 +38,7 @@ public interface Function extends Bindable {
      * @param sexp An {@link SExpression} representing the arguments to this {@link Function}.
      * @return The result of applying this {@code Function} to the given {@code SExpression}.
      */
-    SExpression apply(SExpression sexp);
+    default SExpression apply(SExpression sexp) { return null; }
 
     /**
      * Applies this {@link Function} the given {@link SExpression} and returns the result as
@@ -57,14 +57,20 @@ public interface Function extends Bindable {
     default SExpression apply(SExpression sexp, Environment environment) { return null; }
 
     /**
-     * Indicates if this {@link Function} is a primitive function. Primitive functions are built
-     * in to the interpreter and do not involve re-entry to the eval() function. Non-primitive
-     * functions are generally user-defined and do require re-entry to the eval() function for
-     * application.
+     * Applies this {@link Function} the given {@link SExpression} and returns the result as
+     * a new {@link SExpression}. Additionally, the function may modify the given
+     * {@link Environment} as a side effect, and/or invoke the {@link Eval} function as part of
+     * its implementation. This is usually reserved for functions used to define new language
+     * elements (see {@code isDefining()}) or functions that lazily evaluate their arguments, such
+     * as {@code IF}. The elements of the given {@code sexp} are assumed to have been evaluated
+     * already.
      *
-     * @return True if this is a primitive function, false otherwise.
+     * @param sexp An {@link SExpression} representing the arguments to this {@link Function}.
+     * @param environment Reference to the current runtime {@code Environment}.
+     * @param eval Reference to the effective {@code Eval} function.
+     * @return The result of applying this {@code Function} to the given {@code SExpression}.
      */
-    default boolean isPrimitive() { return true; }
+     default SExpression apply(SExpression sexp, Environment environment, Eval eval) { return null; }
 
     /**
      * Indicates if this {@link Function} is a LISP "special" function, meaning that its arguments
@@ -76,11 +82,20 @@ public interface Function extends Bindable {
     default boolean isSpecial() { return false; }
 
     /**
+     * Indicates if this {@link Function} may re-enter the {@code eval} function. Examples are
+     * user-defined functions and the {@code IF} function, which re-enters {@code eval} to
+     * lazily evaluate its conditional expression and dependent expressions.
+     *
+     * @return True if this function may re-enter the {@code eval} function, false otherwise.
+     */
+    default boolean isReentrant() { return false; }
+
+    /**
      * Indicates if this {@link Function} is used to define another language element, such as a
      * variable or user-function. If so, the version of {@code apply} that includes an
      * {@code Environment} parameter should be used to invoke it.
      *
      * @return True if this function is used to define another language element, false otherwise.
      */
-    default boolean needsEnv() { return false; }
+    default boolean isDefining() { return false; }
 }
