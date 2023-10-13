@@ -9,7 +9,8 @@ import static org.junit.Assert.assertTrue;
 import static org.ulithi.jlisp.test.suite.UnitTestUtilities.evaluate;
 
 /**
- * Unit tests for the LISP primitives implemented in {@link org.ulithi.jlisp.parser.Primitives}.
+ * Unit tests for various LISP primitives: some may be redundant and all should be refactored
+ * out of here.
  */
 public class PrimitivesTestCase {
     @Test
