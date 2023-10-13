@@ -1,11 +1,5 @@
-specs.pdf
-test.sh
-tests
-bin/*
 .idea
 *.iml
 out/
 README.OLD
 Runfile
-src/org/ulithi/jlisp/core/SExpressionOld.java
-src/org/ulithi/jlisp/core/AtomOld.java
