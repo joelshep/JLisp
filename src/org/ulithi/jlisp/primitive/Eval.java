@@ -82,7 +82,7 @@ public class Eval {
             final List args = List.create();
 
             while (!rest.isNil()) {
-                SExpression intermediate = apply((Cell) rest);
+                final SExpression intermediate = apply((Cell) rest);
                 if (intermediate.isAtom()) {
                     args.add(intermediate.toAtom());
                 } else if (intermediate.isList()) {
