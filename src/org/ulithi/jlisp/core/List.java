@@ -167,7 +167,8 @@ public class List extends SExpression {
     }
 
     /**
-     * Returns the length of this {@link List}. This is <em>not</em> a recursive function: it
+     * Returns the length of this {@link List} as an integer {@code Atom}. See {@link #lengthAsInt()}
+     * for details on how the length is calculated. This is <em>not</em> a recursive function: it
      * returns the number of direct elements of this {@code List}. If some of those elements are
      * themselves {@code Lists}, they are counted as a single element for the purposes of this
      * function.
@@ -179,6 +180,14 @@ public class List extends SExpression {
         return Atom.create(lengthAsInt());
     }
 
+    /**
+     * Returns the length of this {@link List} as an integer. This is <em>not</em> a recursive
+     * function: it returns the number of direct elements of this {@code List}. If some of those
+     * elements are themselves {@code Lists}, they are counted as a single element for the purposes
+     * of this function.
+     *
+     * @return The number of atoms or lists that are direct members of this list.
+     */
     public int lengthAsInt() {
         int count = 0;
         Ref curr = root;

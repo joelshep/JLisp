@@ -39,7 +39,7 @@ public class Lexer {
 
 	/**
 	 * Constructs a {@link Lexer} to produce tokens from a given input string.
-	 * @param s A string -- presumably representing a LISP program or expresssion -- to be tokenized.
+	 * @param s A string -- presumably representing a LISP program or expression -- to be tokenized.
 	 */
 	public Lexer(final String s) {
 		text = s;
@@ -56,13 +56,13 @@ public class Lexer {
 	}
 
 	/**
-	 * Splits a string up into chunks meaninful according to Lisp semantics
+	 * Splits a string up into chunks meaningful according to Lisp semantics
 
 	 * @param s A string to be separated according to the Lisp semantics
 	 */
 	private static List<String> tokenize(final String s) {
 		int i = 0;
-		List<String> tokens = new ArrayList<>();
+		final List<String> tokens = new ArrayList<>();
 
 		if (s.length() == 1) {
 			return Collections.singletonList(s);
