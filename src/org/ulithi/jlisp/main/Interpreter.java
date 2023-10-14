@@ -2,7 +2,6 @@ package org.ulithi.jlisp.main;
 
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.mem.PTree;
-import org.ulithi.jlisp.core.Environment;
 import org.ulithi.jlisp.parser.Lexer;
 import org.ulithi.jlisp.parser.Parser;
 import org.ulithi.jlisp.primitive.Eval;
@@ -13,25 +12,11 @@ import org.ulithi.jlisp.primitive.Eval;
  * main client application (e.g. a console REPL-style app).
  */
 public class Interpreter implements Runnable {
-    /**
-     * The LISP environment: Binds symbols, variables, function names, etc. to their storage or
-     * definitions. At some point, the environment may be lexically scoped (allowing the same
-     * name to refer to different things in different lexical scopes) but for now all environment
-     * entries are global.
-     */
-    private final Environment environment;
 
     /**
      * The eval function instance used by this interpreter.
      */
     private final Eval eval = new Eval();
-
-    /**
-     * Creates a new {@link Interpreter} and its {@link Environment}.
-     */
-    public Interpreter () {
-        this.environment = new Environment();
-    }
 
     /**
      * Initializes this {@link Interpreter}.
