@@ -1,9 +1,9 @@
 package org.ulithi.jlisp.main;
 
 import org.ulithi.jlisp.core.SExpression;
-import org.ulithi.jlisp.lexer.Lexer;
 import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.core.Environment;
+import org.ulithi.jlisp.parser.Lexer;
 import org.ulithi.jlisp.parser.Parser;
 import org.ulithi.jlisp.primitive.Eval;
 

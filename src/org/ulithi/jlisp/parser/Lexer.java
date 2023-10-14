@@ -1,6 +1,4 @@
-package org.ulithi.jlisp.lexer;
-
-import org.ulithi.jlisp.parser.Grammar;
+package org.ulithi.jlisp.parser;
 
 import java.io.IOException;
 import java.io.InputStream;

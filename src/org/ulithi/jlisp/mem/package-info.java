@@ -7,7 +7,7 @@
  * are both types of s-expressions. Finally, an atom can be a literal integer or character sequence,
  * or it can be a symbol.
  * <p>
- * After initial lexical analysis by {@link org.ulithi.jlisp.lexer.Lexer}, the parser generates
+ * After initial lexical analysis by {@link org.ulithi.jlisp.parser.Lexer}, the parser generates
  * {@link PTree} (Parse Tree) objects. A {@code PTree} is a set of linked {@code Cells} that are the
  * in-memory representation of a LISP statement.
  * <p>

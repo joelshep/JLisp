@@ -3,12 +3,10 @@ package org.ulithi.jlisp.test.primitive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.ulithi.jlisp.lexer.Lexer;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.mem.Ref;
 import org.ulithi.jlisp.parser.Parser;
-import org.ulithi.jlisp.primitive.Eval;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,9 +22,6 @@ public class EvalTestCase {
 
     /** A parser, re-initialized with each test. */
     private Parser parser;
-
-    /** An eval function, initialized once (shouldn't carry state over between invocations). */
-    private final Eval eval = new Eval();
 
     /**
      * Creates a new {@link Parser} instance before each test.

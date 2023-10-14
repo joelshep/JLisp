@@ -1,8 +1,8 @@
-package org.ulithi.jlisp.test.lexer;
+package org.ulithi.jlisp.test.parser;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.ulithi.jlisp.lexer.Lexer;
+import org.ulithi.jlisp.parser.Lexer;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Unit tests for {@link org.ulithi.jlisp.lexer.Lexer}.
+ * Unit tests for {@link org.ulithi.jlisp.parser.Lexer}.
  */
 public class LexerTestCase {
 
