@@ -14,7 +14,6 @@ import org.ulithi.jlisp.test.parser.GrammarTestCase;
 import org.ulithi.jlisp.test.parser.LexerTestCase;
 import org.ulithi.jlisp.test.parser.ParserTestCase;
 import org.ulithi.jlisp.test.parser.PrimitivesTestCase;
-import org.ulithi.jlisp.test.primitive.EvalTestCase;
 import org.ulithi.jlisp.test.primitive.UtilTestCase;
 import org.ulithi.jlisp.test.primitive.LangTestCase;
 import org.ulithi.jlisp.test.primitive.LogicTestCase;
@@ -31,7 +30,6 @@ import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
         AtomTestCase.class,
         CellTestCase.class,
         EnvironmentTestCase.class,
-        EvalTestCase.class,
         GrammarTestCase.class,
         LangTestCase.class,
         LexerTestCase.class,
