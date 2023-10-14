@@ -1,4 +1,4 @@
-package org.ulithi.jlisp.primitive;
+package org.ulithi.jlisp.core;
 
 /**
  * Abstract implementation of {@link Symbol} that provides the symbol name.

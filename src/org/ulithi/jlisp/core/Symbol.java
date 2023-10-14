@@ -1,7 +1,4 @@
-package org.ulithi.jlisp.primitive;
-
-import org.ulithi.jlisp.core.Bindable;
-import org.ulithi.jlisp.core.SExpression;
+package org.ulithi.jlisp.core;
 
 /**
  * As a language element, {@link Symbol} is essentially an enumerated value. Evaluating the symbol

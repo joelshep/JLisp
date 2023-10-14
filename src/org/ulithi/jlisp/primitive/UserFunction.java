@@ -1,9 +1,10 @@
-package org.ulithi.jlisp.core;
+package org.ulithi.jlisp.primitive;
 
+import org.ulithi.jlisp.core.Environment;
+import org.ulithi.jlisp.core.Function;
+import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.parser.Grammar;
-import org.ulithi.jlisp.primitive.Eval;
-import org.ulithi.jlisp.primitive.Function;
 
 import java.util.ArrayList;
 import java.util.Collections;

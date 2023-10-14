@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.primitive;
 
+import org.ulithi.jlisp.core.AbstractSymbol;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;

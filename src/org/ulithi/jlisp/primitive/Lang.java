@@ -1,11 +1,11 @@
 package org.ulithi.jlisp.primitive;
 
+import org.ulithi.jlisp.core.AbstractFunction;
 import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;
 import org.ulithi.jlisp.core.Environment;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
-import org.ulithi.jlisp.core.UserFunction;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
 

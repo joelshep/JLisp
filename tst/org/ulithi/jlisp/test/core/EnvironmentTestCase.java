@@ -3,9 +3,9 @@ package org.ulithi.jlisp.test.core;
 import org.junit.Test;
 import org.ulithi.jlisp.core.Environment;
 import org.ulithi.jlisp.core.SExpression;
+import org.ulithi.jlisp.core.Function;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.mem.Cell;
-import org.ulithi.jlisp.primitive.Function;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

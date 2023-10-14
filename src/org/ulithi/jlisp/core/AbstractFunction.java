@@ -1,4 +1,4 @@
-package org.ulithi.jlisp.primitive;
+package org.ulithi.jlisp.core;
 
 /**
  * Abstract implementation of {@link Function} that provides the function name.

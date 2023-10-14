@@ -1,9 +1,6 @@
-package org.ulithi.jlisp.primitive;
+package org.ulithi.jlisp.core;
 
-import org.ulithi.jlisp.core.Bindable;
-import org.ulithi.jlisp.core.Binding;
-import org.ulithi.jlisp.core.Environment;
-import org.ulithi.jlisp.core.SExpression;
+import org.ulithi.jlisp.primitive.Eval;
 
 /**
  * A {@link Function} is the core unit of execution in LISP. A function has a programmatic name,

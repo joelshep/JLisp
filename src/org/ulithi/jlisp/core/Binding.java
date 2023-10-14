@@ -1,8 +1,5 @@
 package org.ulithi.jlisp.core;
 
-import org.ulithi.jlisp.primitive.Function;
-import org.ulithi.jlisp.primitive.Symbol;
-
 /**
  * Encapsulates the binding of a programmatic name to a {@link Bindable} object, such as
  * a {@code Function} or a {@code Symbol}.
