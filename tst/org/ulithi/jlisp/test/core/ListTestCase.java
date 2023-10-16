@@ -60,8 +60,6 @@ public class ListTestCase {
 
     @Test
     public void testMultipleListAppend() {
-        final List sublist = newSublist("THERE", "YOU");
-
         final List list = List.create()
                 .add(Atom.create("HELLO"))
                 .append(newSublist("THERE", "YOU"))

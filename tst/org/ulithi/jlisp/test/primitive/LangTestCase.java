@@ -1,17 +1,16 @@
 package org.ulithi.jlisp.test.primitive;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
-import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.primitive.Eval;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.ulithi.jlisp.test.suite.UnitTestUtilities.evaluate;
 import static org.ulithi.jlisp.test.suite.UnitTestUtilities.parse;
 
 /**
@@ -143,8 +142,7 @@ public class LangTestCase {
     public void testConsListToEmptyList() {
         // CONS (PHONE HOME) () -> ((PHONE HOME))  ((PHONE . (HOME . NIL)) . NIL)
         final String expression = "(CONS (QUOTE (PHONE HOME)) ())";
-        final PTree pTree = parse(expression);
-        final SExpression sexp = (new Eval()).apply(pTree.root());
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertEquals("((PHONE . (HOME . NIL)) . NIL)", String.valueOf(sexp));
     }
 
@@ -152,8 +150,7 @@ public class LangTestCase {
     public void testConsAtomToList() {
         // CONS BAR (BAZ) -> (BAR BAZ)  (BAR . (BAZ . ))
         final String expression = "(CONS (QUOTE BAR) (QUOTE (BAZ)))";
-        final PTree pTree = parse(expression);
-        final SExpression sexp = (new Eval()).apply(pTree.root());
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertEquals("(BAR . (BAZ . NIL))", String.valueOf(sexp));
     }
 
@@ -161,8 +158,7 @@ public class LangTestCase {
     public void testConsAtomsToList() {
         // CONS FOO (CONS BAR (BAZ)) -> (FOO BAR BAZ)  (FOO . (BAR . (BAZ . NIL)))
         final String expression = "(CONS (QUOTE FOO) (CONS (QUOTE BAR) (QUOTE (BAZ))))";
-        final PTree pTree = parse(expression);
-        final SExpression sexp = (new Eval()).apply(pTree.root());
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertEquals("(FOO . (BAR . (BAZ . NIL)))", String.valueOf(sexp));
     }
 
@@ -170,10 +166,45 @@ public class LangTestCase {
     public void testConsListToList() {
         // CONS (NOW IS) (THE TIME) -> ((NOW IS) THE TIME)  ((NOW . (IS . NIL)) . (THE . (TIME . NIL)))
         final String expression = "(CONS (QUOTE (NOW IS)) (QUOTE (THE TIME)))";
-        final PTree pTree = parse(expression);
-        final SExpression sexp = (new Eval()).apply(pTree.root());
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertEquals("((NOW . (IS . NIL)) . (THE . (TIME . NIL)))", String.valueOf(sexp));
         assertEquals(3, sexp.toList().length().toAtom().toI());
+    }
+
+    @Test
+    @Ignore
+    public void evaluateCarExpression() {
+        final SExpression sexp = UnitTestUtilities.evaluate("( CAR () )");
+        assertTrue(sexp.isList());
+        assertTrue(sexp.toList().isEmpty());
+    }
+
+    @Test
+    public void evaluateCarConsExpression() {
+        final String expression = "(CAR (CONS x y))";
+        final String result = UnitTestUtilities.evaluate(expression).toAtom().toS();
+        assertEquals("x", result);
+    }
+
+    @Test
+    public void evaluateCdrConsExpression() {
+        final String expression = "(CDR (CONS x y))";
+        final String result = UnitTestUtilities.evaluate(expression).toList().toString();
+        assertEquals("(y . NIL)", result);
+    }
+
+    @Test
+    public void evaluateCdrConsListExpression() {
+        final String expression = "(CDR (CONS x (PLUS 1 2)))";
+        final String result = UnitTestUtilities.evaluate(expression).toList().toString();
+        assertEquals("(3 . NIL)", result);
+    }
+
+    @Test
+    public void evaluateConsExpression() {
+        final String expression = "(CONS x y)";
+        final String result = UnitTestUtilities.evaluate(expression).toList().toString();
+        assertEquals("(x . (y . NIL))", result);
     }
 
     /**
@@ -239,9 +270,7 @@ public class LangTestCase {
     @Test
     public void testSimpleConditional() {
         final String expression = "(IF (> 1 2) (QUOTE BAZ) (QUOTE FOO) )";
-
-        final SExpression result = evaluate(expression);
-
+        final SExpression result = UnitTestUtilities.evaluate(expression);
         assertEquals("FOO", result.toString());
     }
 
@@ -249,8 +278,7 @@ public class LangTestCase {
     public void testQuoteStringLiteral() {
         //(QUOTE FOO) => FOO
         final String expression = "(QUOTE FOO)";
-        final PTree pTree = parse(expression);
-        final SExpression sexp = (new Eval()).apply(pTree.root());
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isAtom());
         assertEquals("FOO", sexp.toString());
     }
@@ -259,8 +287,7 @@ public class LangTestCase {
     public void testQuoteList() {
         // (QUOTE (FOO BAR)) => (FOO BAR)
         final String expression = "(QUOTE (FOO BAR))";
-        final PTree pTree = parse(expression);
-        final SExpression sexp = (new Eval()).apply(pTree.root());
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isList());
         assertEquals("(FOO . (BAR . NIL))", sexp.toString());
     }
@@ -269,8 +296,7 @@ public class LangTestCase {
     public void testQuoteLists() {
         // (QUOTE ((FOO BAR) (BAZ QUX))) => ((FOO BAR) (BAZ QUX))
         final String expression = "(QUOTE ((FOO BAR) (BAZ QUX)))";
-        final PTree pTree = parse(expression);
-        final SExpression sexp = (new Eval()).apply(pTree.root());
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isList());
         assertEquals("((FOO . (BAR . NIL)) . ((BAZ . (QUX . NIL)) . NIL))", sexp.toString());
         assertEquals(2, sexp.toList().length().toI());
