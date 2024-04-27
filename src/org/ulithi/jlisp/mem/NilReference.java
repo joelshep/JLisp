@@ -11,6 +11,11 @@ public final class NilReference implements Ref {
      */
     public static final Ref NIL = new NilReference();
 
+    /**
+     * No construction: use the globally defined NIL object.
+     */
+    private NilReference() { };
+
     @Override
     public boolean isAtom() { return true; }
 
