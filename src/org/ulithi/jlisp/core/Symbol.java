@@ -6,7 +6,13 @@ package org.ulithi.jlisp.core;
  * symbol itself can be considered to be a singleton.
  */
 public interface Symbol extends Bindable {
-     SExpression eval();
-
+    /**
+     * @return The programmatic name of this {@link Symbol}: e.g., "T", "F", etc.
+     */
     String name();
+
+    /**
+     * @return An {@link SExpression} representing the value of this {@link Symbol}
+     */
+    SExpression eval();
 }
