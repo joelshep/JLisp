@@ -13,29 +13,34 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The JLISP {@link Environment}. The {@code Environment} is initialized with a core package of
- * built-in LISP functions and symbols, and an empty package for user-defined functions and symbols
- * with global scope. A function invocation creates a "scope" that is effective during the lifetime
- * of the invocation, where new bindings (e.g. variables) can be created. The scope is released when
- * the function returns.
+ * The JLISP {@link Environment}. An {@code Environment} is a sequence of "frames", where a frame
+ * is either a "package" or a "scope". Both are collections of function and symbol bindings, but
+ * packages are long-lived while a scope only exists for the lifetime of a single function invocation.
+ * The {@code Environment} is initialized with a core frame/package of built-in LISP functions and
+ * symbols, and an empty package for user-defined functions and symbols with global scope. A
+ * function invocation creates a "scope" that is effective over the lifetime of the invocation,
+ * where new dynamically-scoped bindings (e.g. variables) can be created. The scope is released
+ * when the function returns.
  */
 public final class Environment implements BindingRegistrar {
 
     /**
-     * The index of the "core" package in the "bindings" list.
+     * The index of the "core" frame/package in the "frames" list.
      */
-    private static final int CORE_ENV_INDEX = 0;
+    private static final int CORE_FRAME_INDEX = 0;
 
 	/**
-	 * The index of the (initially empty) "user" package in the "bindings" list.
+	 * The index of the (initially empty) "user" frame/package in the "frames" list.
 	 */
-	private static final int GLOBAL_ENV_INDEX = 1;
+	private static final int USER_FRAME_INDEX = 1;
 
     /**
      * The number of packages (whose symbols can't be redefined) currently loaded in this
-	 * environment, including the built-in "core" package.
+	 * environment, including the built-in "core" package. At this time, packages must be
+	 * created (not necessarily with bindings as well) when the environment is first initialized:
+	 * after initialization, the package count doesn't change.
      */
-    private int packageCount = 0;
+    private final int packageCount;
 
     /**
      * The number of function-specific scopes in this environment. In general, the index of the
@@ -45,28 +50,28 @@ public final class Environment implements BindingRegistrar {
     private int scopeCount = 0;
 
     /**
-     * The environment bindings. The "core" language binding is the first element in the list,
-     * followed by package bindings, followed by run-time dynamically scoped bindings.
+     * The environment frames. The "core" language package is the first frame in the list,
+     * followed by user-defined bindings, followed by dynamically scoped bindings.
      */
-    private final List<Map<String, Bindable>> bindings;
+    private final List<Map<String, Bindable>> frames;
 
 	/**
-	 * Initializes the {@code environment}, including creating bindings for core (built-in)
-	 * language functions and symbols.
+	 * Initializes the {@code environment}, including creating a frame for core (built-in)
+	 * language functions and symbols, and an empty frame for user-defined bindings.
 	 */
 	public Environment() {
-		bindings = new ArrayList<>();
-		bindings.add(new HashMap<>());
+		frames = new ArrayList<>();
+		frames.add(new HashMap<>());
 		new Lang().provideBindings(this);
 		new Logic().provideBindings(this);
 		new Math().provideBindings(this);
 		new Predicate().provideBindings(this);
 		new Util().provideBindings(this);
 
-		// Add the "user" package.
-		bindings.add(new HashMap<>());
+		// Add the "user" frame.
+		frames.add(new HashMap<>());
 
-		packageCount = bindings.size();
+		packageCount = frames.size();
 	}
 
 	/**
@@ -74,66 +79,21 @@ public final class Environment implements BindingRegistrar {
 	 */
 	@Override
 	public void register(final Binding binding) {
-		final Map<String, Bindable> core = bindings.get(CORE_ENV_INDEX);
+		final Map<String, Bindable> core = frames.get(CORE_FRAME_INDEX);
 
-		addBinding(binding.name(), binding.bindable(), core);
+		registerBinding(binding.name(), binding.bindable(), core);
 
 		for (final String synonym: binding.synonyms() ) {
-			addBinding(synonym, binding.bindable(), core);
+			registerBinding(synonym, binding.bindable(), core);
 		}
 	}
 
-	public void addGlobalBinding(final Binding binding) {
-		final String name = binding.name();
-		if (isDefined(name, GLOBAL_ENV_INDEX)) {
-			throw new EvaluationException("Binding '" + name + "' already defined");
-		}
-
-		bindings.get(GLOBAL_ENV_INDEX).put(name.toLowerCase(), binding.bindable());
-	}
-
 	/**
-	 * Creates a new environment scope, to manage bindings for a new function invocation.
-	 */
-	public void startScope() {
-		bindings.add(new HashMap<>());
-		scopeCount++;
-	}
-
-	/**
-	 * Ends the most recently started environment scope, typically to release bindings after
-	 * a completed function invocation.
-	 */
-	public void endScope() {
-		if (scopeCount <= 0) {
-			throw new EvaluationException("Scope index underflow");
-		}
-
-		bindings.remove(bindings.size() - 1);
-		scopeCount--;
-    }
-
-	/**
-	 * Adds the named binding to the given bindings map, and warns if an existing definition
-	 * is being overwritten.
+	 * Adds the named {@link Bindable} (a function or symbol) to the most recently started
+	 * dynamic scope.
 	 *
 	 * @param name The programmatic name to associate with the binding.
 	 * @param bindable The {@link Bindable} object to be bound.
-	 * @param bindings The map to which the binding should be added.
-	 */
-	private void addBinding(final String name,
-							final Bindable bindable,
-							final Map<String, Bindable> bindings) {
-		if (bindings.put(name.toLowerCase(), bindable) != null) {
-			System.err.println("WARNING: Binding for '" + name + "' overwritten");
-		}
-	}
-
-	/**
-	 * Adds the named binding to the most recently started environment scope.
-     *
-     * @param name The programmatic name to associate with the binding.
-     * @param bindable The {@link Bindable} object to be bound.
 	 * @throws EvaluationException If there is no active scope to add the binding to, or the
 	 *         name is already defined in 'core' or another package.
 	 */
@@ -142,11 +102,63 @@ public final class Environment implements BindingRegistrar {
 			throw new EvaluationException("No  active scope to add binding '" + name + "' to");
 		}
 
-		if (isDefined(name, packageCount - 1)) {
-            throw new EvaluationException("Binding '" + name + "' already defined");
-        }
+		if (!canDefine(name)) {
+			throw new EvaluationException("Binding '" + name + "' already defined");
+		}
 
-		bindings.get(bindings.size() - 1).put(name.toLowerCase(), bindable);
+		frames.get(frames.size() - 1).put(name.toLowerCase(), bindable);
+	}
+
+	/**
+	 * Adds the given {@link Binding} as a user-defined function or symbol.
+	 * @param binding The named {@link Bindable} to add as a user-defined function or symbol.
+	 * @throws EvaluationException If the name is already defined in 'core' or another package.
+	 */
+	public void addUserBinding(final Binding binding) {
+		final String name = binding.name();
+
+		if (!canDefine(name)) {
+			throw new EvaluationException("Binding '" + name + "' already defined");
+		}
+
+		frames.get(USER_FRAME_INDEX).put(name.toLowerCase(), binding.bindable());
+	}
+
+	/**
+	 * Creates a frame/scope, to manage bindings for a new function invocation.
+	 */
+	public void startScope() {
+		frames.add(new HashMap<>());
+		scopeCount++;
+	}
+
+	/**
+	 * Ends the most recently started frame/scope, typically to release bindings after
+	 * a completed function invocation.
+	 */
+	public void endScope() {
+		if (scopeCount <= 0) {
+			throw new EvaluationException("Scope index underflow");
+		}
+
+		frames.remove(frames.size() - 1);
+		scopeCount--;
+    }
+
+	/**
+	 * Registers the named binding in the given frame, and warns if an existing definition
+	 * is being overwritten.
+	 *
+	 * @param name The programmatic name to associate with the binding.
+	 * @param bindable The {@link Bindable} object to be bound.
+	 * @param frame The frame to which the binding should be added.
+	 */
+	private void registerBinding(final String name,
+								 final Bindable bindable,
+								 final Map<String, Bindable> frame) {
+		if (frame.put(name.toLowerCase(), bindable) != null) {
+			System.err.println("WARNING: Binding for '" + name + "' overwritten");
+		}
 	}
 
 	/**
@@ -160,32 +172,20 @@ public final class Environment implements BindingRegistrar {
 	}
 
 	/**
-	 * Indicates if the given name has a valid binding in the current environment. The name
-	 * search starts at the given {@code startIndex}. This is primarily to search for names
-	 * defined in either the core or other loaded packages.
+	 * Returns the binding for the given name, in the current environment.
 	 *
 	 * @param name A function, variable or symbol name.
-	 * @return True if the given name has a valid binding, false otherwise.
+	 * @return The current binding for the given name.
 	 */
-	private boolean isDefined(final String name, final int startIndex) {
-		return getBinding(name, startIndex) != null;
+	public Bindable getBinding(final String name) {
+		return getBinding(name, frames.size() - 1);
 	}
 
 	/**
-	 * Returns the binding for the given name, in the current environment.
-     *
-     * @param name A function, variable or symbol name.
-     * @return The current binding for the given name.
-     */
-    public Bindable getBinding(final String name) {
-        return getBinding(name, bindings.size() - 1);
-    }
-
-	/**
 	 * Returns the binding for the given name, in the current environment. The name search
-	 * starts at the given {@code startIndex} and proceeds back to the "core" package.
-	 * This is primarily to search for names defined in either the core or other loaded
-	 * packages, that can't be overwritten by dynamically scoped names.
+	 * starts at the frame denoted by the given {@code startIndex} and proceeds back to the
+	 * "core" package. This is primarily to search for names defined in either the core or
+	 * other loaded packages, that can't be overwritten by dynamically-scoped names.
 	 *
 	 * @param name A function, variable or symbol name.
 	 * @return The current binding for the given name.
@@ -194,12 +194,26 @@ public final class Environment implements BindingRegistrar {
 		final String bindingName = name.toLowerCase();
 
 		for (int i = startIndex; i >= 0; i--) {
-			final Map<String, Bindable> binding = bindings.get(i);
-			if (binding.containsKey(bindingName)) {
-				return binding.get(bindingName);
+			final Map<String, Bindable> frame = frames.get(i);
+			if (frame.containsKey(bindingName)) {
+				return frame.get(bindingName);
 			}
 		}
 
 		return null;
+	}
+
+	/**
+	 * Indicates if the given name can be defined (or redefined) in the current environment. If
+	 * the name is not in the "core" or user-defined packages, then it can be defined/redefined
+	 * in a dynamic scope and this method returns true. Otherwise, if the name is already defined
+	 * in the core or user-defined packages, then it can't be redefined and this method returns
+	 * false.
+	 *
+	 * @param name A function, variable or symbol name.
+	 * @return True if the given name can be defined/redefined, false otherwise.
+	 */
+	private boolean canDefine(final String name) {
+		return getBinding(name, packageCount - 1) == null;
 	}
 }

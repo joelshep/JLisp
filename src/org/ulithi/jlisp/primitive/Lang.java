@@ -134,7 +134,7 @@ public class Lang implements BindingProvider {
             final SExpression definition = args.cdr().toList().cdr().toList().car();
             final UserFunction function = new UserFunction(name.toString(), arguments, definition);
 
-            env.addGlobalBinding(new Binding(name.toAtom().toS(), function));
+            env.addUserBinding(new Binding(name.toAtom().toS(), function));
 
             return name;
         }
