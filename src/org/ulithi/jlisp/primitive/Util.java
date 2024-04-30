@@ -6,7 +6,6 @@ import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
-import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
 
 import java.util.Arrays;
@@ -21,8 +20,7 @@ public class Util implements BindingProvider {
     @Override
     public java.util.List<Binding> getBindings() {
         return Arrays.asList(new Binding(new EQL()),
-                             new Binding(new Util.EQUAL()),
-                             new Binding(new Util.LENGTH()));
+                             new Binding(new Util.EQUAL()));
     }
 
     /**
@@ -68,9 +66,13 @@ public class Util implements BindingProvider {
      * if and only if their printed representations are the same.
      */
     public static class EQUAL extends AbstractFunction {
-        public EQUAL() { super("EQUAL"); }
+        public EQUAL() {
+            super("EQUAL");
+        }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public SExpression apply(final SExpression sexp) {
             List it = sexp.toList();
@@ -85,7 +87,9 @@ public class Util implements BindingProvider {
             while (!it.endp()) {
                 it = it.cdr().toList();
                 result = isEqual(lhs, it.car());
-                if (!result) { break; }
+                if (!result) {
+                    break;
+                }
             }
 
             return Atom.create(result);
@@ -131,23 +135,6 @@ public class Util implements BindingProvider {
             }
 
             return isEqual(lhs.car(), rhs.car()) && isEqual(lhs.cdr(), rhs.cdr());
-        }
-    }
-
-    /**
-     * Implements the LISP {@code LENGTH} function, which returns the number of top-level elements in
-     * a given list. If the list is empty/NIL, returns 0. Throws if the given {@code sexpr} is not a
-     * list.
-     */
-    public static class LENGTH extends AbstractFunction {
-        public LENGTH() { super("LENGTH"); }
-
-        /** {@inheritDoc} */
-        @Override
-        public SExpression apply(final SExpression sexp) {
-            final List args = sexp.toList();
-            if (args.car().isList()) { return args.car().toList().length(); }
-            throw new EvaluationException("Argument to LENGTH must be a list");
         }
     }
 }

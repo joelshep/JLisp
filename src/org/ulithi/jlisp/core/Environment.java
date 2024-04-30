@@ -1,6 +1,7 @@
 package org.ulithi.jlisp.core;
 
 import org.ulithi.jlisp.exception.EvaluationException;
+import org.ulithi.jlisp.primitive.Collections;
 import org.ulithi.jlisp.primitive.Lang;
 import org.ulithi.jlisp.primitive.Logic;
 import org.ulithi.jlisp.primitive.Math;
@@ -62,6 +63,7 @@ public final class Environment implements BindingRegistrar {
 	public Environment() {
 		frames = new ArrayList<>();
 		frames.add(new HashMap<>());
+		new Collections().provideBindings(this);
 		new Lang().provideBindings(this);
 		new Logic().provideBindings(this);
 		new Math().provideBindings(this);
