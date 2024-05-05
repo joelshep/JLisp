@@ -15,43 +15,66 @@ import static org.junit.Assert.assertEquals;
 public class LexerTestCase {
 
     /**
-     * Tests the lexer on basic atoms and simple (non-nested) lists.
+     * Tokenizes simple atoms and un-nested lists, including cases with extra whitespace.
      */
     @Test
-    public void tokenizeSimpleExpressions() {
+    public void testTokenizeSimpleExpressions() {
         assertEquals(toList("(", "PLUS", "2", "3", ")"),
-                     lexerize("(PLUS 2 3)"));
+                     tokenize("(PLUS 2 3)"));
         assertEquals(toList("(", "PLUS", "3", "4", ")"),
-                     lexerize("( PLUS 3 4 )"));
+                     tokenize("( PLUS 3 4 )"));
         assertEquals(toList("(", ")"),
-                     lexerize("()"));
+                     tokenize("()"));
         assertEquals(toList("(", ")"),
-                     lexerize(" ( ) "));
+                     tokenize(" ( ) "));
         assertEquals(toList("HELLO"),
-                     lexerize("HELLO"));
+                     tokenize("HELLO"));
+        assertEquals(toList("FOO"),
+                     tokenize(" FOO "));
         assertEquals(toList("123"),
-                     lexerize("123"));
+                     tokenize("123"));
+        assertEquals(toList("456"),
+                     tokenize("  456 "));
         assertEquals(toList("-123"),
-                     lexerize("-123"));
+                     tokenize("-123"));
         assertEquals(toList("A"),
-                     lexerize("A"));
+                     tokenize("A"));
     }
 
     /**
-     * Tests the lexer on a variety of nested expressions
+     * Tokenizes an atom prefixed by a single quote (parser will transform this to a QUOTE
+     * function invocation).
      */
     @Test
-    public void tokenizeNestedExpressions() {
+    public void testTokenizeSingleQuoteAtom() {
+        assertEquals(toList("'", "FOO"), tokenize("'FOO"));
+    }
+
+    /**
+     * Tokenizes a simple list prefixed by a single quote (parser will transform this to a QUOTE
+     * function invocation).
+     */
+    @Test
+    public void testTokenizeSingleQuoteList() {
+        assertEquals(toList("'", "(", "FOO", "BAR", ")"),
+                     tokenize("'(FOO BAR)"));
+    }
+
+    /**
+     * Tokenizes a variety of nested expressions.
+     */
+    @Test
+    public void testTokenizeNestedExpressions() {
         assertEquals(toList("(", "A", "(", "B", "C", ")", ")"),
-                     lexerize("( A ( B C ) )"));
+                     tokenize("( A ( B C ) )"));
         assertEquals(toList("(", "A", "(", ")", ")"),
-                     lexerize("(A () )"));
+                     tokenize("(A () )"));
         assertEquals(toList("(", "(","A",  ")", ")"),
-                     lexerize("( (A) )"));
+                     tokenize("( (A) )"));
         assertEquals(toList("(", "A", "(", "B", "C", ")", "(", "C", "D", ")", ")"),
-                     lexerize("(A (B C) (C D ) )"));
+                     tokenize("(A (B C) (C D ) )"));
         assertEquals(toList("(", "A", "(", "B", "C", "(", "C", "D", ")", ")"),
-                     lexerize("(A (B C (C D ) )"));
+                     tokenize("(A (B C (C D ) )"));
     }
 
     /**
@@ -62,7 +85,7 @@ public class LexerTestCase {
     @Ignore
     public void brokenTestCases() {
         assertEquals(toList("this-is-an-atom"),
-                     lexerize("this-is-an-atom"));
+                     tokenize("this-is-an-atom"));
     }
 
     /**
@@ -71,7 +94,7 @@ public class LexerTestCase {
      * @param expr A string.
      * @return An ordered list of tokens extracted from the given string.
      */
-    private static List<String> lexerize(final String expr) {
+    private static List<String> tokenize(final String expr) {
         return (new Lexer(expr)).getTokens();
     }
 

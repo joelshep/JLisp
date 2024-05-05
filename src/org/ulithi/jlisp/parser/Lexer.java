@@ -56,9 +56,10 @@ public class Lexer {
 	}
 
 	/**
-	 * Splits a string up into chunks meaningful according to Lisp semantics
+	 * Transforms a string into an ordered list of Lisp language tokens.
 
-	 * @param s A string to be separated according to the Lisp semantics
+	 * @param s A string representing (presumably) a Lisp language statement or program.
+	 * @return An ordered list of Lisp language tokens extracted from the given string.
 	 */
 	private static List<String> tokenize(final String s) {
 		int i = 0;
