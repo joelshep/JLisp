@@ -41,8 +41,8 @@ public class Predicate implements BindingProvider {
     }
 
     /**
-     * Implements the LISP {@code ATOM} function. The {@code ATOM} function accepts a value and
-     * returns true if the value is an atom, false otherwise.
+     * Implements the LISP {@code INTEGERP} function. The {@code INTEGERP} function accepts a value
+     * and returns true if the value is an integer, false otherwise.
      */
     public static class INTEGERP extends AbstractFunction {
         public INTEGERP() { super("INTEGERP"); }
