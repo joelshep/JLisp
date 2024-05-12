@@ -68,6 +68,48 @@ public class ListTestCase {
         assertEquals("(HELLO . (THERE . (YOU . (PRETTY . (GIRL . NIL)))))", list.toString());
     }
 
+    @Test
+    public void testSimpleListSize() {
+        final List list = List.create()
+                .add(Atom.create("FOO"))
+                .add(Atom.create("BAR"))
+                .add(Atom.create("BAZ"));
+        assertEquals(3, list.size().toI());
+    }
+
+    @Test
+    public void testSingleNestedListSize() {
+        final List list = List.create()
+                .add(Atom.create("HELLO"))
+                .add(newSublist("THERE", "YOU"));
+        assertEquals(3, list.size().toI());
+    }
+
+    @Test
+    public void testMultipleNestedListSize() {
+        final List list = List.create()
+                .add(newSublist("I", "LIKE"))
+                .add(Atom.create("TO"))
+                .add(newSublist("EAT", "BANANAS"));
+        assertEquals(5, list.size().toI());
+    }
+
+    @Test
+    public void testDeeplyNestedListSize() {
+        final List innerList = List.create()
+                .add(newSublist("I", "LIKE"))
+                .add(Atom.create("TO"))
+                .add(newSublist("EAT", "BANANAS"));
+
+        final List outerList = List.create()
+                .add(Atom.create("BUT"))
+                .add(innerList);
+
+        System.out.println(outerList);
+
+        assertEquals(6, outerList.size().toI());
+    }
+
     private static List newSublist(final String lhs, final String rhs) {
         return List.create()
                 .add(Atom.create(lhs))

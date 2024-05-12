@@ -4,6 +4,9 @@ import org.ulithi.jlisp.exception.JLispRuntimeException;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.Ref;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 import static org.ulithi.jlisp.mem.NilReference.NIL;
 
 /**
@@ -195,6 +198,51 @@ public class List extends SExpression {
         while (!curr.isNil()) {
             count++;
             curr = ((Cell)curr).getRest();
+        }
+
+        return count;
+    }
+
+    /**
+     * Returns the <em>size</em> of this {@link List} as an integer {@code Atom}. Unlike the
+     * {@code length()} method, this method <em>is</em> recursive: returning the total number of
+     * {@code atoms} contained in this list and in any nested lists. Note that the returned value
+     * does not include the count of lists themselves: only of atoms.
+     * <p>
+     * For example, the size of {@code (A B C)} is 3 (which is also the length). The size of
+     * {@code (1 (2 3) 4)} is 4, while its length is only 3.
+     *
+     * @return An {@link Atom} representing the number of atoms that are direct members of this
+     *         list and any sub-lists.
+     */
+    public Atom size() {
+        return Atom.create(sizeAsInt());
+    }
+
+    /**
+     * Using a breadth-first algorithm, recursively counts the number of atoms in this list, and
+     * in any sub-lists. Sub-lists themselves are not included in the count: only the atoms that
+     * they contain.
+     *
+     * @return The number of atoms that are direct members of this list and any sub-lists.
+     */
+    private int sizeAsInt() {
+        int count = 0;
+        Ref curr = root;
+        final Queue<Ref> stack = new LinkedList<>();
+
+        while (!curr.isNil()) {
+            if (curr.isList()) {
+                stack.add(((Cell)curr).getFirst());
+            } else {
+                count++;
+            }
+
+            curr = ((Cell)curr).getRest();
+        }
+
+        while (!stack.isEmpty()) {
+            count += (new List((Cell)stack.remove())).sizeAsInt();
         }
 
         return count;
