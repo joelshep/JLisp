@@ -238,7 +238,7 @@ public class Cell implements Ref {
     @Override
     public boolean isList() {
         // If the first reference is nil, it's an empty list.
-        return (first instanceof Cell) || isNil();
+        return isNil() || (first instanceof Cell);
     }
 
     /**

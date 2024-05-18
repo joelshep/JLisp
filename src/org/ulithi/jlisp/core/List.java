@@ -114,7 +114,6 @@ public class List extends SExpression {
      * @param list The {@code List} to add to this {@code List}.
      * @return This {@code List} with the given {@code list} appended.
      */
-
     public List append(final List list) {
         if (this.isEmpty()) {
             root.setFirst(list.getRoot());
