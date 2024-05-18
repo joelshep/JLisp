@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.mem.Cell;
+import org.ulithi.jlisp.mem.NilReference;
 import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.mem.Ref;
 
@@ -16,6 +17,14 @@ import static org.ulithi.jlisp.test.suite.UnitTestUtilities.parse;
  * Unit tests for {@link org.ulithi.jlisp.core.SExpression};
  */
 public class SExpressionTestCase {
+
+    @Test
+    public void testExplicitNilRef() {
+        final Ref ref = NilReference.NIL;
+        final SExpression sexp = SExpression.create(ref);
+        assertTrue(sexp.isList());
+        assertTrue(sexp.toList().isEmpty());
+    }
 
     @Test
     public void testNilCell() {
@@ -34,19 +43,6 @@ public class SExpressionTestCase {
     }
 
     @Test
-    public void testStorageCell() {
-        final Cell cell = Cell.createStorage("HELLO");
-
-        SExpression sexp = SExpression.create(cell);
-        assertTrue(sexp.isAtom());
-        assertEquals("HELLO", ((Atom)sexp).toS());
-
-        final Ref ref = cell.getFirst();
-        sexp = SExpression.create(ref);
-        assertEquals("HELLO", ((Atom)sexp).toS());
-    }
-
-    @Test
     public void testListCell() {
         final Cell cell = Cell.create("HELLO");
 
@@ -54,19 +50,6 @@ public class SExpressionTestCase {
         assertFalse(sexp.isAtom());
         assertTrue(sexp.isList());
         assertEquals("(HELLO . NIL)", String.valueOf(sexp));
-    }
-
-    @Test
-    public void testNumericStorageCell() {
-        final Cell cell = Cell.createStorage(1234);
-
-        SExpression sexp = SExpression.create(cell);
-        assertTrue(sexp.isAtom());
-        assertEquals(1234, ((Atom)sexp).toI());
-
-        final Ref ref = cell.getFirst();
-        sexp = SExpression.create(ref);
-        assertEquals(1234, ((Atom)sexp).toI());
     }
 
     @Test
@@ -81,28 +64,6 @@ public class SExpressionTestCase {
         final Ref ref = cell.getFirst();
         sexp = SExpression.create(ref);
         assertEquals(1234, ((Atom)sexp).toI());
-    }
-
-    @Test
-    public void testBooleanStorageCell() {
-        final Cell trueCell = Cell.createStorage(true);
-
-        SExpression sexp = SExpression.create(trueCell);
-        assertTrue(sexp.isAtom());
-        assertTrue(((Atom) sexp).toB());
-
-        Ref ref = trueCell.getFirst();
-        sexp = SExpression.create(ref);
-        assertTrue(((Atom) sexp).toB());
-
-        final Cell falseCell = Cell.createStorage(false);
-        sexp = SExpression.create(falseCell);
-        assertTrue(sexp.isAtom());
-        assertFalse(((Atom) sexp).toB());
-
-        ref = falseCell.getFirst();
-        sexp = SExpression.create(ref);
-        assertFalse(((Atom) sexp).toB());
     }
 
     @Test

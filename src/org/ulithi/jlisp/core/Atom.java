@@ -12,7 +12,7 @@ import org.ulithi.jlisp.parser.Grammar;
  * class type that can represent several types of data and provides seamless transformations
  * between types when possible (e.g., number to string, or string to boolean).
  */
-public class Atom extends SExpression implements Ref {
+public class Atom implements SExpression, Ref {
 
     /** An {@link Atom} representing the special {@code F} (false) value. */
     public static final Atom F = new Atom(Boolean.FALSE, Type.Boolean);
@@ -143,6 +143,41 @@ public class Atom extends SExpression implements Ref {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isAtom() {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Atom toAtom() {
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isList() {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation throws a {@link TypeConversionException} because an {@code Atom} is not
+     * a {@code List}.
+     */
+    @Override
+    public List toList() {
+        throw new TypeConversionException("Can't convert Atom to List");
+    }
+    
     /**
      * Returns this {@link Atom Atom's} value as a boolean. Boolean atoms have their value returned
      * directly. For numeric atoms, returns true if the value is non-zero, false otherwise. For

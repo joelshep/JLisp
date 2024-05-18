@@ -1,6 +1,7 @@
 package org.ulithi.jlisp.core;
 
 import org.ulithi.jlisp.exception.JLispRuntimeException;
+import org.ulithi.jlisp.exception.TypeConversionException;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.Ref;
 
@@ -12,7 +13,7 @@ import static org.ulithi.jlisp.mem.NilReference.NIL;
 /**
  * Wrapper class for a LISP list.
  */
-public class List extends SExpression {
+public class List implements SExpression {
 
     /** The root cell of this List. */
     private final Cell root;
@@ -40,6 +41,11 @@ public class List extends SExpression {
         return new List(root);
     }
 
+    public static List create(final Ref ref) {
+        assert ref != null: "Ref is null";
+        if (ref.isNil()) { return List.create(); }
+        return List.create((Cell)ref);
+    }
 
     /**
      * Private constructor: constructs a new List with the given Cell as its root node.
@@ -48,6 +54,25 @@ public class List extends SExpression {
     private List(final Cell root) {
         this.root = root;
         this.end = root;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation throws a {@link TypeConversionException} because a {@code List} is not
+     * an {@code Atom}.
+     */
+    @Override
+    public Atom toAtom() {
+        throw new TypeConversionException("Can't convert List to Atom");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List toList() {
+        return this;
     }
 
     /**
