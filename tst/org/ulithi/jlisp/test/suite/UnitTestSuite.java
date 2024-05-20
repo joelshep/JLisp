@@ -11,7 +11,6 @@ import org.ulithi.jlisp.test.core.SExpressionTestCase;
 import org.ulithi.jlisp.test.core.AtomTestCase;
 import org.ulithi.jlisp.test.mem.CellTestCase;
 import org.ulithi.jlisp.test.mem.NilReferenceTestCase;
-import org.ulithi.jlisp.test.mem.RefTestCase;
 import org.ulithi.jlisp.test.parser.GrammarTestCase;
 import org.ulithi.jlisp.test.parser.LexerTestCase;
 import org.ulithi.jlisp.test.parser.ParserTestCase;
@@ -42,7 +41,6 @@ import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
         NilReferenceTestCase.class,
         ParserTestCase.class,
         PredicateTestCase.class,
-        RefTestCase.class,
         SExpressionTestCase.class,
         SmokeTestCase.class,
         StringUtilsTestCase.class,

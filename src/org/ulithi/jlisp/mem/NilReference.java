@@ -1,5 +1,8 @@
 package org.ulithi.jlisp.mem;
 
+import org.ulithi.jlisp.core.Atom;
+import org.ulithi.jlisp.core.List;
+
 /**
  * The special {@link NilReference NIL} reference. The {@code NIL} reference is both an atom and
  * a list.
@@ -20,7 +23,13 @@ public final class NilReference implements Ref {
     public boolean isAtom() { return true; }
 
     @Override
+    public Atom toAtom() { return Atom.create(NIL); }
+
+    @Override
     public boolean isList() { return true; }
+
+    @Override
+    public List toList() { return List.create(); }
 
     @Override
     public boolean isNil() { return true; }

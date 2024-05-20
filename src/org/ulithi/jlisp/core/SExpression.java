@@ -25,18 +25,4 @@ public interface SExpression extends Ref, Bindable {
         if (ref.isAtom()) { return (Atom)ref; }
         return List.create((Cell)ref);
     }
-
-    /**
-     * If possible, returns this {@link SExpression} as an {@link Atom}. Callers should check
-     * {@code isAtom()} before calling this method.
-     * @return This {@link SExpression} as an {@link Atom}.
-     */
-    Atom toAtom();
-
-    /**
-     * If possible, returns this {@link SExpression} as a {@link List}. Callers should check
-     * {@code isList()} before calling this method.
-     * @return This {@link SExpression} as a {@link List}.
-     */
-    List toList();
 }

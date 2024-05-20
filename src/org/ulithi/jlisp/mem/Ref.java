@@ -18,6 +18,13 @@ public interface Ref {
     default boolean isAtom() { return this instanceof Atom; }
 
     /**
+     * If possible, returns this {@link Ref} as an {@link Atom}. Callers should check
+     * {@code isAtom()} before calling this method.
+     * @return This {@link Ref} as an {@link Atom}.
+     */
+    Atom toAtom();
+
+    /**
      * Indicates if this is a reference to a {@link Cell}.
      * @return True if this is a reference to a {@code Cell}, false otherwise.
      */
@@ -28,6 +35,13 @@ public interface Ref {
      * @return True if this is a reference to a {@code List}, false otherwise.
      */
     default boolean isList() { return this instanceof List; }
+
+    /**
+     * If possible, returns this {@link Ref} as a {@link List}. Callers should check
+     * {@code isList()} before calling this method.
+     * @return This {@link Ref} as a {@link List}.
+     */
+    List toList();
 
     /**
      * Indicates if this is a {@code NIL} reference.

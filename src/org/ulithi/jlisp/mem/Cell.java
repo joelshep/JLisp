@@ -241,6 +241,11 @@ public class Cell implements Ref {
         return isNil() || (first instanceof Cell);
     }
 
+    @Override
+    public List toList() {
+        return List.create(first);
+    }
+
     /**
      * Indicates if this {@link Cell} stores the special {@code NIL} value.
      * @return True if this {@code Cell} is a "NIL cell", false otherwise.
