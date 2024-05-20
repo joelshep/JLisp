@@ -15,23 +15,23 @@ public interface Ref {
      * Indicates if this is a reference to an {@link Atom}.
      * @return True if this is a reference to an {@code Atom}, false otherwise.
      */
-    default boolean isAtom() { return false; }
+    default boolean isAtom() { return this instanceof Atom; }
 
     /**
      * Indicates if this is a reference to a {@link Cell}.
      * @return True if this is a reference to a {@code Cell}, false otherwise.
      */
-    default boolean isCell() { return false; }
+    default boolean isCell() { return this instanceof Cell; }
 
     /**
      * Indicates if this is a reference to a {@link List}.
      * @return True if this is a reference to a {@code List}, false otherwise.
      */
-    default boolean isList() { return false; }
+    default boolean isList() { return this instanceof List; }
 
     /**
      * Indicates if this is a {@code NIL} reference.
      * @return True if this is a {@code NIL} reference, false otherwise.
      */
-    default boolean isNil() { return false; }
+    default boolean isNil() { return this == NilReference.NIL; }
 }

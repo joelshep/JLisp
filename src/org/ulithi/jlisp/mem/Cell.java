@@ -251,15 +251,6 @@ public class Cell implements Ref {
     }
 
     /**
-     * Indicates if this {@link Ref} is a {@code Cell}. It is.
-     * @return True.
-     */
-    @Override
-    public boolean isCell() {
-        return true;
-    }
-
-    /**
      * Returns the {@code first} field of this {@link Cell} as a {@link Ref}.
      * @return The {@code first} field of this {@code Cell}.
      */

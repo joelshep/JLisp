@@ -7,7 +7,7 @@ import org.ulithi.jlisp.mem.Ref;
  * An {@link SExpression} is the fundamental LISP language element, the basis for both
  * {@link Atom Atoms} (literals and symbols) and {@link List Lists}.
  */
-public interface SExpression extends Bindable {
+public interface SExpression extends Ref, Bindable {
     /**
      * Creates and returns a new {@link SExpression}. The subtype depends on the given {@link Ref},
      * according to the following rules:<ul>
@@ -27,27 +27,11 @@ public interface SExpression extends Bindable {
     }
 
     /**
-     * Indicates if this {@link SExpression} is an {@link Atom}.
-     * @return True if this s-expression is an {@code Atom}, false otherwise.
-     */
-    default boolean isAtom() {
-        return this instanceof Atom;
-    }
-
-    /**
      * If possible, returns this {@link SExpression} as an {@link Atom}. Callers should check
      * {@code isAtom()} before calling this method.
      * @return This {@link SExpression} as an {@link Atom}.
      */
     Atom toAtom();
-
-    /**
-     * Indicates if this {@link SExpression} is a {@link List}.
-     * @return True if this is a reference to a {@code List}, false otherwise.
-     */
-    default boolean isList() {
-        return this instanceof List;
-    }
 
     /**
      * If possible, returns this {@link SExpression} as a {@link List}. Callers should check

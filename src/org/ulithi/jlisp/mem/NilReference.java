@@ -20,9 +20,6 @@ public final class NilReference implements Ref {
     public boolean isAtom() { return true; }
 
     @Override
-    public boolean isCell() { return false; }
-
-    @Override
     public boolean isList() { return true; }
 
     @Override

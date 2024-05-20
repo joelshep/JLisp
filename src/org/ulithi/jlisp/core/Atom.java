@@ -147,24 +147,8 @@ public class Atom implements SExpression, Ref {
      * {@inheritDoc}
      */
     @Override
-    public boolean isAtom() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Atom toAtom() {
         return this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isList() {
-        return false;
     }
 
     /**
@@ -177,7 +161,7 @@ public class Atom implements SExpression, Ref {
     public List toList() {
         throw new TypeConversionException("Can't convert Atom to List");
     }
-    
+
     /**
      * Returns this {@link Atom Atom's} value as a boolean. Boolean atoms have their value returned
      * directly. For numeric atoms, returns true if the value is non-zero, false otherwise. For
