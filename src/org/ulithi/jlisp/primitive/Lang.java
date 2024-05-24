@@ -136,13 +136,13 @@ public class Lang implements BindingProvider {
 
             env.addUserBinding(new Binding(name.toAtom().toS(), function));
 
-            return name;
+            return name.toAtom();
         }
     }
 
     /**
      * Implements the LISP {@code IF} special function. {@code IF} takes two or three
-     * {@link SExpression SExpressions}:<pre>
+     * {@link SExpression S-Expressions}:<pre>
      *     (IF (test-sexp) (then-sexp) (else-sexp) )</pre>
      * It evaluates the {@code test-sexp}. If the {@code text-sexp} evaluates to a non-false value,
      * then {@code IF} evaluates {@code then-sexp} and returns the resulting value. Otherwise, it

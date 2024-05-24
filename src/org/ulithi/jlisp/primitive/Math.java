@@ -39,7 +39,7 @@ public class Math implements BindingProvider {
 
         @Override
         public SExpression apply(final SExpression sexp) {
-            List it = toList(sexp);
+            List it = sexp.toList();
             int last = Integer.MIN_VALUE;
             boolean result = true;
 
@@ -67,7 +67,7 @@ public class Math implements BindingProvider {
 
         @Override
         public SExpression apply(final SExpression sexp) {
-            List it = toList(sexp);
+            List it = sexp.toList();
             int last = Integer.MAX_VALUE;
             boolean result = true;
 
@@ -97,7 +97,7 @@ public class Math implements BindingProvider {
 
         @Override
         public SExpression apply(final SExpression sexp) {
-            final int result = Math.applyNumericVarArgsOperator(toList(sexp), op);
+            final int result = Math.applyNumericVarArgsOperator(sexp.toList(), op);
             return Atom.create(result);
         }
     }
@@ -119,7 +119,7 @@ public class Math implements BindingProvider {
 
             // When invoked with a single argument, MINUS returns the
             // negation of its argument.
-            List args = toList(sexp);
+            List args = sexp.toList();
             final int first = args.car().toAtom().toI();
 
             if (args.endp()) { return Atom.create(-first); }
@@ -143,7 +143,7 @@ public class Math implements BindingProvider {
 
         @Override
         public SExpression apply(final SExpression sexp) {
-            final int result = Math.applyNumericVarArgsOperator(toList(sexp), op);
+            final int result = Math.applyNumericVarArgsOperator(sexp.toList(), op);
             return Atom.create(result);
         }
     }
@@ -162,7 +162,7 @@ public class Math implements BindingProvider {
 
         @Override
         public SExpression apply(final SExpression sexp) {
-            final int result = Math.applyNumericVarArgsOperator(toList(sexp), op);
+            final int result = Math.applyNumericVarArgsOperator(sexp.toList(), op);
             return Atom.create(result);
         }
     }
@@ -181,7 +181,7 @@ public class Math implements BindingProvider {
 
         @Override
         public SExpression apply(final SExpression sexp) {
-            final int result = Math.applyNumericVarArgsOperator(toList(sexp), op);
+            final int result = Math.applyNumericVarArgsOperator(sexp.toList(), op);
             return Atom.create(result);
         }
     }
@@ -212,16 +212,5 @@ public class Math implements BindingProvider {
         } catch (final ArithmeticException e) {
             throw new EvaluationException("Arithmetic exception: " + e.getMessage());
         }
-    }
-
-    /**
-     * Converts the given SExpression to a List.
-     *
-     * @param sexp An SExpression.
-     * @return The given SExpression as a List.
-     */
-    private static List toList(final SExpression sexp) {
-        if (!sexp.isList()) { throw new EvaluationException("List argument expected"); }
-        return sexp.toList();
     }
 }

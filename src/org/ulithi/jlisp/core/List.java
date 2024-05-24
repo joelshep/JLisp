@@ -162,21 +162,21 @@ public class List implements SExpression {
     }
 
     /**
-     * Given a Cell, returns an s-expression representing the referee of the cell's first element.
-     * @return The referee of the cell's first element, as an s-expression.
+     * Returns an {@link SExpression} representing this {@code List's} first element.
+     * @return This {@code List's} first element.
      */
     public SExpression car() {
         final Ref ref = root.getFirst();
         if (ref.isNil()) { return List.create(); }
-        if (ref.isAtom()) { return (Atom)ref; }
+        if (ref.isAtom()) { return ref.toAtom(); }
         if (ref.isCell()) { return List.create(ref); }
         throw new JLispRuntimeException("Don't know how to fetch CAR of ref: " + ref);
     }
 
     /**
-     * Returns an s-expression representing the referee of this list's root cell's {@code rest}
-     * element.
-     * @return The referee of this list's root cell's {@code rest} element, as an s-expression.
+     * Returns a {@link SExpression} representing the referee of this list's root cell's
+     * {@code rest} element.
+     * @return The referee of this list's root cell's {@code rest} element.
      */
     public SExpression cdr() {
         final Ref ref = root.getRest();

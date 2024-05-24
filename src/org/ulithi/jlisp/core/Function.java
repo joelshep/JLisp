@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.core;
 
+import org.ulithi.jlisp.mem.Ref;
 import org.ulithi.jlisp.primitive.Eval;
 
 /**
@@ -25,11 +26,11 @@ public interface Function extends Bindable {
     default String[] synonyms() { return Binding.EMPTY_SYNONYMS; }
 
     /**
-     * Applies this {@link Function} the given {@link SExpression} and returns the result as
-     * a new {@link SExpression}. The elements of the given {@code sexp} is assumed to have been
+     * Applies this {@link Function} the given {@link SExpression} and returns the result as a new
+     * {@link SExpression}. The elements of the given {@code SExpression} are assumed to have been
      * evaluated already: i.e., they are generally literals or symbolic <em>names</em>. For example,
      * if the original expression was {@code (* (+ 2 3) (+ 3 4))} and this function was the
-     * {@code *} function, the given {@code sexp} would be (6 12). {@code Functions} generally
+     * {@code *} function, the given {@code ref} would be (6 12). {@code Functions} generally
      * do not evaluate their arguments.
      *
      * @param sexp An {@link SExpression} representing the arguments to this {@link Function}.
@@ -38,14 +39,14 @@ public interface Function extends Bindable {
     default SExpression apply(SExpression sexp) { return null; }
 
     /**
-     * Applies this {@link Function} the given {@link SExpression} and returns the result as
-     * a new {@link SExpression}. Additionally, the function may modify the given
-     * {@link Environment} as a side effect. This is usually reserved for functions used to
-     * define new language elements (see {@code needsEnv()}). The elements of the given
-     * {@code sexp} is assumed to have been evaluated already: i.e., they are generally literals
-     * or symbolic <em>names</em>. For example, if the original expression was
-     * {@code (* (+ 2 3) (+ 3 4))} and this function was the {@code *} function, the given
-     * {@code sexp} would be (6 12). {@code Functions} generally do not evaluate their arguments.
+     * Applies this {@link Function} the given {@link SExpression} and returns the result as a new
+     * {@link SExpression}. Additionally, the function may modify the given {@link Environment} as
+     * a side effect. This is usually reserved for functions used to define new language
+     * elements (see {@code needsEnv()}). The elements of the given {@code sexp} are assumed
+     * to have been evaluated already: i.e., they are generally literals or symbolic
+     * <em>names</em>. For example, if the original expression was {@code (* (+ 2 3) (+ 3 4))}
+     * and this function was the {@code *} function, the given {@code sexp} would be (6 12).
+     * {@code Functions} generally do not evaluate their arguments.
      *
      * @param sexp An {@link SExpression} representing the arguments to this {@link Function}.
      * @param environment Reference to the current runtime {@code Environment}.
@@ -54,15 +55,15 @@ public interface Function extends Bindable {
     default SExpression apply(SExpression sexp, Environment environment) { return null; }
 
     /**
-     * Applies this {@link Function} the given {@link SExpression} and returns the result as
-     * a new {@link SExpression}. Additionally, the function may modify the given
-     * {@link Environment} as a side effect, and/or invoke the {@link Eval} function as part of
-     * its implementation. This is usually reserved for functions used to define new language
-     * elements (see {@code isDefining()}) or functions that lazily evaluate their arguments, such
-     * as {@code IF}. The elements of the given {@code sexp} are assumed to have been evaluated
+     * Applies this {@link Function} the given {@link SExpression} and returns the result as a new
+     * {@link SExpression}. Additionally, the function may modify the given {@link Environment} as
+     * a side effect, and/or invoke the {@link Eval} function as part of its implementation.
+     * This is usually reserved for functions used to define new language elements
+     * (see {@code isDefining()}) or functions that lazily evaluate their arguments, such as
+     * {@code IF}. The elements of the given {@code sexp} are assumed to have been evaluated
      * already.
      *
-     * @param sexp An {@link SExpression} representing the arguments to this {@link Function}.
+     * @param sexp A {@link SExpression} representing the arguments to this {@link Function}.
      * @param environment Reference to the current runtime {@code Environment}.
      * @param eval Reference to the effective {@code Eval} function.
      * @return The result of applying this {@code Function} to the given {@code SExpression}.

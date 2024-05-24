@@ -12,7 +12,7 @@ import org.ulithi.jlisp.parser.Grammar;
  * class type that can represent several types of data and provides seamless transformations
  * between types when possible (e.g., number to string, or string to boolean).
  */
-public class Atom implements SExpression, Ref {
+public class Atom implements SExpression {
 
     /** An {@link Atom} representing the special {@code F} (false) value. */
     public static final Atom F = new Atom(Boolean.FALSE, Type.Boolean);
@@ -39,11 +39,10 @@ public class Atom implements SExpression, Ref {
 
     /**
      * Creates and returns a new {@link Atom}: either {@code F} if {@code ref} is {@code NIL} or
-     * {@code ref} itself if it is an {@code Atom}. Overrides the {@link SExpression} implementation
-     * to return only {@code Atoms} and handle the empty list appropriately.
+     * {@code ref} itself if it is an {@code Atom}.
      *
-     * @param ref A {@link Ref}, which may represent an {@link Atom} or a {@link List}.
-     * @return An {@link Atom} as represented by the {@code Ref}.
+     * @param ref A {@link Ref}, that represents an {@link Atom} or {@code NIL}.
+     * @return An {@link Atom} as represented by the {@code ref}.
      */
     public static Atom create (final Ref ref) {
         if (ref == NilReference.NIL) { return Atom.F; }

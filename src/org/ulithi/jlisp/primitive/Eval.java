@@ -7,7 +7,6 @@ import org.ulithi.jlisp.core.Function;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.core.Symbol;
-import org.ulithi.jlisp.exception.JLispRuntimeException;
 import org.ulithi.jlisp.exception.UndefinedSymbolException;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.Ref;
@@ -15,10 +14,7 @@ import org.ulithi.jlisp.mem.Ref;
 /**
  * Implements the LISP {@code eval} function. The {@code eval} function accepts a "form" -- a list
  * whose first element is a symbol that identifies an operator or function -- and evaluates it
- * according the LISP language semantics, returning the result as an s-expression.
- * <p>
- * This is currently a very crude albeit functional implementation, that can only handle simple
- * arithmetic expressions. It does, however, correctly implement recursive evaluation.
+ * according the LISP language semantics, returning the result as a {@link Ref}.
  */
 public class Eval {
 
@@ -28,7 +24,7 @@ public class Eval {
     /**
      * Given a "form" as an {@link SExpression}, evaluates the form and returns the result.
      *
-     * @param sexp An {@code SExpression} representing the LISP form to evaliate.
+     * @param sexp An {@code SExpression} representing the LISP form to evaluate.
      * @return The resulting value of the evaluation.
      */
     public SExpression apply(final SExpression sexp) {
@@ -46,14 +42,14 @@ public class Eval {
         if ( cell.isNil() ) { return List.create(); }
 
         // Get the root cell's first element as an s-expression.
-        final SExpression car = cellToCar(cell);
+        final SExpression car = SExpression.fromRef(cell.getFirst());
 
         // If the referee (the thing being referred to) is a list, recursively evaluate it
         // and return the result.
         if (car.isList()) { return apply((Cell) cell.getFirst()); }
 
         // If the referee is a number, return it.
-        if (car.isAtom() && ((Atom)car).isNumber()) { return car; }
+        if (car.isAtom() && ((Atom)car).isNumber()) { return car.toAtom(); }
 
         final String lexeme = car.toString();
 
@@ -70,21 +66,21 @@ public class Eval {
             val = resolveIfVariable(lexeme);
             if (val != null) { return val; }
 
-            if (car.isAtom() && (car.toAtom()).isLiteral()) { return car; }
+            if (car.isAtom() && (car.toAtom()).isLiteral()) { return car.toAtom(); }
             throw new UndefinedSymbolException("Unknown symbol: " + car);
         }
 
         Ref rest = cell.getRest();
 
         if (func.isSpecial()) {
-            return invokeFunction(func, SExpression.create(rest), env);
+            return invokeFunction(func, SExpression.fromRef(rest), env);
         } else {
             // Iterate over 'rest', evaluate each element, accumulate the results in a
-            // sexpr/cell/list, and then invoke the function at the end.
+            // list, and then invoke the function at the end.
             final List args = List.create();
 
             while (!rest.isNil()) {
-                final SExpression intermediate = apply((Cell) rest);
+                final Ref intermediate = apply((Cell) rest);
                 if (intermediate.isAtom()) {
                     args.add(intermediate.toAtom());
                 } else if (intermediate.isList()) {
@@ -171,19 +167,5 @@ public class Eval {
         } finally {
             env.endScope();
         }
-    }
-
-    /**
-     * Given a Cell, returns an s-expression represent the referee of the cell's first element.
-     * @param cell A Cell from a parse tree.
-     * @return The referee of the cell's first element, as an s-expression.
-     */
-    private static SExpression cellToCar(final Cell cell) {
-        final Ref ref = cell.getFirst();
-        // Deal with the empty list first, maybe returning ... an empty list?!
-        if (ref.isNil()) { return List.create(); }
-        if (ref.isAtom()) { return Atom.create(ref); }
-        if (ref.isCell()) { return List.create(cell.getFirst()); }
-        throw new JLispRuntimeException("Don't know how to fetch CAR of ref: " + ref);
     }
 }

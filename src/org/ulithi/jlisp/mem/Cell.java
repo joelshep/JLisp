@@ -3,7 +3,6 @@ package org.ulithi.jlisp.mem;
 import org.apache.commons.lang3.Validate;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.List;
-import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.parser.Grammar;
 
 import static org.ulithi.jlisp.mem.NilReference.NIL;
@@ -19,7 +18,7 @@ import static org.ulithi.jlisp.mem.NilReference.NIL;
  * <p>
  * Cells can also be used as "pure storage": as just a holder for a value. In a storage-only cell,
  * the {@code first} reference is the value; the {@code rest} reference is undefined (but typically
- * {@code NIL}).
+ * {@code null}).
  * <p>
  * The type of value held in a cell's {@code first} element can be determined by the {@code isAtom()},
  * {@code isList()} and {@code isNil()} methods.
@@ -241,6 +240,9 @@ public class Cell implements Ref {
         return isNil() || (first instanceof Cell);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List toList() {
         return List.create(first);
@@ -265,12 +267,12 @@ public class Cell implements Ref {
 
     /**
      * Sets the {@code car} (first/lhs) element of this {@link} cell to the {@link Atom}, Symbol
-     * or List represented by the given {@link SExpression}.
-     * @param sexp A non-null {@link SExpression}.
+     * or List represented by the given {@link Ref}.
+     * @param ref A non-null {@link Ref}.
      */
-    public void setFirst(final Ref sexp) {
-        Validate.notNull(sexp);
-        this.first = sexp;
+    public void setFirst(final Ref ref) {
+        Validate.notNull(ref);
+        this.first = ref;
     }
 
     /**

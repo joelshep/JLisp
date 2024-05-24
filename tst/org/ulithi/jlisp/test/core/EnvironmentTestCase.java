@@ -1,11 +1,11 @@
 package org.ulithi.jlisp.test.core;
 
 import org.junit.Test;
+import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Environment;
-import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.core.Function;
+import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
-import org.ulithi.jlisp.mem.Cell;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -145,7 +145,7 @@ public class EnvironmentTestCase {
 
             @Override
             public SExpression apply(SExpression sexp) {
-                return SExpression.create(Cell.create(name));
+                return Atom.create(name);
             }
         };
     }

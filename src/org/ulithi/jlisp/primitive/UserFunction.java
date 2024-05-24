@@ -53,8 +53,8 @@ public class UserFunction implements Function {
 	}
 
 	/**
-	 * Simple transforms the given SExpression representing a list of formal parameters, to a
-	 * Java list of strings with those same formal parameters, preserving order.
+	 * Transforms the given SExpression representing a list of formal parameters, to a Java list
+	 * of strings with those same formal parameters, preserving order.
 	 *
 	 * @param formals An SExpression representing a (possibly empty) list of formal function
 	 *                parameters.
@@ -152,7 +152,7 @@ public class UserFunction implements Function {
 
 	/**
 	 * Updates the given {@link Environment} with formals bound to the arguments in the given
-	 * {@link SExpression} list, and returns the body of this user function for evaluation.
+	 * {@link SExpression}, and returns the body of this user function for evaluation.
 	 *
 	 * @param sexp An {@link SExpression} representing the arguments to this {@link Function}.
 	 * @param environment Reference to the current runtime {@code Environment}.

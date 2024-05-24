@@ -8,7 +8,6 @@ import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.mem.Ref;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -19,11 +18,6 @@ import static org.ulithi.jlisp.mem.NilReference.NIL;
  * can then be evaluated as a LISP expression.
  */
 public class Parser {
-    /**
-     * An ordered list of parse trees representing individual LISP expressions, ready for evaluation.
-     */
-    private final List<PTree> expressions = new ArrayList<>();
-
     /**
      * Parses and construct parse trees for the LISP statements in the given list of tokens. Parsed
      * expressions are appended to this parser's expressions list.

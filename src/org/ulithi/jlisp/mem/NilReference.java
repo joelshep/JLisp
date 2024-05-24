@@ -2,6 +2,7 @@ package org.ulithi.jlisp.mem;
 
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.List;
+import org.ulithi.jlisp.core.SExpression;
 
 /**
  * The special {@link NilReference NIL} reference. The {@code NIL} reference is both an atom and
@@ -17,13 +18,13 @@ public final class NilReference implements Ref {
     /**
      * No construction: use the globally defined NIL object.
      */
-    private NilReference() { };
+    private NilReference() { }
 
     @Override
     public boolean isAtom() { return true; }
 
     @Override
-    public Atom toAtom() { return Atom.create(NIL); }
+    public Atom toAtom() { return Atom.create(SExpression.fromRef(NIL)); }
 
     @Override
     public boolean isList() { return true; }
