@@ -206,6 +206,14 @@ public class Cell implements Ref {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Cell toCell() {
+        return this;
+    }
+
+    /**
      * Indicates if this {@link Cell} is a storage-only {@code Cell}.
      * @return True if this {@code Cell} is storage-only, false otherwise.
      */

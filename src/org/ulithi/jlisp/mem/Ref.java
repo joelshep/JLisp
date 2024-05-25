@@ -3,6 +3,7 @@ package org.ulithi.jlisp.mem;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Bindable;
 import org.ulithi.jlisp.core.List;
+import org.ulithi.jlisp.exception.TypeConversionException;
 
 /**
  * A {@link Ref} is the concrete representation of an <em>S-Expression</em>. An S-Expression is
@@ -35,6 +36,15 @@ public interface Ref extends Bindable {
      */
     default boolean isCell() { return this instanceof Cell; }
 
+    /**
+     * If possible, returns this {@link Ref} as a {@link Cell}. Callers should check
+     * {@code isCell()} before calling this method.
+     * @return This {@link Ref} as a {@link Cell}.
+     */
+    default Cell toCell() {
+        throw new TypeConversionException("Ref is not a Cell");
+    }
+    
     /**
      * Indicates if this is a reference to a {@link List}.
      * @return True if this is a reference to a {@code List}, false otherwise.

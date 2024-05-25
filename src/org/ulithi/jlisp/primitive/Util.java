@@ -19,7 +19,7 @@ public class Util implements BindingProvider {
      */
     @Override
     public java.util.List<Binding> getBindings() {
-        return Arrays.asList(new Binding(new EQL()),
+        return Arrays.asList(new Binding(new Util.EQL()),
                              new Binding(new Util.EQUAL()));
     }
 

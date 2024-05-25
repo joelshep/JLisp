@@ -32,7 +32,7 @@ public class Predicate implements BindingProvider {
         public SExpression apply(final SExpression sexp) {
             final List args = sexp.toList();
 
-            if (args.length().toI() == 1 && args.car().isAtom()) {
+            if (args.lengthAsInt() == 1 && args.car().isAtom()) {
                 return Atom.T;
             }
 
@@ -50,7 +50,7 @@ public class Predicate implements BindingProvider {
         public SExpression apply(final SExpression sexp) {
             final List args = sexp.toList();
 
-            if (args.length().toI() == 1 &&
+            if (args.lengthAsInt() == 1 &&
                 args.car().isAtom() &&
                 args.car().toAtom().isNumber()) {
                 return Atom.T;

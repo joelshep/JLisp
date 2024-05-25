@@ -33,18 +33,15 @@ public class List implements SExpression {
     }
 
     /**
-     * Creates a new list with the given {@link Cell} as its root node.
-     * @param root A {@code Cell} representing the root node of this list.
+     * Creates a new list with the given {@link Ref} (a cell or a list) as its root node.
+     * @param ref A {@code Cell} or {@code List} representing the root node of this list.
      * @return A new {@link List}.
      */
-    public static List create(final Cell root) {
-        return new List(root);
-    }
-
     public static List create(final Ref ref) {
         assert ref != null: "Ref is null";
         if (ref.isNil()) { return List.create(); }
-        return List.create((Cell)ref);
+        if (ref.isCell()) { return new List((Cell)ref); };
+        throw new TypeConversionException("Cannot create List from Atom");
     }
 
     /**
@@ -221,7 +218,7 @@ public class List implements SExpression {
 
         while (!curr.isNil()) {
             count++;
-            curr = ((Cell)curr).getRest();
+            curr = curr.toCell().getRest();
         }
 
         return count;
@@ -257,16 +254,16 @@ public class List implements SExpression {
 
         while (!curr.isNil()) {
             if (curr.isList()) {
-                stack.add(((Cell)curr).getFirst());
+                stack.add(curr.toCell().getFirst());
             } else {
                 count++;
             }
 
-            curr = ((Cell)curr).getRest();
+            curr = curr.toCell().getRest();
         }
 
         while (!stack.isEmpty()) {
-            count += (new List((Cell)stack.remove())).sizeAsInt();
+            count += (new List(stack.remove().toCell())).sizeAsInt();
         }
 
         return count;
