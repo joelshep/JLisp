@@ -44,7 +44,7 @@ public interface Ref extends Bindable {
     default Cell toCell() {
         throw new TypeConversionException("Ref is not a Cell");
     }
-    
+
     /**
      * Indicates if this is a reference to a {@link List}.
      * @return True if this is a reference to a {@code List}, false otherwise.

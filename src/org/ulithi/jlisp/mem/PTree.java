@@ -20,7 +20,7 @@ public final class PTree {
      */
     public PTree() {
         this.root = Cell.create();
-        this.end = null;
+        this.end = this.root;
     }
 
     /**

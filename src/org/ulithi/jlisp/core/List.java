@@ -16,7 +16,7 @@ import static org.ulithi.jlisp.mem.NilReference.NIL;
 public class List implements SExpression {
 
     /** The root cell of this List. */
-    private final Cell root;
+    private Cell root;
 
     /**
      * Reference to the last top-level cell in this list: used to determine where
@@ -40,7 +40,7 @@ public class List implements SExpression {
     public static List create(final Ref ref) {
         assert ref != null: "Ref is null";
         if (ref.isNil()) { return List.create(); }
-        if (ref.isCell()) { return new List((Cell)ref); };
+        if (ref.isCell()) { return new List(ref.toCell()); }
         throw new TypeConversionException("Cannot create List from Atom");
     }
 
@@ -91,13 +91,14 @@ public class List implements SExpression {
     public List add(final Atom atom) {
         assert atom != null : "atom is null";
 
+        final Cell cell = Cell.create(atom);
+
         if (root.isNil()) {
-            root.setFirst(atom);
-            root.setRest(NIL);
+            root = cell;
             end = root;
         } else {
-            end.setRest(Cell.create(atom));
-            end = (Cell)end.getRest();
+            end.setRest(cell);
+            end = cell;
         }
 
         return this;
@@ -114,12 +115,14 @@ public class List implements SExpression {
      * @return This {@code List} with the given {@code list} added.
      */
     public List add(final List list) {
+
+        final Cell cell = Cell.createAsList(list.getRoot());
+
         if (this.isEmpty()) {
-            root.setFirst(list.getRoot());
-            root.setRest(NIL);
+            root = cell;
             end = root;
         } else {
-            end.setRest(Cell.createAsList(list.getRoot()));
+            end.setRest(cell);
             end = (Cell)end.getRest();
         }
 
@@ -138,8 +141,7 @@ public class List implements SExpression {
      */
     public List append(final List list) {
         if (this.isEmpty()) {
-            root.setFirst(list.getRoot());
-            root.setRest(NIL);
+            root = Cell.createAsList(list.getRoot());
             end = root;
         } else {
             end.setRest(list.getRoot());
