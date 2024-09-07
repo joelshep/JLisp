@@ -18,6 +18,7 @@ import static org.ulithi.jlisp.mem.NilReference.NIL;
  * can then be evaluated as a LISP expression.
  */
 public class Parser {
+
     /**
      * Parses and construct parse trees for the LISP statements in the given list of tokens. Parsed
      * expressions are appended to this parser's expressions list.
@@ -35,14 +36,12 @@ public class Parser {
             return new PTree(Cell.createStorage(ref));
         }
 
-        return parseList(tokens);
+        final PTree pTree = parseList(tokens);
+
+        return postProcess(pTree);
     }
 
     private PTree parseList(final List<String> tokens) {
-        if (tokens == null) {
-            throw new JLispRuntimeException("Unexpected null token list");
-        }
-
         final Stack<PTree> stack = new Stack<>();
         PTree pTree = new PTree();
         boolean outer = true;
@@ -86,5 +85,46 @@ public class Parser {
         }
 
         return Atom.create(token);
+    }
+
+    /**
+     * Performs post-processing on a fully parsed PTree. At this time, this only serves to handle
+     * the ' => QUOTE transformation.
+     *
+     * @param pTree A fully parsed PTree.
+     * @return A new PTree, based on the given PTree with any applied transformations.
+     */
+    private static void depthFirstTraversal(Cell node) {
+        if (node == null || node.isNil()) { return; }
+
+        do {
+            if (node.isList()) {
+                depthFirstTraversal(org.ulithi.jlisp.core.List.create(node.getFirst()).toList().getRoot());
+            } else {
+                processNode(node);
+            }
+            if (node.getRest().isNil()) { break; }
+            node = (Cell)node.getRest();
+        } while (!node.isNil());
+    }
+
+    private static void processNode(final Cell node) {
+        if (node.getFirst().isAtom() && ((Atom)node.getFirst()).toS().equals("'")) {
+            node.setFirst(Atom.create("QUOTE"));
+
+            if (node.getRest().isCell() && !((Cell)node.getRest()).isAtom()) {
+                node.setRest(Cell.createAsList((Cell)node.getRest()));
+            }
+        }
+        System.out.println(node);
+    }
+
+    private static void processNode(final Ref ref) {
+        System.out.println(ref);
+    }
+
+    private static PTree postProcess(final PTree pTree) {
+        depthFirstTraversal(pTree.root());
+        return pTree;
     }
 }

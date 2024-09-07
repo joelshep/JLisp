@@ -275,12 +275,28 @@ public class LangTestCase {
     }
 
     @Test
+    public void testSingleQuoteStringLiteral() {
+        final String expression = "'FOO";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertEquals("FOO", sexp.toString());
+    }
+
+    @Test
     public void testQuoteStringLiteral() {
         //(QUOTE FOO) => FOO
         final String expression = "(QUOTE FOO)";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isAtom());
         assertEquals("FOO", sexp.toString());
+    }
+
+    @Test
+    public void testSingleQuoteList() {
+        final String expression = "'(FOO BAR)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isList());
+        assertEquals("(FOO . (BAR . NIL))", sexp.toString());
     }
 
     @Test
