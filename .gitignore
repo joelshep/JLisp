@@ -1,5 +1,8 @@
 .idea
 *.iml
 out/
+target/
 README.OLD
 Runfile
+SAVE/
+JLisp-UML.png
