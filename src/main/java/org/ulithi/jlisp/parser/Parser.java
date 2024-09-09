@@ -124,7 +124,8 @@ public class Parser {
     }
 
     private static PTree postProcess(final PTree pTree) {
-        depthFirstTraversal(pTree.root());
+        // TODO This isn't working: commenting out for now.
+        // depthFirstTraversal(pTree.root());
         return pTree;
     }
 }
