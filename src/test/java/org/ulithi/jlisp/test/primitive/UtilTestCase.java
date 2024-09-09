@@ -44,9 +44,6 @@ public class UtilTestCase {
         assertFalse(sexp.toAtom().toB());
     }
 
-    /**
-     * TODO - This test probably should pass. Need to figure out how to memoize an empty list.
-     */
     @Test
     public void testEmptyListsAreEql() {
         final String expression = "(EQL (QUOTE ()) (QUOTE ()))";

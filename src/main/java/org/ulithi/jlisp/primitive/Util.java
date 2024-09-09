@@ -49,6 +49,8 @@ public class Util implements BindingProvider {
                 final SExpression rhs = it.car();
                 if (lhs.isAtom() && rhs.isAtom()) {
                     result = lhs.toAtom().eql(rhs.toAtom());
+                } else if (lhs.isList() && rhs.isList()) {
+                    result = lhs.toList().isEmpty() && rhs.toList().isEmpty();
                 } else {
                     result = (lhs == it.car());
                 }
