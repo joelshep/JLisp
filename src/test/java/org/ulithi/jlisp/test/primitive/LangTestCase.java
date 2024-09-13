@@ -104,7 +104,7 @@ public class LangTestCase {
 
     @Test
     public void testConsEmptyListToEmptyList() {
-        final String expression = "(CONS () ()))";
+        final String expression = "(CONS () ())";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isList());
         assertTrue(sexp.toList().isEmpty());
@@ -274,7 +274,6 @@ public class LangTestCase {
         assertEquals("FOO", result.toString());
     }
 
-    @Ignore  // TODO
     @Test
     public void testSingleQuoteStringLiteral() {
         final String expression = "'FOO";
@@ -292,13 +291,20 @@ public class LangTestCase {
         assertEquals("FOO", sexp.toString());
     }
 
-    @Ignore  // TODO
     @Test
     public void testSingleQuoteList() {
         final String expression = "'(FOO BAR)";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isList());
         assertEquals("(FOO . (BAR . NIL))", sexp.toString());
+    }
+
+    @Test
+    public void testSingleQuoteListWithNestedQuote() {
+        final String expression = "'(FOO BAR 'BAZ)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isList());
+        assertEquals("(FOO . (BAR . (' . (BAZ . NIL))))", sexp.toString());
     }
 
     @Test

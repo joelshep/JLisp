@@ -53,6 +53,9 @@ public class Grammar {
     /** Dot symbol (for S-Expressions) **/
     public static final String DOT = ".";
 
+    /** Single quote (shorthand for QUOTE) **/
+    public static final String QUOTE = "'";
+
     /** Left parenthesis. */
     public static final String LPAREN = "(";
 

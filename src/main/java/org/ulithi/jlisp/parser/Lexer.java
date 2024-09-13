@@ -62,12 +62,12 @@ public class Lexer {
 	 * @return An ordered list of Lisp language tokens extracted from the given string.
 	 */
 	private static List<String> tokenize(final String s) {
-		int i = 0;
-		final List<String> tokens = new ArrayList<>();
-
 		if (s.length() == 1) {
 			return Collections.singletonList(s);
 		}
+
+		int i = 0;
+		final List<String> tokens = new ArrayList<>();
 
 		while (i < s.length()) {
 			int j = i + 1;

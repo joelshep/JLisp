@@ -2,7 +2,6 @@ package org.ulithi.jlisp.parser;
 
 import org.ulithi.jlisp.commons.CollectionUtils;
 import org.ulithi.jlisp.core.Atom;
-import org.ulithi.jlisp.exception.JLispRuntimeException;
 import org.ulithi.jlisp.exception.ParseException;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.PTree;
@@ -28,7 +27,7 @@ public class Parser {
      */
     public PTree parse(final List<String> tokens) {
         if (CollectionUtils.isEmpty(tokens)) {
-            throw new ParseException("Can't parse empty expression");
+            return new PTree();
         }
 
         if (tokens.size() == 1) {
@@ -36,32 +35,46 @@ public class Parser {
             return new PTree(Cell.createStorage(ref));
         }
 
-        final PTree pTree = parseList(tokens);
-
-        return postProcess(pTree);
+        return parseTokens(tokens);
     }
 
-    private PTree parseList(final List<String> tokens) {
+    private static PTree parseTokens(final List<String> tokens) {
         final Stack<PTree> stack = new Stack<>();
         PTree pTree = new PTree();
-        boolean outer = true;
+        boolean sublist = false;
+        int depth = 0;
+        boolean inQuote = false;
+        int quoteDepth = 0;
 
         for (final String token: tokens) {
-            if (token.equals(Grammar.LPAREN)) {
-                if (!outer) {
+            if (token.equals(Grammar.QUOTE) && !inQuote) {
+                inQuote = true;
+                quoteDepth = depth;
+                sublist = true;
+                pTree.add(Cell.create(parseToken("QUOTE")));
+            } else if (token.equals(Grammar.LPAREN)) {
+                if (sublist) {
                     stack.push(pTree);
                     pTree = new PTree();
                 }
-                outer = false;
+                sublist = true;
+                depth++;
             } else if (token.equals(Grammar.RPAREN)) {
                 if (!stack.empty()) {
                     final PTree newOne = pTree;
                     pTree = stack.pop();
                     pTree.addList(newOne.root());
                 }
+                depth--;
+                if (quoteDepth == depth) { inQuote = false; }
             } else {
                 pTree.add(Cell.create(parseToken(token)));
+                if (quoteDepth == depth) { inQuote = false; }
             }
+        }
+
+        if (depth != 0) {
+            throw new ParseException("Mismatched parentheses");
         }
 
         return pTree;
@@ -85,47 +98,5 @@ public class Parser {
         }
 
         return Atom.create(token);
-    }
-
-    /**
-     * Performs post-processing on a fully parsed PTree. At this time, this only serves to handle
-     * the ' => QUOTE transformation.
-     *
-     * @param pTree A fully parsed PTree.
-     * @return A new PTree, based on the given PTree with any applied transformations.
-     */
-    private static void depthFirstTraversal(Cell node) {
-        if (node == null || node.isNil()) { return; }
-
-        do {
-            if (node.isList()) {
-                depthFirstTraversal(org.ulithi.jlisp.core.List.create(node.getFirst()).toList().getRoot());
-            } else {
-                processNode(node);
-            }
-            if (node.getRest().isNil()) { break; }
-            node = (Cell)node.getRest();
-        } while (!node.isNil());
-    }
-
-    private static void processNode(final Cell node) {
-        if (node.getFirst().isAtom() && ((Atom)node.getFirst()).toS().equals("'")) {
-            node.setFirst(Atom.create("QUOTE"));
-
-            if (node.getRest().isCell() && !((Cell)node.getRest()).isAtom()) {
-                node.setRest(Cell.createAsList((Cell)node.getRest()));
-            }
-        }
-        System.out.println(node);
-    }
-
-    private static void processNode(final Ref ref) {
-        System.out.println(ref);
-    }
-
-    private static PTree postProcess(final PTree pTree) {
-        // TODO This isn't working: commenting out for now.
-        // depthFirstTraversal(pTree.root());
-        return pTree;
     }
 }

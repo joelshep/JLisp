@@ -3,13 +3,16 @@ package org.ulithi.jlisp.test.parser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.ulithi.jlisp.exception.ParseException;
 import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.parser.Parser;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Basic unit tests for {@link org.ulithi.jlisp.parser.Parser} and related classes. At the
@@ -33,13 +36,39 @@ public class ParserTestCase {
         this.parser = null;
     }
 
+    @Test
+    public void testUnbalancedExtraParenthesis() {
+        final List<String> tokens = Arrays.asList("(", "(", "CAR", "(", "QUOTE", "FOO", ")", ")");
+
+        try {
+            parser.parse(tokens);
+            fail("Parser should throw exception if unbalanced parentheses");
+        } catch (final ParseException e) {
+            // Expected.
+            assertEquals("Mismatched parentheses", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testUnbalancedMissingParenthesis() {
+        final List<String> tokens = Arrays.asList("(", "CAR", "(", "QUOTE", "FOO", ")");
+
+        try {
+            parser.parse(tokens);
+            fail("Parser should throw exception if unbalanced parentheses");
+        } catch (final ParseException e) {
+            // Expected.
+            assertEquals("Mismatched parentheses", e.getMessage());
+        }
+    }
+
     /**
      * Parses a numeric literal.
      */
     @Test
     public void parseNumericLiteral() {
         // 43 => (43 . null)
-        final List<String> tokens = Arrays.asList("43");
+        final List<String> tokens = Collections.singletonList("43");
         final String expected = "(43 . null)";
         parseAndValidate(parser, tokens, expected);
     }

@@ -64,9 +64,7 @@ public final class REPL {
 				System.err.flush();
 				safeSleep(20); // Blech. But it helps ...
 
-				if (ok) {
-					//System.out.println(ACK);
-				} else {
+				if (!ok) {
 					System.out.println();
 				}
 			}
