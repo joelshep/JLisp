@@ -5,6 +5,8 @@ import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.parser.Grammar;
 
+import java.util.Objects;
+
 import static org.ulithi.jlisp.mem.NilReference.NIL;
 
 /**
@@ -186,7 +188,7 @@ public class Cell implements Ref {
      * @param rest The new Cell's {@code rest} element.
      */
     private Cell(final Ref first, final Ref rest) {
-        Validate.notNull(first);
+        Objects.requireNonNull(first);
         this.first = first;
         this.rest = rest;
         this.isStorage = false;
@@ -199,7 +201,7 @@ public class Cell implements Ref {
      * @param first The new Cell's {@code first} element.
      */
     private Cell(final Ref first) {
-        Validate.notNull(first);
+        Objects.requireNonNull(first);
         this.first = first;
         this.rest = null;
         this.isStorage = true;
@@ -279,7 +281,7 @@ public class Cell implements Ref {
      * @param ref A non-null {@link Ref}.
      */
     public void setFirst(final Ref ref) {
-        Validate.notNull(ref);
+        Objects.requireNonNull(ref);
         this.first = ref;
     }
 
@@ -297,7 +299,7 @@ public class Cell implements Ref {
      * @param ref A non-null {@link Ref}.
      */
     public void setRest(final Ref ref) {
-        Validate.notNull(ref);
+        Objects.requireNonNull(ref);
         this.rest = ref;
     }
 
