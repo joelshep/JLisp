@@ -1,10 +1,11 @@
 package org.ulithi.jlisp.core;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.ulithi.jlisp.exception.TypeConversionException;
 import org.ulithi.jlisp.mem.NilReference;
 import org.ulithi.jlisp.mem.Ref;
 import org.ulithi.jlisp.parser.Grammar;
+
+import java.util.Objects;
 
 /**
  * An {@link Atom} is an indivisible unit of literal data (e.g., number, boolean or character
@@ -89,7 +90,7 @@ public class Atom implements SExpression {
     /**
      * Creates a new Atom with the given value and specified underlying type.
      *
-     * @param value The underlying value of this Atom.
+     * @param value The value of this Atom.
      * @param type The native data type of the given value.
      */
     private Atom(final Object value, final Type type) {
@@ -216,6 +217,6 @@ public class Atom implements SExpression {
      */
     public boolean eql(final Atom rhs) {
         return (this.type == rhs.type &&
-                ObjectUtils.equals(this.value, rhs.value));
+                Objects.equals(this.value, rhs.value));
     }
 }
