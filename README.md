@@ -3,6 +3,24 @@
 Greenspun's Tenth Rule: Any sufficiently complicated C or Fortran program contains an ad hoc,
 informally-specified, bug-ridden, slow implementation of half of Common Lisp.
 
+## Quick Start
+
+JLISP is a standard Maven-based project, with minimal dependencies. As supplied, it compiles
+with JDK-17 but will probably compile with older versions as well.
+
+A simple REPL is included with the project, in the ```main``` package. As written, it depends
+on a simple "console" app, included in this project.
+
+To build an executable jar:
+
+```mvn clean package```
+
+To run the JLisp REPL:
+
+```java -jar target/org-ulithi-jlisp-0.1-SNAPSHOT.jar```
+
+See Functions.md for some information about the built-in functions in the JLisp interpreter.
+
 ## Introduction
 
 JLISP is a LISP interpreter and REPL (Read-Evaluate-Print-Loop), implemented in Java.
@@ -158,7 +176,7 @@ Finally, the "dynamic" section is where dynamically-scoped bindings are created 
 Bindings in the "dynamic" section can shadow other bindings in the "dynamic" and "extension"
 sections for as long as the related dynamic scope is active.
 
-Implementation-wise, the environment is a list of maps. The outer-most list contains
+Implementation-wise, the environment is a list of maps. The outermost list contains
 the "core" section, any "extension" sub-environments in the order in which they are registered, and
 then the dynamic sub-environments. Every function invocation results in a new sub-environment being
 appended to the list -- for symbols defined in the dynamic scope of the function -- which is removed

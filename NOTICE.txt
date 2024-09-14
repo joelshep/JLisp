@@ -1,0 +1,10 @@
+org-ulithi-jlisp
+Copyright 2024 Joel Shepherd
+
+Licensed under the MIT License. See LICENSE.txt for details.
+
+Console library licensed under the Code Project Open License (CPOL). See
+org.ulithi.console package-info.java for details.
+
+This is a "toy" LISP interpreter, implemented primarily as a way to teach myself
+about LISP and programming language interpreter construction.
