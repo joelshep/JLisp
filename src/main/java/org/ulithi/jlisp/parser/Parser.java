@@ -41,35 +41,39 @@ public class Parser {
     private static PTree parseTokens(final List<String> tokens) {
         final Stack<PTree> stack = new Stack<>();
         PTree pTree = new PTree();
-        boolean sublist = false;
+        boolean inlist = false;
         int depth = 0;
-        boolean inQuote = false;
-        int quoteDepth = 0;
+        int quoteDepth = -1;
 
         for (final String token: tokens) {
-            if (token.equals(Grammar.QUOTE) && !inQuote) {
-                inQuote = true;
-                quoteDepth = depth;
-                sublist = true;
-                pTree.add(Cell.create(parseToken("QUOTE")));
-            } else if (token.equals(Grammar.LPAREN)) {
-                if (sublist) {
-                    stack.push(pTree);
-                    pTree = new PTree();
-                }
-                sublist = true;
-                depth++;
-            } else if (token.equals(Grammar.RPAREN)) {
-                if (!stack.empty()) {
-                    final PTree newOne = pTree;
-                    pTree = stack.pop();
-                    pTree.addList(newOne.root());
-                }
-                depth--;
-                if (quoteDepth == depth) { inQuote = false; }
-            } else {
-                pTree.add(Cell.create(parseToken(token)));
-                if (quoteDepth == depth) { inQuote = false; }
+            switch (token) {
+                case Grammar.LPAREN:
+                    if (inlist) {
+                        stack.push(pTree);
+                        pTree = new PTree();
+                    }
+                    inlist = true;
+                    depth++;
+                    break;
+                case Grammar.RPAREN:
+                    if (!stack.empty()) {
+                        final PTree newOne = pTree;
+                        pTree = stack.pop();
+                        pTree.addList(newOne.root());
+                    }
+                    depth--;
+                    if (quoteDepth == depth) { quoteDepth = -1; }
+                    break;
+                case Grammar.QUOTE:
+                    if (quoteDepth < 0) {
+                        quoteDepth = depth;
+                        inlist = true;
+                        pTree.add(Cell.create(parseToken("QUOTE")));
+                        break;
+                    }
+                default:
+                    pTree.add(Cell.create(parseToken(token)));
+                    if (quoteDepth == depth) { quoteDepth = -1; }
             }
         }
 
