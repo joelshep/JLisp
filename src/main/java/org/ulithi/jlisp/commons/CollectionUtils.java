@@ -10,7 +10,7 @@ public class CollectionUtils {
     /**
      * Indicates if the given {@link Collection} is null or empty.
      * @param collection A {@link Collection} object.
-     * @return True if the {@link Collection} is not null and not empty, false otherwise.
+     * @return True if the {@link Collection} is null or empty, false otherwise.
      */
     public static <T> boolean isEmpty(final Collection<T> collection) {
         return (collection == null || collection.isEmpty());
