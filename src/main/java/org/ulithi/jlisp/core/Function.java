@@ -1,6 +1,5 @@
 package org.ulithi.jlisp.core;
 
-import org.ulithi.jlisp.mem.Ref;
 import org.ulithi.jlisp.primitive.Eval;
 
 /**
