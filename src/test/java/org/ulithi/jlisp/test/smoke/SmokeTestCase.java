@@ -29,6 +29,6 @@ public class SmokeTestCase {
     public void evaluateCarCdrExpression() {
         final String expression = "(CDR (CAR (QUOTE ((1 2 3) (4 5 6)) ) ) )";
         final String result = evaluate(expression).toString();
-        assertEquals("(2 . (3 . NIL))", result);
+        assertEquals("( 2 3 )", result);
     }
 }

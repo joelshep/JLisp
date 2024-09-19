@@ -49,7 +49,7 @@ public class SExpressionTestCase {
         SExpression sexp = SExpression.fromRef(cell);
         assertFalse(sexp.isAtom());
         assertTrue(sexp.isList());
-        assertEquals("(HELLO . NIL)", String.valueOf(sexp));
+        assertEquals("( HELLO )", String.valueOf(sexp));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class SExpressionTestCase {
         SExpression sexp = SExpression.fromRef(cell);
         assertFalse(sexp.isAtom());
         assertTrue(sexp.isList());
-        assertEquals("(1234 . NIL)", String.valueOf(sexp));
+        assertEquals("( 1234 )", String.valueOf(sexp));
 
         final Ref ref = cell.getFirst();
         sexp = SExpression.fromRef(ref);
@@ -73,7 +73,7 @@ public class SExpressionTestCase {
         SExpression sexp = SExpression.fromRef(trueCell);
         assertFalse(sexp.isAtom());
         assertTrue(sexp.isList());
-        assertEquals("(T . NIL)", String.valueOf(sexp));
+        assertEquals("( T )", String.valueOf(sexp));
 
         Ref ref = trueCell.getFirst();
         sexp = SExpression.fromRef(ref);
@@ -83,7 +83,7 @@ public class SExpressionTestCase {
         sexp = SExpression.fromRef(falseCell);
         assertFalse(sexp.isAtom());
         assertTrue(sexp.isList());
-        assertEquals("(F . NIL)", String.valueOf(sexp));
+        assertEquals("( F )", String.valueOf(sexp));
 
         ref = falseCell.getFirst();
         sexp = SExpression.fromRef(ref);
@@ -96,7 +96,7 @@ public class SExpressionTestCase {
         final PTree pTree = parse(expression);
         SExpression sexp = SExpression.fromRef(pTree.root());
         assertTrue(sexp.isList());
-        assertEquals("(1 . (2 . (3 . (4 . NIL))))", String.valueOf(sexp));
+        assertEquals("( 1 2 3 4 )", String.valueOf(sexp));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class SExpressionTestCase {
         final PTree pTree = parse(expression);
         SExpression sexp = SExpression.fromRef(pTree.root().getFirst());
         assertTrue(sexp.isList());
-        assertEquals("(A . (B . (C . NIL)))", String.valueOf(sexp));
+        assertEquals("( A B C )", String.valueOf(sexp));
     }
 
     @Test
@@ -123,6 +123,6 @@ public class SExpressionTestCase {
         final PTree pTree = parse(expression);
         SExpression sexp = SExpression.fromRef(pTree.root().getRest());
         assertTrue(sexp.isList());
-        assertEquals("(B . (C . (D . NIL)))", String.valueOf(sexp));
+        assertEquals("( B C D )", String.valueOf(sexp));
     }
 }

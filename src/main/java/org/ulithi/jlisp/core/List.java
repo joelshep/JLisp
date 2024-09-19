@@ -3,6 +3,7 @@ package org.ulithi.jlisp.core;
 import org.ulithi.jlisp.exception.JLispRuntimeException;
 import org.ulithi.jlisp.exception.TypeConversionException;
 import org.ulithi.jlisp.mem.Cell;
+import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.mem.Ref;
 
 import java.util.LinkedList;
@@ -275,6 +276,7 @@ public class List implements SExpression {
      * {@inheritDoc}
      */
     public String toString() {
-        return String.valueOf(root);
+        PTree pTree = new PTree(root);
+        return pTree.unparse();
     }
 }

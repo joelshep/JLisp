@@ -55,7 +55,7 @@ public class LangTestCase {
     public void testCAROfListOfLists() {
         final String expression = "(CAR (QUOTE ((A B) (C D) (E F))))";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
-        assertEquals("(A . (B . NIL))", sexp.toList().toString()); //String.valueOf(list));
+        assertEquals("( A B )", sexp.toList().toString()); //String.valueOf(list));
     }
 
     @Test
@@ -91,14 +91,14 @@ public class LangTestCase {
     public void testCDROfSimpleList() {
         final String expression = "(CDR (QUOTE (4 5 6)))";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
-        assertEquals("(5 . (6 . NIL))", sexp.toList().toString());
+        assertEquals("( 5 6 )", sexp.toList().toString());
     }
 
     @Test
     public void testCDROfListOfLists() {
         final String expression = "(CDR (QUOTE ((A B) (C D) (E F))))";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
-        assertEquals("((C . (D . NIL)) . ((E . (F . NIL)) . NIL))", sexp.toList().toString());
+        assertEquals("( ( C D ) ( E F ) )", sexp.toList().toString());
     }
 
     @Test
@@ -134,7 +134,7 @@ public class LangTestCase {
         // (CONS 1 (QUOTE (2 3))) => (1 2 3)
         final String expression = "(CONS 1 (QUOTE (2 3)))";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
-        assertEquals("(1 . (2 . (3 . NIL)))", String.valueOf(sexp));
+        assertEquals("( 1 2 3 )", String.valueOf(sexp));
     }
 
     @Test
@@ -142,7 +142,7 @@ public class LangTestCase {
         // CONS HELLO () -> (HELLO)   (HELLO . NIL)
         final String expression = "(CONS HELLO ())";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
-        assertEquals("(HELLO . NIL)", String.valueOf(sexp));
+        assertEquals("( HELLO )", String.valueOf(sexp));
     }
 
     @Test
@@ -150,7 +150,7 @@ public class LangTestCase {
         // CONS (PHONE HOME) () -> ((PHONE HOME))  ((PHONE . (HOME . NIL)) . NIL)
         final String expression = "(CONS (QUOTE (PHONE HOME)) ())";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
-        assertEquals("((PHONE . (HOME . NIL)) . NIL)", String.valueOf(sexp));
+        assertEquals("( ( PHONE HOME ) )", String.valueOf(sexp));
     }
 
     @Test
@@ -158,7 +158,7 @@ public class LangTestCase {
         // CONS BAR (BAZ) -> (BAR BAZ)  (BAR . (BAZ . ))
         final String expression = "(CONS (QUOTE BAR) (QUOTE (BAZ)))";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
-        assertEquals("(BAR . (BAZ . NIL))", String.valueOf(sexp));
+        assertEquals("( BAR BAZ )", String.valueOf(sexp));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class LangTestCase {
         // CONS FOO (CONS BAR (BAZ)) -> (FOO BAR BAZ)  (FOO . (BAR . (BAZ . NIL)))
         final String expression = "(CONS (QUOTE FOO) (CONS (QUOTE BAR) (QUOTE (BAZ))))";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
-        assertEquals("(FOO . (BAR . (BAZ . NIL)))", String.valueOf(sexp));
+        assertEquals("( FOO BAR BAZ )", String.valueOf(sexp));
     }
 
     @Test
@@ -174,12 +174,11 @@ public class LangTestCase {
         // CONS (NOW IS) (THE TIME) -> ((NOW IS) THE TIME)  ((NOW . (IS . NIL)) . (THE . (TIME . NIL)))
         final String expression = "(CONS (QUOTE (NOW IS)) (QUOTE (THE TIME)))";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
-        assertEquals("((NOW . (IS . NIL)) . (THE . (TIME . NIL)))", String.valueOf(sexp));
+        assertEquals("( ( NOW IS ) THE TIME )", String.valueOf(sexp));
         assertEquals(3, sexp.toList().length().toAtom().toI());
     }
 
     @Test
-    @Ignore
     public void evaluateCarExpression() {
         final SExpression sexp = UnitTestUtilities.evaluate("( CAR () )");
         assertTrue(sexp.isList());
@@ -197,21 +196,21 @@ public class LangTestCase {
     public void evaluateCdrConsExpression() {
         final String expression = "(CDR (CONS x y))";
         final String result = UnitTestUtilities.evaluate(expression).toList().toString();
-        assertEquals("(y . NIL)", result);
+        assertEquals("( y )", result);
     }
 
     @Test
     public void evaluateCdrConsListExpression() {
         final String expression = "(CDR (CONS x (PLUS 1 2)))";
         final String result = UnitTestUtilities.evaluate(expression).toList().toString();
-        assertEquals("(3 . NIL)", result);
+        assertEquals("( 3 )", result);
     }
 
     @Test
     public void evaluateConsExpression() {
         final String expression = "(CONS x y)";
         final String result = UnitTestUtilities.evaluate(expression).toList().toString();
-        assertEquals("(x . (y . NIL))", result);
+        assertEquals("( x y )", result);
     }
 
     /**
@@ -303,7 +302,7 @@ public class LangTestCase {
         final String expression = "'(FOO BAR)";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isList());
-        assertEquals("(FOO . (BAR . NIL))", sexp.toString());
+        assertEquals("( FOO BAR )", sexp.toString());
     }
 
     @Test
@@ -311,7 +310,7 @@ public class LangTestCase {
         final String expression = "'(FOO BAR 'BAZ)";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isList());
-        assertEquals("(FOO . (BAR . (' . (BAZ . NIL))))", sexp.toString());
+        assertEquals("( FOO BAR ' BAZ )", sexp.toString());
     }
 
     @Test
@@ -320,7 +319,7 @@ public class LangTestCase {
         final String expression = "(QUOTE (FOO BAR))";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isList());
-        assertEquals("(FOO . (BAR . NIL))", sexp.toString());
+        assertEquals("( FOO BAR )", sexp.toString());
     }
 
     @Test
@@ -329,7 +328,7 @@ public class LangTestCase {
         final String expression = "(QUOTE ((FOO BAR) (BAZ QUX)))";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
         assertTrue(sexp.isList());
-        assertEquals("((FOO . (BAR . NIL)) . ((BAZ . (QUX . NIL)) . NIL))", sexp.toString());
+        assertEquals("( ( FOO BAR ) ( BAZ QUX ) )", sexp.toString());
         assertEquals(2, sexp.toList().length().toI());
     }
 }

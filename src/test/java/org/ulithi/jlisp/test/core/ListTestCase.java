@@ -19,7 +19,7 @@ public class ListTestCase {
         final List list = List.create();
         assertTrue(list.isEmpty());
         assertEquals(0, list.length().toI());
-        assertEquals("(NIL . NIL)", list.toString());
+        assertEquals("NIL", list.toString());
     }
 
     @Test
@@ -27,7 +27,7 @@ public class ListTestCase {
         final List list = List.create(Cell.create("OCEAN"));
         assertFalse(list.isEmpty());
         assertEquals(1, list.length().toI());
-        assertEquals("(OCEAN . NIL)", list.toString());
+        assertEquals("( OCEAN )", list.toString());
     }
 
     @Test
@@ -36,7 +36,7 @@ public class ListTestCase {
                 .add(Atom.create("HELLO"))
                 .add(newSublist("THERE", "YOU"));
         assertEquals(2, list.length().toI());
-        assertEquals("(HELLO . ((THERE . (YOU . NIL)) . NIL))", list.toString());
+        assertEquals("( HELLO ( THERE YOU ) )", list.toString());
     }
 
     @Test
@@ -46,7 +46,7 @@ public class ListTestCase {
                 .add(newSublist("THERE", "YOU"))
                 .add(newSublist("PRETTY", "GIRL"));
         assertEquals(3, list.length().toI());
-        assertEquals("(HELLO . ((THERE . (YOU . NIL)) . ((PRETTY . (GIRL . NIL)) . NIL)))", list.toString());
+        assertEquals("( HELLO ( THERE YOU ) ( PRETTY GIRL ) )", list.toString());
     }
 
     @Test
@@ -55,7 +55,7 @@ public class ListTestCase {
                 .add(Atom.create("HELLO"))
                 .append(newSublist("THERE", "YOU"));
         assertEquals(3, list.length().toI());
-        assertEquals("(HELLO . (THERE . (YOU . NIL)))", list.toString());
+        assertEquals("( HELLO THERE YOU )", list.toString());
     }
 
     @Test
@@ -65,7 +65,7 @@ public class ListTestCase {
                 .append(newSublist("THERE", "YOU"))
                 .append(newSublist("PRETTY", "GIRL"));
         assertEquals(5, list.length().toI());
-        assertEquals("(HELLO . (THERE . (YOU . (PRETTY . (GIRL . NIL)))))", list.toString());
+        assertEquals("( HELLO THERE YOU PRETTY GIRL )", list.toString());
     }
 
     @Test
@@ -104,8 +104,6 @@ public class ListTestCase {
         final List outerList = List.create()
                 .add(Atom.create("BUT"))
                 .add(innerList);
-
-        System.out.println(outerList);
 
         assertEquals(6, outerList.size().toI());
     }

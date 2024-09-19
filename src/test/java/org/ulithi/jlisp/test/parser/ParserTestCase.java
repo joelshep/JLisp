@@ -161,6 +161,5 @@ public class ParserTestCase {
         PTree ptree = parser.parse(tokens);
         final String dpExpression = ptree.toString();
         assertEquals(expected, dpExpression);
-        System.out.println(ptree);
     }
 }

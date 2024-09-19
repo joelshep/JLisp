@@ -35,7 +35,7 @@ public class CellTestCase {
         assertEquals(Atom.F, atom);
         final List list = List.create(cell);
         assertTrue(list.isEmpty());
-        assertEquals("(NIL . NIL)", list.toString());
+        assertEquals("NIL", list.toString());
     }
 
     /**
@@ -56,7 +56,7 @@ public class CellTestCase {
         assertEquals(Atom.F, cell.toAtom());
         final List list = List.create(cell);
         assertFalse(list.isEmpty());
-        assertEquals("(F . NIL)", list.toString());
+        assertEquals("( F )", list.toString());
     }
 
     @Test
