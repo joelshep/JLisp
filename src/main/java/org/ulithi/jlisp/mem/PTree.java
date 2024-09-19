@@ -42,6 +42,14 @@ public final class PTree {
     }
 
     /**
+     * Indicates if this {@link PTree} is empty (contains no data but NIL) or not.
+     * @return True if this {@link PTree} is empty, false otherwise.
+     */
+    public boolean isEmpty() {
+        return this.root.isNil();
+    }
+
+    /**
      * Adds a {@link Cell} to this {@link PTree}. If this {@code PTree} is currently empty (root
      * cell is the NIL cell), the given {@code Cell} becomes the root cell of the tree. Otherwise,
      * it is added as the {@code rest} element of the "end" cell.
@@ -87,5 +95,58 @@ public final class PTree {
     @Override
     public String toString() {
         return String.valueOf(root);
+    }
+
+    /**
+     * Constructs and returns a valid LISP expression from this parse tree.
+     *
+     * @return An equivalent expression for this parse tree.
+     */
+    public String unparse() {
+        if (root.isNil()) { return "NIL"; }
+
+        final Ref curr = root;
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append("(");
+        printRef(curr, sb);
+        sb.append(" )");
+
+        return sb.toString();
+    }
+
+    /**
+     * Constructs and returns a valid LISP expression from the given parse tree.
+     *
+     * @param pTree The parse tree to create an expression from.
+     * @return An equivalent expression for the parse tree.
+     */
+    private String unparse(final PTree pTree) {
+        return pTree.unparse();
+    }
+
+    /**
+     * Appends a valid LISP expression for ref to the given StringBuilder.
+     * @param ref A LISP atom or list.
+     * @param sb A StringBuilder instance.
+     */
+    private void printRef(Ref ref, final StringBuilder sb) {
+        if (ref.isAtom()) {
+            sb.append(ref.toAtom().toS());
+            return;
+        }
+
+        while (!ref.isNil()) {
+            sb.append(" ");
+            final Cell cell = ref.toCell();
+
+            if (cell.isList()) {
+                sb.append(unparse(new PTree(cell.getFirst().toCell())));
+            } else {
+                sb.append(cell.toAtom().toS());
+            }
+
+            ref = ref.toCell().getRest();
+        }
     }
 }
