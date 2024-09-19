@@ -191,8 +191,7 @@ public class Atom implements SExpression {
      */
     public final String toS() {
         if (this.type == Type.Boolean) { return ((Boolean)value) ? Grammar.T : Grammar.F; }
-        if (this.type != Type.Symbol) { return String.valueOf(value); }
-        throw new TypeConversionException("Can't convert symbol to character string");
+        return String.valueOf(value);
     }
 
     /**
