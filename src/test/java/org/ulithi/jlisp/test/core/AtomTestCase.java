@@ -162,12 +162,7 @@ public class AtomTestCase {
         assertFalse(atom.isNil());
         assertFalse(atom.isNumber());
         assertTrue(atom.isSymbol());
-        try {
-            atom.toS();
-            fail("Expected TypeConversionException not thrown");
-        } catch (TypeConversionException e) {
-            // Expected.
-        }
+        assertEquals("FOO", atom.toS());
 
         try {
             atom.toB();
