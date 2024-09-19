@@ -19,8 +19,7 @@ import static org.ulithi.jlisp.mem.NilReference.NIL;
 public class Parser {
 
     /**
-     * Parses and construct parse trees for the LISP statements in the given list of tokens. Parsed
-     * expressions are appended to this parser's expressions list.
+     * Parses and construct parse trees for the LISP statements in the given list of tokens.
      *
      * @param tokens An ordered list of LISP language tokens produced by lexical analysis of one
      *               or more LISP expressions.
@@ -38,6 +37,14 @@ public class Parser {
         return parseTokens(tokens);
     }
 
+    /**
+     * Parses a list of tokens representing a LISP statement and returns the resulting parse
+     * tree.
+
+     * @param tokens An ordered list of LISP language tokens produced by lexical analysis of a
+     *               LISP expression.
+     * @return A {@link PTree parse tree} representing the expression and ready for evaluation.
+     */
     private static PTree parseTokens(final List<String> tokens) {
         final Stack<PTree> stack = new Stack<>();
         PTree pTree = new PTree();
@@ -65,10 +72,20 @@ public class Parser {
                     if (quoteDepth == depth) { quoteDepth = -1; }
                     break;
                 case Grammar.QUOTE:
+                    // Single quotes (shorthand for QUOTE) behave a little differently
+                    // depending on whether they are the first element in a list or not.
+                    // Also, nested single quotes are treated as literals (default case,
+                    // below).
                     if (quoteDepth < 0) {
                         quoteDepth = depth;
+                        final Ref quoteToken = parseToken("QUOTE");
+                        if (inlist && !pTree.isEmpty()) {
+                            stack.push(pTree);
+                            pTree = new PTree(Cell.create(quoteToken));
+                        } else {
+                            pTree.add(Cell.create(quoteToken));
+                        }
                         inlist = true;
-                        pTree.add(Cell.create(parseToken("QUOTE")));
                         break;
                     }
                 default:

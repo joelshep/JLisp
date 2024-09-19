@@ -45,6 +45,13 @@ public class LangTestCase {
     }
 
     @Test
+    public void testCAROfSingleQuoteList() {
+        final String expression = "(CAR '(A B C))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertEquals("A", sexp.toAtom().toS());
+    }
+
+    @Test
     public void testCAROfListOfLists() {
         final String expression = "(CAR (QUOTE ((A B) (C D) (E F))))";
         final SExpression sexp = UnitTestUtilities.evaluate(expression);
