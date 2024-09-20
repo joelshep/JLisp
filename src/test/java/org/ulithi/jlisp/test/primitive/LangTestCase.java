@@ -1,6 +1,5 @@
 package org.ulithi.jlisp.test.primitive;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
@@ -330,5 +329,27 @@ public class LangTestCase {
         assertTrue(sexp.isList());
         assertEquals("( ( FOO BAR ) ( BAZ QUX ) )", sexp.toString());
         assertEquals(2, sexp.toList().length().toI());
+    }
+
+    @Test
+    public void testSetQQuoteList() {
+        final Eval eval = new Eval();
+        final String setq = "(SETQ X '(A B))";
+        final SExpression result = eval.apply(parse(setq).root());
+        assertTrue(result.isList());
+        assertEquals("( A B )", result.toString());
+        final SExpression X = eval.apply(parse("X").root());
+        assertEquals("( A B )", X.toString());
+    }
+
+    @Test
+    public void testSetQExpression() {
+        final Eval eval = new Eval();
+        final String setq = "(SETQ X (+ (* 2 3) (* 3 4)))";
+        final SExpression result = eval.apply(parse(setq).root());
+        assertTrue(result.isAtom());
+        assertEquals("18", result.toString());
+        final SExpression X = eval.apply(parse("X").root());
+        assertEquals("18", X.toString());
     }
 }

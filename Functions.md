@@ -11,14 +11,14 @@ Returns true if the argument is an `atom`; and false otherwise.
 Returns the first element of a `list` as an S-expression.  
 Lang.java  
 `(CAR (QUOTE (HELLO)))` => `'HELLO'`  
-`(CAR (QUOTE ((A B) (C D) (E F))))` => `(A . (B . NIL))`  
+`(CAR (QUOTE ((A B) (C D) (E F))))` => `( A B )`  
 `(CAR (QUOTE ()))` => `()`
 
 ### CDR  
 Returns the remainder of a `list` as a `list`.  
 Lang.java  
-`(CDR (QUOTE (HELLO)))` => `()`
-`(CDR (QUOTE (4 5 6)))` => `(5 . (6 . NIL))`
+`(CDR (QUOTE (HELLO)))` => `()`  
+`(CDR (QUOTE (4 5 6)))` => `( 5 6 )`  
 `(CDR (QUOTE ()))` => `()`
 
 ### CONS
@@ -26,7 +26,7 @@ Accepts two arguments and returns a `list` whose CAR is the first argument and t
 CDR of the `list` is the second argument.  
 Lang.java  
 `(CONS () ()))` => `()`  
-`(CONS 1 (QUOTE (2 3)))` => `(1 . (2 . (3 . NIL)))`  
+`(CONS 1 (QUOTE (2 3)))` => `( 1 2 3 )`  
 `(CONS HELLO ())` => `(HELLO . NIL)`
 
 ### DEFUN
@@ -76,7 +76,7 @@ Collections.java
 Returns true if the arguments are strictly increasing in order, false otherwise.  
 Math.java  
 `(< 5 8)` => `T`  
-`(< -4 8 23 67 98 104)` => `T`
+`(< -4 8 23 67 98 104)` => `T`  
 `(< -4 8 23 67 48 104)` => `F`
 
 ### MINUS | -
@@ -97,7 +97,11 @@ Math.java
 Returns its argument as-is.  
 Lang.java  
 `(QUOTE FOO)` => FOO  
-`(QUOTE (FOO BAR))` => `(FOO . (BAR . NIL))`
+`(QUOTE (FOO BAR))` => `( FOO BAR )`
+
+There is also the shorthand single-quote notation:  
+`'FOO` => FOO  
+`'(FOO BAR)` => `( FOO BAR )`
 
 ### QUOTIENT | /
 Returns the first argument divided by the successive arguments.  

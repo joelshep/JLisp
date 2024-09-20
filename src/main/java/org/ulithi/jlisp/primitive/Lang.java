@@ -26,7 +26,8 @@ public class Lang implements BindingProvider {
                              new Binding(new Lang.CONS()),
                              new Binding(new Lang.DEFUN()),
                              new Binding(new Lang.IF()),
-                             new Binding(new Lang.QUOTE()));
+                             new Binding(new Lang.QUOTE()),
+                             new Binding(new Lang.SETQ()));
     }
 
     /**
@@ -59,7 +60,7 @@ public class Lang implements BindingProvider {
             final List arg = sexp.toList();
 
             if (arg.lengthAsInt() != 1 || !arg.car().isList()) {
-                throw new EvaluationException("Argument to CAR must be a list");
+                throw new EvaluationException("Argument to CDR must be a list");
             }
 
             return arg.car().toList().cdr();
@@ -183,9 +184,9 @@ public class Lang implements BindingProvider {
     }
 
     /**
-     * Implements the LISP {@code QUOTE} function. The {@code QUOTE} returns its arguments as-is, and is
-     * therefore a "special" function. In modern LISP, the {@code '} token is shorthand for
-     * {@code QUOTE}, but implementing it will require changes to the lexer, which I haven't done yet.
+     * Implements the LISP {@code QUOTE} function. The {@code QUOTE} function returns its arguments
+     * as-is, and is therefore a "special" function. In modern LISP, the {@code '} token is
+     * shorthand for {@code QUOTE}.
      */
     public static class QUOTE extends AbstractFunction {
         public QUOTE() { super("QUOTE"); }
@@ -197,10 +198,40 @@ public class Lang implements BindingProvider {
             return sexp.toList().car();
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        /** {@inheritDoc} */
         @Override
         public boolean isSpecial() { return true; }
+    }
+
+    /**
+     * Implements the LISP {@code SETQ} function. The {@code SETQ} function assigns the value of
+     * its second argument to the symbol specified by the first argument. When the symbol has not
+     * been defined previously (e.g. by {@code DEFVAR}, {@code SETQ} creates a corresponding
+     * global variable.
+     */
+    private static class SETQ extends AbstractFunction {
+        public SETQ() { super("SETQ"); }
+
+        @Override
+        public boolean isDefining() { return true; }
+
+        /** {@inheritDoc} */
+        @Override
+        public SExpression apply(final SExpression sexp) {
+            throw new EvaluationException("Defining function invoked without environment reference");
+        }
+
+        /** {@inheritDoc} **/
+        @Override
+        public SExpression apply(final SExpression sexp, final Environment env) {
+            final List args = sexp.toList();
+
+            final SExpression varName = args.car();
+            final SExpression definition = args.cdr().toList().car();
+
+            env.addUserBinding(new Binding(varName.toAtom().toS(), definition));
+
+            return definition;
+        }
     }
 }
