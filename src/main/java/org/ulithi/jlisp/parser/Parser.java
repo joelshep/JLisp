@@ -50,52 +50,33 @@ public class Parser {
         PTree pTree = new PTree();
         boolean inlist = false;
         int depth = 0;
-        int quoteDepth = -1;
 
         for (final String token: tokens) {
-            switch (token) {
-                case Grammar.LPAREN:
-                    if (inlist) {
-                        stack.push(pTree);
-                        pTree = new PTree();
-                    }
-                    inlist = true;
-                    depth++;
-                    break;
-                case Grammar.RPAREN:
-                    if (!stack.empty()) {
-                        final PTree newOne = pTree;
-                        pTree = stack.pop();
-                        pTree.addList(newOne.root());
-                    }
-                    depth--;
-                    if (quoteDepth == depth) { quoteDepth = -1; }
-                    break;
-                case Grammar.QUOTE:
-                    // Single quotes (shorthand for QUOTE) behave a little differently
-                    // depending on whether they are the first element in a list or not.
-                    // Also, nested single quotes are treated as literals (default case,
-                    // below).
-                    if (quoteDepth < 0) {
-                        quoteDepth = depth;
-                        final Ref quoteToken = parseToken("QUOTE");
-                        if (inlist && !pTree.isEmpty()) {
-                            stack.push(pTree);
-                            pTree = new PTree(Cell.create(quoteToken));
-                        } else {
-                            pTree.add(Cell.create(quoteToken));
-                        }
-                        inlist = true;
-                        break;
-                    }
-                default:
-                    pTree.add(Cell.create(parseToken(token)));
-                    if (quoteDepth == depth) { quoteDepth = -1; }
+            if (token.equals(Grammar.LPAREN)) {
+                if (inlist) {
+                    stack.push(pTree);
+                    pTree = new PTree();
+                }
+                inlist = true;
+                depth++;
+            } else if (token.equals(Grammar.RPAREN)) {
+                if (!stack.empty()) {
+                    final PTree inner = pTree;
+                    pTree = stack.pop();
+                    pTree.addList(inner.root());
+                }
+                depth--;
+            } else {
+                pTree.add(Cell.create(parseToken(token)));
             }
         }
 
         if (depth != 0) {
             throw new ParseException("Mismatched parentheses");
+        }
+
+        if (!stack.empty()) {
+            throw new ParseException("Parser error: please report");
         }
 
         return pTree;

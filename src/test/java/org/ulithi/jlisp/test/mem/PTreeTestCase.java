@@ -45,7 +45,18 @@ public class PTreeTestCase {
 
     @Test
     public void testSingleQuoteUnparse() {
-        final String expression = "('(A B C))";
+        final String expression = "'A";
+        final PTree pTree = UnitTestUtilities.parse(expression);
+        assertFalse(pTree.isEmpty());
+        final String unparsed = pTree.unparse();
+        assertEquals("( QUOTE A )", unparsed);
+    }
+
+
+
+    @Test
+    public void testSingleQuoteListUnparse() {
+        final String expression = "'(A B C)";
         final PTree pTree = UnitTestUtilities.parse(expression);
         assertFalse(pTree.isEmpty());
         final String unparsed = pTree.unparse();

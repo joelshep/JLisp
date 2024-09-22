@@ -10,7 +10,9 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Unit tests for {@link org.ulithi.jlisp.parser.Lexer}.
+ * Unit tests for {@link org.ulithi.jlisp.parser.Lexer}. There are lots of tests for handling
+ * single-quotes as shorthand for QUOTE: for whatever reason, I had a hard time getting that
+ * right.
  */
 public class LexerTestCase {
 
@@ -42,25 +44,6 @@ public class LexerTestCase {
     }
 
     /**
-     * Tokenizes an atom prefixed by a single quote (parser will transform this to a QUOTE
-     * function invocation).
-     */
-    @Test
-    public void testTokenizeSingleQuoteAtom() {
-        assertEquals(toList("'", "FOO"), tokenize("'FOO"));
-    }
-
-    /**
-     * Tokenizes a simple list prefixed by a single quote (parser will transform this to a QUOTE
-     * function invocation).
-     */
-    @Test
-    public void testTokenizeSingleQuoteList() {
-        assertEquals(toList("'", "(", "FOO", "BAR", ")"),
-                     tokenize("'(FOO BAR)"));
-    }
-
-    /**
      * Tokenizes a variety of nested expressions.
      */
     @Test
@@ -86,6 +69,54 @@ public class LexerTestCase {
     public void brokenTestCases() {
         assertEquals(toList("this-is-an-atom"),
                      tokenize("this-is-an-atom"));
+    }
+
+    @Test
+    public void testTokenizeSingleQuoteAtom() {
+        // 'A
+        assertEquals(toList("(", "QUOTE", "A", ")"), tokenize("'A"));
+
+        // 'FOO
+        assertEquals(toList("(", "QUOTE", "FOO", ")"), tokenize("'FOO"));
+    }
+
+    @Test
+    public void testTokenizeSingleQuoteList() {
+        // '(FOO BAR)
+        assertEquals(toList("(", "QUOTE", "(", "FOO", "BAR", ")", ")"),
+                     tokenize("'(FOO BAR)"));
+
+        // '(1 2 3)
+        assertEquals(toList("(", "QUOTE", "(", "1", "2", "3", ")", ")"),
+                     tokenize("'(1 2 3)"));
+    }
+
+    @Test
+    public void testQuoteMultipleAtoms() {
+        // (LIST 'A 'B 'C)
+        assertEquals(toList("(", "LIST", "(", "QUOTE", "A", ")", "(", "QUOTE", "B", ")", "(", "QUOTE", "C", ")", ")"),
+                     tokenize("(LIST 'A 'B 'C)"));
+    }
+
+    @Test
+    public void testQuoteMixed() {
+        // (CAR (CONS 'A '(B C)))
+        assertEquals(toList("(", "CAR", "(", "CONS", "(", "QUOTE", "A", ")", "(", "QUOTE", "(", "B", "C", ")", ")", ")", ")"),
+                     tokenize("(CAR (CONS 'A '(B C)))"));
+    }
+
+    @Test
+    public void testQuoteMultipleLists() {
+        // (LIST '(A B) '(C D) 'E)
+        assertEquals(toList("(", "LIST", "(", "QUOTE", "(", "A", "B", ")", ")", "(", "QUOTE", "(", "C", "D", ")", ")", "(", "QUOTE", "E", ")", ")"),
+                     tokenize("(LIST '(A B) '(C D) 'E)"));
+    }
+
+    @Test
+    public void testNestedQuote() {
+        // (LIST 'A 'B '(C 'D E))
+        assertEquals(toList("(", "LIST", "(", "QUOTE", "A", ")", "(", "QUOTE", "B", ")", "(", "QUOTE", "(", "C", "'", "D", "E", ")", ")", ")"),
+                     tokenize("(LIST 'A 'B '(C 'D E))"));
     }
 
     /**
