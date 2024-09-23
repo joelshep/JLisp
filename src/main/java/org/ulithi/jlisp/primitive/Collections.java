@@ -19,6 +19,7 @@ public class Collections implements BindingProvider {
     @Override
     public java.util.List<Binding> getBindings() {
         return Arrays.asList(new Binding(new Collections.LENGTH()),
+                             new Binding(new Collections.LIST()),
                              new Binding(new Collections.SIZE()));
     }
 
@@ -36,6 +37,21 @@ public class Collections implements BindingProvider {
             final List args = sexp.toList();
             if (args.car().isList()) { return args.car().toList().length(); }
             throw new EvaluationException("Argument to LENGTH must be a list");
+        }
+    }
+
+    /**
+     * Implements the LISP {@code LIST} function, which constructs a list whose elements are the
+     * given arguments.
+     */
+    public static class LIST extends AbstractFunction {
+        public LIST() { super("LIST"); }
+
+        /** {@inheritDoc} */
+        @Override
+        public SExpression apply(final SExpression sexp) {
+            final List args = sexp.toList();
+            return args;
         }
     }
 

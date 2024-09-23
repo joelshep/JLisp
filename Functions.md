@@ -79,6 +79,12 @@ Math.java
 `(< -4 8 23 67 98 104)` => `T`  
 `(< -4 8 23 67 48 104)` => `F`
 
+### LIST
+Constructs a list whose elements are the given arguments.  
+Collections.java  
+`(LIST 'A 'B 'C)` => `( A B C )`  
+`(LIST (LIST 'A 'B) (LIST 'C 'D))` => `( ( A B ) ( C D ) )`
+
 ### MINUS | -
 When invoked with a single argument, returns the negation of the argument. Otherwise,
 subtracts from the first argument all successive arguments and returns the result.  

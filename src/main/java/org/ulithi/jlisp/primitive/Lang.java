@@ -206,7 +206,7 @@ public class Lang implements BindingProvider {
     /**
      * Implements the LISP {@code SETQ} function. The {@code SETQ} function assigns the value of
      * its second argument to the symbol specified by the first argument. When the symbol has not
-     * been defined previously (e.g. by {@code DEFVAR}, {@code SETQ} creates a corresponding
+     * been defined previously (e.g. by {@code DEFVAR}), {@code SETQ} creates a corresponding
      * global variable.
      */
     private static class SETQ extends AbstractFunction {
