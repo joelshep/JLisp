@@ -2,6 +2,7 @@ package org.ulithi.jlisp.test.primitive;
 
 import org.junit.Test;
 import org.ulithi.jlisp.core.SExpression;
+import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 
 import static org.junit.Assert.assertEquals;
@@ -80,4 +81,44 @@ public class CollectionsTestCase {
         assertTrue(sexp.isList());
         assertEquals("( ( A B ) ( C D ) )", sexp.toString());
     }
+
+    @Test
+    public void testAppendSingleAtom() {
+        final String expression = "(APPEND 'A)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertEquals("A", sexp.toString());
+    }
+
+    @Test(expected = EvaluationException.class)
+    public void testAppendMultipleAtomsIsError() {
+        final String expression = "(APPEND 'A 'B 'C)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+    }
+
+    @Test
+    public void testAppendSingleLists() {
+        final String expression = "(APPEND '(A) '() '(B) '())";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isList());
+        assertEquals("( A B )", sexp.toString());
+    }
+
+    @Test
+    public void testAppendTwoLists() {
+        final String expression = "(APPEND '(A B) '(A B))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isList());
+        assertEquals("( A B A B )", sexp.toString());
+    }
+
+    @Test
+    public void testAppendListOfLists() {
+        final String expression = "(APPEND '((A) (B)) ' ((C) (D)))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isList());
+        assertEquals("( ( A ) ( B ) ( C ) ( D ) )", sexp.toString());
+    }
+
+
 }

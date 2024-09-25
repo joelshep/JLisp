@@ -18,9 +18,57 @@ public class Collections implements BindingProvider {
      */
     @Override
     public java.util.List<Binding> getBindings() {
-        return Arrays.asList(new Binding(new Collections.LENGTH()),
+        return Arrays.asList(new Binding(new Collections.APPEND()),
+                             new Binding(new Collections.LENGTH()),
                              new Binding(new Collections.LIST()),
                              new Binding(new Collections.SIZE()));
+    }
+
+    /**
+     * Implements the LISP {@code APPEND} function, which concatenates list arguments into a single
+     * list. APPEND special-cases the case where the only argument is a single atom, returning just
+     * the atom.
+     */
+    public static class APPEND extends AbstractFunction {
+        public APPEND() { super("APPEND"); }
+
+        /** {@inheritDoc} */
+        @Override
+        public SExpression apply(final SExpression sexp) {
+            List args = sexp.toList();
+
+            if (args.lengthAsInt() == 1 && args.car().isAtom()) {
+                return args.car().toAtom();
+            } else if (args.car().isAtom()) {
+                throw new EvaluationException("First argument to APPEND must be a list");
+            }
+
+            final List result = List.create();
+
+            // Iterate over the given arguments and add them to the result list.
+            while (!args.isEmpty()) {
+                SExpression arg = args.car();
+
+                if (arg.isAtom()) {
+                    result.add(arg.toAtom());
+                } else {
+                    // If the argument is a list, don't add it to result directly, but
+                    // rather add its constituent elements.
+                    while (!arg.toList().isEmpty()) {
+                        SExpression el = arg.toList().car();
+                        if (el.isAtom()) {
+                            result.add(el.toAtom());
+                        } else {
+                            result.add(el.toList());
+                        }
+                        arg = arg.toList().cdr();
+                    }
+                }
+                args = args.cdr().toList();
+            }
+
+            return result;
+        }
     }
 
     /**
@@ -50,8 +98,7 @@ public class Collections implements BindingProvider {
         /** {@inheritDoc} */
         @Override
         public SExpression apply(final SExpression sexp) {
-            final List args = sexp.toList();
-            return args;
+            return sexp.toList();
         }
     }
 
