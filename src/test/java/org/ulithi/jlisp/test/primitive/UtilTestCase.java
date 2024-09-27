@@ -131,4 +131,28 @@ public class UtilTestCase {
         assertTrue(sexp.isAtom());
         assertFalse(sexp.toAtom().toB());
     }
+
+    @Test
+    public void testExpectIsAtom() {
+        final String expression = "(EXPECT (+ 1 2) 3)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertTrue(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testExpectFailure() {
+        final String expression = "(EXPECT (+ 1 2) 4)";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertFalse(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testExpectIsList() {
+        final String expression = "(EXPECT (APPEND '(A) '() '(B) '()) '(A B))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isAtom());
+        assertTrue(sexp.toAtom().toB());
+    }
 }

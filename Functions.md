@@ -48,6 +48,13 @@ Util.java
 ### EQL
 Util.java
 
+### EXPECT
+Non-standard function. Evaluates to arguments and returns `T` if they are `EQUAL`, and logs to
+STDERR and returns `F` otherwise. Intended to support unit testing.  
+Util.java  
+`(EXPECT (+ 1 2) 4)` => `F`  
+`(EXPECT (APPEND '(A) '() '(B) '()) (A B))` => `T`
+
 ### F
 Symbol representing the Boolean `false` value.  
 Logic.java  
