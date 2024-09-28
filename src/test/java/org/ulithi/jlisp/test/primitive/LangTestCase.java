@@ -352,4 +352,23 @@ public class LangTestCase {
         final SExpression X = eval.apply(parse("X").root());
         assertEquals("18", X.toString());
     }
+
+    @Test
+    public void testSetQVariableTwice() {
+        final Eval eval = new Eval();
+        String setq = "(SETQ X '(A B))";
+        SExpression result = eval.apply(parse(setq).root());
+        assertTrue(result.isList());
+        assertEquals("( A B )", result.toString());
+        SExpression X = eval.apply(parse("X").root());
+        assertEquals("( A B )", X.toString());
+
+        setq = "(SETQ X '(C D))";
+        result = eval.apply(parse(setq).root());
+        assertTrue(result.isList());
+        assertEquals("( C D )", result.toString());
+        X = eval.apply(parse("X").root());
+        assertEquals("( C D )", X.toString());
+
+    }
 }

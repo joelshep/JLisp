@@ -213,23 +213,24 @@ public class Lang implements BindingProvider {
         public SETQ() { super("SETQ"); }
 
         @Override
-        public boolean isDefining() { return true; }
+        public boolean isReentrant() { return true; }
 
-        /** {@inheritDoc} */
         @Override
-        public SExpression apply(final SExpression sexp) {
-            throw new EvaluationException("Defining function invoked without environment reference");
-        }
+        public boolean isSpecial() { return true; }
 
         /** {@inheritDoc} **/
         @Override
-        public SExpression apply(final SExpression sexp, final Environment env) {
+        public SExpression apply(final SExpression sexp, final Environment env, final Eval eval) {
             final List args = sexp.toList();
 
-            final SExpression varName = args.car();
-            final SExpression definition = args.cdr().toList().car();
+            final SExpression varNameAtom = args.car();
 
-            env.addUserBinding(new Binding(varName.toAtom().toS(), definition));
+            if (!varNameAtom.isAtom()) {
+                throw new EvaluationException("First argument to SETQ must be a symbol: received " + varNameAtom);
+            }
+
+            final SExpression definition = eval.apply(args.cdr());
+            env.addUserBinding(new Binding(varNameAtom.toString(), definition));
 
             return definition;
         }
