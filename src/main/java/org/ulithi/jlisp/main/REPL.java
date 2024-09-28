@@ -1,9 +1,13 @@
 package org.ulithi.jlisp.main;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.ulithi.console.Console;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /**
  * The main application class for an interactive read-evaluate-print-loop (REPL) LISP
@@ -73,7 +77,7 @@ public final class REPL {
 				while (input.contains("\b")) { input = input.replaceAll("^\b+|[^\b]\b", ""); }
 
                 if (isReplCommand(input)) {
-                    ok = processReplCommand(input);
+                    ok = processReplCommand(input, lisp);
                 } else if (parseOnlyMode) {
                     ok = lisp.parse(input);
                 } else if (echoMode) {
@@ -107,14 +111,21 @@ public final class REPL {
     /**
      * Attempts to process the given input as a direct command to the REPL.
      */
-    private static boolean processReplCommand(final String input) {
+    private static boolean processReplCommand(final String input, final Interpreter lisp) {
         if (input.length() < 2) {
             showHelp();
         }
 
-        final String command = input.substring(1).trim().toUpperCase();
+        // Commands should consist of a ":", an action keyword, and then zero or more space-
+        // delimited arguments. Extract those and then carry out the specified action.
+        final String command = input.substring(1).trim();
 
-        switch (command) {
+        final String[] tokens = command.split(" ");
+        final String action = tokens[0].toUpperCase();
+        final String[] args = tokens.length > 1 ? Arrays.copyOfRange(tokens, 1, tokens.length)
+                                                : ArrayUtils.EMPTY_STRING_ARRAY;
+
+        switch (action) {
             case "PARSE":
                 parseOnlyMode = true;
                 echoMode = false;
@@ -129,6 +140,9 @@ public final class REPL {
                 echoMode = true;
                 parseOnlyMode = false;
                 System.err.println("Entering 'echo' mode ...");
+                break;
+            case "LOAD":
+                loadAndEvalFromFile(args, lisp);
                 break;
             case "QUIT":
                 System.exit(0);
@@ -151,6 +165,41 @@ public final class REPL {
         System.err.println("\tQUIT: Quit/exit the REPL");
         System.err.println("\tHELP: Print this message");
         System.err.flush();
+    }
+
+    /**
+     * Expects a valid file path and name in {@code args}. Opens and reads the file as text, with
+     * one LISP expression per line, and runs each through the interpreter in order.
+     *
+     * @param args Expects a single-element array, containing the full path and file name of the
+     *             file to load.
+     * @param lisp An initialized JLisp interpreter.
+     */
+    private static void loadAndEvalFromFile(final String[] args, final Interpreter lisp) {
+        if (ArrayUtils.isEmpty(args) || args.length > 1) {
+            System.err.println("LOAD expects file name as an argument");
+            return;
+        }
+
+        // See if the specified file exists
+        final String fileName = args[0];
+        final File f = new File(fileName);
+
+        if (!f.exists()) {
+            System.err.println("File '" + fileName + "' not found");
+            return;
+        }
+
+        try (final BufferedReader file = new BufferedReader((new FileReader(fileName)))) {
+            String text = file.readLine();
+
+            while (text != null) {
+                lisp.offer(text);
+                text = file.readLine();
+            }
+        } catch (final Exception e) {
+            System.err.println("Error reading file '" + fileName + "': " + e.getMessage());
+        }
     }
 
 	/**
