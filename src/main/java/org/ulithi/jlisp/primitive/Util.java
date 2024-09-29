@@ -21,8 +21,7 @@ public class Util implements BindingProvider {
     @Override
     public java.util.List<Binding> getBindings() {
         return Arrays.asList(new Binding(new EQL()),
-                             new Binding(new EQUAL()),
-                             new Binding(new EXPECT()));
+                             new Binding(new EQUAL()));
     }
 
     /**
@@ -99,44 +98,6 @@ public class Util implements BindingProvider {
     }
 
     /**
-     * Implements the non-standard {@code EXPECT} function, which is intended to support unit
-     * test functionality. EXPECT accepts a LISP expression to evaluate, and a second expression
-     * representing the expected output of the first expression. If the output matches the second
-     * expression, returns T. Otherwise, writes a warning to STDERR and returns F.
-     */
-    public static class EXPECT extends AbstractFunction {
-        public EXPECT() { super("EXPECT"); }
-
-        @Override
-        public boolean isSpecial() { return true; }
-
-        @Override
-        public boolean isReentrant() { return true; }
-
-        @Override
-        public SExpression apply(SExpression sexp, Environment environment, Eval eval) {
-            List it = sexp.toList();
-
-            if (it.lengthAsInt() != 2) {
-                throw new WrongArgumentCountException("Expected 2 arguments: received " + it.length());
-            }
-
-            final SExpression lhs = it.car();
-            final SExpression rhs = it.cdr();
-
-            final SExpression actual = eval.apply(lhs);
-            final SExpression expected = eval.apply(rhs);
-
-            if (isEqual(actual, expected)) {
-                return Atom.T;
-            } else {
-                System.err.println("Expected " + expected + ", got " + actual);
-                return Atom.F;
-            }
-        }
-    }
-
-    /**
      * Recursively determines equality (as defined for the {@code EQUAL} function) of two
      * {@link SExpression SExpressions}. Two {@code SExpressions} are considered isomorphic
      * if they are identical {@code Atoms} or isomorphic {@code Lists}.
@@ -177,5 +138,4 @@ public class Util implements BindingProvider {
 
         return isEqual(lhs.car(), rhs.car()) && isEqual(lhs.cdr(), rhs.cdr());
     }
-
 }

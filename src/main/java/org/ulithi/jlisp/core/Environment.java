@@ -7,6 +7,7 @@ import org.ulithi.jlisp.primitive.Logic;
 import org.ulithi.jlisp.primitive.Math;
 import org.ulithi.jlisp.primitive.Predicate;
 import org.ulithi.jlisp.primitive.Util;
+import org.ulithi.jlisp.test.UnitTest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,6 +69,7 @@ public final class Environment implements BindingRegistrar {
         new Logic().provideBindings(this);
         new Math().provideBindings(this);
         new Predicate().provideBindings(this);
+        new UnitTest().provideBindings(this);
         new Util().provideBindings(this);
 
         // Add the "user" frame.
