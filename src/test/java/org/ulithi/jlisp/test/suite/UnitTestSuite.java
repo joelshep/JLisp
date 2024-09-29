@@ -21,7 +21,7 @@ import org.ulithi.jlisp.test.primitive.LangTestCase;
 import org.ulithi.jlisp.test.primitive.LogicTestCase;
 import org.ulithi.jlisp.test.primitive.MathTestCase;
 import org.ulithi.jlisp.test.primitive.PredicateTestCase;
-import org.ulithi.jlisp.test.smoke.SmokeTestCase;
+import org.ulithi.jlisp.test.reference.ReferenceTestCase;
 import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
 
 /**
@@ -44,7 +44,7 @@ import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
         PredicateTestCase.class,
         PTreeTestCase.class,
         SExpressionTestCase.class,
-        SmokeTestCase.class,
+        ReferenceTestCase.class,
         StringUtilsTestCase.class,
         UtilTestCase.class,
 })
