@@ -73,12 +73,19 @@ public class Lexer {
         boolean inQuote = false;     // Are we processing quoted (') input?
         int depth = 0;               // Parenthesis depth of quoted (') input.
         boolean expectAtom = false;  // Whether we expect the quoted (') input to be an atom.
+        boolean inComment = false;   // Are we processing commented-out input?
 
         while (i < s.length()) {
             int j = i + 1;
             final String ch = s.substring(i, j);
 
-            if (ch.matches(Grammar.QUOTE) && !inQuote) {
+            if (ch.equals(Grammar.EOL)) {
+                inComment = false;
+            } else if (inComment) {
+                // Continue
+            } else if (ch.equals(Grammar.SEMI)) {
+                inComment = true;
+            } else if (ch.matches(Grammar.QUOTE) && !inQuote) {
                 tokens.add(Grammar.LPAREN);
                 tokens.add("QUOTE");
                 inQuote = true;

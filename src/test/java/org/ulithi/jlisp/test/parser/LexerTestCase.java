@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link org.ulithi.jlisp.parser.Lexer}. There are lots of tests for handling
@@ -117,6 +118,24 @@ public class LexerTestCase {
         // (LIST 'A 'B '(C 'D E))
         assertEquals(toList("(", "LIST", "(", "QUOTE", "A", ")", "(", "QUOTE", "B", ")", "(", "QUOTE", "(", "C", "'", "D", "E", ")", ")", ")"),
                      tokenize("(LIST 'A 'B '(C 'D E))"));
+    }
+
+    @Test
+    public void testFullLineComment() {
+        final List<String> tokens = tokenize("; (A B C)   ");
+        assertTrue(tokens.isEmpty());
+    }
+
+    @Test
+    public void testEndOfLineComment() {
+        assertEquals(toList("(", "+", "1", "2", "3", ")"),
+                     tokenize("(+ 1 2 3) ; Add some numbers"));
+    }
+
+    @Test
+    public void testNewlineTerminatesComment() {
+        assertEquals(toList("(", "+", "1", "2", ")", "(", "+", "3", "4", ")"),
+                     tokenize("(+ 1 2) ; Multi-line input, yo\n(+ 3 4)"));
     }
 
     /**

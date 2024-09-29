@@ -62,11 +62,17 @@ public class Grammar {
     /** Right parenthesis. */
     public static final String RPAREN = ")";
 
-    /** The NIL token. */
-    public static final String NIL = "NIL";
+    /** Semicolon (starts a rest-of-line comment). */
+    public static final String SEMI = ";";
+
+    /** End-of-line character. **/
+    public static final String EOL = "\n";
 
     /** A single space character. */
     public static final String SPACE = " ";
+
+    /** The NIL token. */
+    public static final String NIL = "NIL";
 
     /** The T (true) token. */
     public static final String T = "T";
