@@ -32,7 +32,7 @@ public class CellTestCase {
         assertTrue(cell.isNil());
         assertFalse(cell.isStorage());
         final Atom atom = cell.toAtom();
-        assertEquals(Atom.F, atom);
+        assertEquals(Atom.NIL, atom);
         final List list = List.create(cell);
         assertTrue(list.isEmpty());
         assertEquals("NIL", list.toString());

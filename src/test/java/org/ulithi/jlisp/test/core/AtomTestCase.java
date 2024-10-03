@@ -3,6 +3,7 @@ package org.ulithi.jlisp.test.core;
 import org.junit.Test;
 import org.ulithi.jlisp.exception.TypeConversionException;
 import org.ulithi.jlisp.core.Atom;
+import org.ulithi.jlisp.parser.Grammar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -153,6 +154,26 @@ public class AtomTestCase {
         assertEquals(0, atom.toI());
         assertEquals("F", atom.toString());
         assertEquals(Atom.F, atom);
+    }
+
+    @Test
+    public void testNil() {
+        Atom atom = Atom.NIL;
+        assertTrue(atom.isAtom());
+        assertTrue(atom.isNil());
+        assertTrue(atom.isLiteral());
+        assertFalse(atom.isNumber());
+        assertTrue(atom.isSymbol());
+        assertEquals(Grammar.NIL, atom.toS());
+        assertEquals(Grammar.NIL, atom.toString());
+        assertFalse(atom.toB());
+
+        try {
+            atom.toI();
+            fail("Expected TypeConversionException not thrown");
+        } catch (TypeConversionException e) {
+            // Expected.
+        }
     }
 
     @Test

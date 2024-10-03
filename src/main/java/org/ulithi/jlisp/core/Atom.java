@@ -21,12 +21,16 @@ public class Atom implements SExpression {
     /** An {@link Atom} representing the special {@code T} (true) value. */
     public static final Atom T = new Atom(Boolean.TRUE, Type.Boolean);
 
+    /** An {@link Atom} representing the special {@code NIL} value. */
+    public static final Atom NIL = new Atom(null, Type.NIL);
+
     /** Enumerates the data types that can be represented as an Atom. */
     private enum Type {
         String,
         Number,
         Boolean,
-        Symbol
+        Symbol,
+        NIL
     }
 
     /** The underlying type of this Atom. */
@@ -39,14 +43,14 @@ public class Atom implements SExpression {
     private final Object value;
 
     /**
-     * Creates and returns a new {@link Atom}: either {@code F} if {@code ref} is {@code NIL} or
+     * Creates and returns a new {@link Atom}: either {@code NIL} if {@code ref} is {@code NIL} or
      * {@code ref} itself if it is an {@code Atom}.
      *
      * @param ref A {@link Ref}, that represents an {@link Atom} or {@code NIL}.
      * @return An {@link Atom} as represented by the {@code ref}.
      */
     public static Atom create (final Ref ref) {
-        if (ref == NilReference.NIL) { return Atom.F; }
+        if (ref == NilReference.NIL) { return Atom.NIL; }
         return (Atom) ref;
     }
 
@@ -103,7 +107,7 @@ public class Atom implements SExpression {
      * @return True if this {@code Atom} is a symbol, false otherwise.
      */
     public final boolean isSymbol() {
-        return this.type == Type.Symbol;
+        return this.type == Type.Symbol || this.type == Type.NIL;
     }
 
     /**
@@ -121,6 +125,14 @@ public class Atom implements SExpression {
      */
     public final boolean isNumber() {
         return this.type == Type.Number;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final boolean isNil() {
+        return this.equals(Atom.NIL);
     }
 
     /**
@@ -173,6 +185,7 @@ public class Atom implements SExpression {
      */
     public final boolean toB() {
         switch (this.type) {
+            case NIL: return false;
             case Number: return ((Number)value).intValue() != 0;
             case Boolean: return ((Boolean)value);
             case String: return !((String)value).isEmpty();
@@ -190,6 +203,7 @@ public class Atom implements SExpression {
      *         conversion for this {@code Atom's} type.
      */
     public final String toS() {
+        if (this.type == Type.NIL) { return Grammar.NIL; }
         if (this.type == Type.Boolean) { return ((Boolean)value) ? Grammar.T : Grammar.F; }
         return String.valueOf(value);
     }
@@ -200,6 +214,7 @@ public class Atom implements SExpression {
      */
     @Override
     public final String toString() {
+        if (this.type == Type.NIL) { return Grammar.NIL; }
         if (this.type == Type.Boolean) { return ((Boolean)value) ? Grammar.T : Grammar.F; }
         return String.valueOf(value);
     }
