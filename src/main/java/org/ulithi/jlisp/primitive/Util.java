@@ -4,7 +4,6 @@ import org.ulithi.jlisp.core.AbstractFunction;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;
-import org.ulithi.jlisp.core.Environment;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
@@ -87,7 +86,7 @@ public class Util implements BindingProvider {
 
             while (!it.endp()) {
                 it = it.cdr().toList();
-                result = isEqual(lhs, it.car());
+                result = lhs.isEqual(it.car());
                 if (!result) {
                     break;
                 }
@@ -95,47 +94,5 @@ public class Util implements BindingProvider {
 
             return Atom.create(result);
         }
-    }
-
-    /**
-     * Recursively determines equality (as defined for the {@code EQUAL} function) of two
-     * {@link SExpression SExpressions}. Two {@code SExpressions} are considered isomorphic
-     * if they are identical {@code Atoms} or isomorphic {@code Lists}.
-     *
-     * @param lhs The {@code SExpression} to compare to.
-     * @param rhs The {@code SExpression} to compare.
-     * @return True if the two {@code SExpressions} are isomorphic, false otherwise.
-     */
-    private static boolean isEqual(final SExpression lhs, final SExpression rhs) {
-        if (lhs.isAtom() && rhs.isAtom()) {
-            return lhs.toAtom().eql(rhs.toAtom());
-        }
-
-        if (!(lhs.isList() && rhs.isList())) {
-            return false;
-        }
-
-        return listEqual(lhs.toList(), rhs.toList());
-    }
-
-    /**
-     * Recursively determines equality (as defined for the {@code EQUAL} function) of two
-     * {@link List Lists}. Two {@code Lists} are considered isomorphic if they are the same
-     * length and contain the same elements in the same order.
-     *
-     * @param lhs The {@code List} to compare to.
-     * @param rhs The {@code List} to compare.
-     * @return True if the two {@code Lists} are isomorphic, false otherwise.
-     */
-    private static boolean listEqual(final List lhs, final List rhs) {
-        if (lhs.isEmpty() && rhs.isEmpty()) {
-            return true;
-        }
-
-        if (lhs.lengthAsInt() != rhs.lengthAsInt()) {
-            return false;
-        }
-
-        return isEqual(lhs.car(), rhs.car()) && isEqual(lhs.cdr(), rhs.cdr());
     }
 }

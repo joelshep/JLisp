@@ -59,58 +59,12 @@ public class UnitTest implements BindingProvider {
             final SExpression actual = eval.apply(lhs);
             final SExpression expected = eval.apply(rhs);
 
-            if (isEqual(actual, expected)) {
+            if (actual.isEqual(expected)) {
                 return Atom.T;
             } else {
                 System.err.println("Expected " + expected + ", got " + actual);
                 return Atom.F;
             }
         }
-    }
-
-    /**
-     * Recursively determines equality (as defined for the {@code EQUAL} function) of two
-     * {@link SExpression SExpressions}. Two {@code SExpressions} are considered isomorphic
-     * if they are identical {@code Atoms} or isomorphic {@code Lists}.
-     *
-     * TODO - This is copied from Util.java. Where should it live?
-     *
-     * @param lhs The {@code SExpression} to compare to.
-     * @param rhs The {@code SExpression} to compare.
-     * @return True if the two {@code SExpressions} are isomorphic, false otherwise.
-     */
-    private static boolean isEqual(final SExpression lhs, final SExpression rhs) {
-        if (lhs.isAtom() && rhs.isAtom()) {
-            return lhs.toAtom().eql(rhs.toAtom());
-        }
-
-        if (!(lhs.isList() && rhs.isList())) {
-            return false;
-        }
-
-        return listEqual(lhs.toList(), rhs.toList());
-    }
-
-    /**
-     * Recursively determines equality (as defined for the {@code EQUAL} function) of two
-     * {@link List Lists}. Two {@code Lists} are considered isomorphic if they are the same
-     * length and contain the same elements in the same order.
-     *
-     * TODO - This is copied from Util.java. Where should it live?
-     *
-     * @param lhs The {@code List} to compare to.
-     * @param rhs The {@code List} to compare.
-     * @return True if the two {@code Lists} are isomorphic, false otherwise.
-     */
-    private static boolean listEqual(final List lhs, final List rhs) {
-        if (lhs.isEmpty() && rhs.isEmpty()) {
-            return true;
-        }
-
-        if (lhs.lengthAsInt() != rhs.lengthAsInt()) {
-            return false;
-        }
-
-        return isEqual(lhs.car(), rhs.car()) && isEqual(lhs.cdr(), rhs.cdr());
     }
 }
