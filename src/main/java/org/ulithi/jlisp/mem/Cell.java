@@ -159,8 +159,9 @@ public class Cell implements Ref {
      * @return A new storage-only {@code Cell} of the form {@code (ref . NULL_REF)}.
      */
     public static Cell createStorage(final Ref ref) {
-        Validate.isInstanceOf(Atom.class, ref);
-        return new Cell(ref);
+        if (ref.isNil()) { return create(Atom.NIL); }
+        if (ref.isAtom()) { return new Cell(ref); }
+        throw new IllegalArgumentException();
     }
 
     /**

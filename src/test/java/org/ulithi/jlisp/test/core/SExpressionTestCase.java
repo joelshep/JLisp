@@ -22,24 +22,24 @@ public class SExpressionTestCase {
     public void testExplicitNilRef() {
         final Ref ref = NilReference.NIL;
         final SExpression sexp = SExpression.fromRef(ref);
-        assertTrue(sexp.isList());
-        assertTrue(sexp.toList().isEmpty());
+        assertTrue(sexp.isAtom());
+        assertEquals(Atom.NIL, sexp.toAtom());
     }
 
     @Test
     public void testNilCell() {
         final Cell cell = Cell.create();
         final SExpression sexp = SExpression.fromRef(cell);
-        assertTrue(sexp.isList());
-        assertTrue(sexp.toList().isEmpty());
+        assertTrue(sexp.isAtom());
+        assertEquals(Atom.NIL, sexp.toAtom());
     }
 
     @Test
     public void testNilRef() {
         final Ref ref = Cell.create().getFirst();
         final SExpression sexp = SExpression.fromRef(ref);
-        assertTrue(sexp.isList());
-        assertTrue(sexp.toList().isEmpty());
+        assertTrue(sexp.isAtom());
+        assertEquals(Atom.NIL, sexp.toAtom());
     }
 
     @Test
