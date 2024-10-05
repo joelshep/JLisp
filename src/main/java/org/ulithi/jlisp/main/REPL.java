@@ -45,7 +45,7 @@ public final class REPL {
 
 		console.setTitle(lisp.getName());
 
-		startRepl(lisp);
+		runRepl(lisp);
 	}
 
 	/**
@@ -53,7 +53,7 @@ public final class REPL {
      *
      * @param lisp An instance of the JLISP {@link Interpreter}.
 	 */
-	private static void startRepl(final Interpreter lisp) {
+	private static void runRepl(final Interpreter lisp) {
 
 		// Create a reader to read from STDIN.
 		final InputStreamReader isr = new InputStreamReader(System.in);

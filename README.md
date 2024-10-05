@@ -11,11 +11,15 @@ with JDK-17 but will probably compile with older versions as well.
 A simple REPL is included with the project, in the ```main``` package. As written, it depends
 on a simple "console" app, included in this project.
 
-To build an executable jar:
+To build the jar and run the unit test suite:
 
 ```mvn clean package```
 
-To run the JLisp REPL:
+To build an executable jar:
+
+```mvn clean package shade:shade```
+
+To run the JLisp REPL from the executable jar:
 
 ```java -jar target/org-ulithi-jlisp-0.1-SNAPSHOT.jar```
 
