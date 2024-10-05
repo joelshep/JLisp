@@ -31,6 +31,6 @@ public class UnitTestUtilities {
     public static PTree parse(final String expression) {
         final Lexer lexer = new Lexer(expression);
         final Parser p = new Parser();
-        return p.parse(lexer.getTokens());
+        return p.parse(lexer.getTokens()).orElseThrow();
     }
 }

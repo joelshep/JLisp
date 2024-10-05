@@ -6,6 +6,8 @@ import org.ulithi.jlisp.parser.Lexer;
 import org.ulithi.jlisp.parser.Parser;
 import org.ulithi.jlisp.primitive.Eval;
 
+import java.util.Optional;
+
 /**
  * The top-level JLISP interpreter. Feed it a LISP expression, and it will scan, parse and
  * evaluate it. Repeat as necessary. Runs on its own thread to stabilize integration with the
@@ -13,9 +15,16 @@ import org.ulithi.jlisp.primitive.Eval;
  */
 public class Interpreter implements Runnable {
 
-    /**
-     * The eval function instance used by this interpreter.
-     */
+    /** Interpreter name. */
+    private static final String NAME = "JLisp";
+
+    /** A version string for the core LISP implementation. */
+    private static final String VERSION = "0.10";
+
+    /** If true, enables stack trace dumps in the event of processing errors. */
+    private boolean verbose = false;
+
+    /** The eval function instance used by this interpreter. */
     private final Eval eval = new Eval();
 
     /**
@@ -37,18 +46,44 @@ public class Interpreter implements Runnable {
     public void run() { }
 
     /**
+     * Enables/disables verbose error logging.
+     * @param flag If true, enables stack trace dumps in the event of processing errors.
+     */
+    public void verbose(final boolean flag) {
+        verbose = flag;
+    }
+
+    /**
+     * @return The name of this interpreter.
+     */
+    public String getName() {
+        return NAME;
+    }
+
+    /**
+     * @return The version of this interpreter.
+     */
+    public String getVersion() {
+        return VERSION;
+    }
+
+    /**
      * Initiates the scanning, parsing and evaluation of the given LISP expression.
      * @param expression A LISP expression to evaluate.
      * @return True if expression was evaluated successfully, false otherwise.
      */
     public boolean offer(final String expression) {
         try {
-            final PTree pTree = parseExpression(expression);
-            final SExpression ret = eval.apply(pTree.root());
-            System.out.println(" " + ret);
+            final Optional<PTree> pTree = parseExpression(expression);
+            pTree.map(tree -> {
+                SExpression ret = eval.apply(tree.root());
+                System.out.println(" " + ret);
+                return true;
+            });
             return true;
         } catch (final Exception e) {
             System.err.println(e.getMessage());
+            if (verbose) { e.printStackTrace(System.err); }
             return false;
         }
     }
@@ -62,11 +97,14 @@ public class Interpreter implements Runnable {
      */
     public boolean parse(final String expression) {
         try {
-            final PTree pTree = parseExpression(expression);
-            System.out.println(pTree);
+            final Optional<PTree> pTree = parseExpression(expression);
+            pTree.ifPresentOrElse(
+                    System.out::println,
+                    System.out::println
+            );
             return true;
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println("Error parsing expression: " + e.getMessage());
             return false;
         }
     }
@@ -81,12 +119,14 @@ public class Interpreter implements Runnable {
      */
     public boolean parseAndEcho(final String expression) {
         try {
-            final PTree pTree = parseExpression(expression);
-            final String reExpression = pTree.unparse();
-            System.out.println(reExpression);
+            final Optional<PTree> pTree = parseExpression(expression);
+            pTree.ifPresentOrElse(
+                    tree -> System.out.println(tree.unparse()),
+                    System.out::println
+            );
             return true;
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println("Error parsing expression: " + e.getMessage());
             return false;
         }
     }
@@ -97,7 +137,7 @@ public class Interpreter implements Runnable {
      * @param expression The expression to parse.
      * @return The parse tree for the expression.
      */
-    private static PTree parseExpression(final String expression) {
+    private static Optional<PTree> parseExpression(final String expression) {
         final Lexer lexer = new Lexer(expression);
         final Parser p = new Parser();
         return p.parse(lexer.getTokens());

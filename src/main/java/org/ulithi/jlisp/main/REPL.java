@@ -39,19 +39,21 @@ public final class REPL {
 	 *
 	 * @param args Any commandline arguments passed to the application.
 	 */
-	public static void main (final String [] args) {
+	public static void main(final String [] args) {
 		final Console console = new Console();
+        final Interpreter lisp = new Interpreter();
 
-		console.setTitle("JLisp");
+		console.setTitle(lisp.getName());
 
-		startRepl();
+		startRepl(lisp);
 	}
 
 	/**
 	 * Initializes the JLISP interpreter and runs the basic REPL (Read-Evaluate-Print-Loop).
+     *
+     * @param lisp An instance of the JLISP {@link Interpreter}.
 	 */
-	private static void startRepl () {
-		final Interpreter lisp = new Interpreter();
+	private static void startRepl(final Interpreter lisp) {
 
 		// Create a reader to read from STDIN.
 		final InputStreamReader isr = new InputStreamReader(System.in);
@@ -61,7 +63,9 @@ public final class REPL {
 		lisp.initialize();
 		(new Thread(lisp)).start();
 
-        System.out.println("JLisp 0.10. \":help\" for help.");
+        System.out.printf("%s %s. %s%n",
+                          lisp.getName(), lisp.getVersion(),
+                          "\":help\" for help.");
 
 		//
 		// Prompt for input and interpret it line by line, until either a
@@ -134,6 +138,7 @@ public final class REPL {
             case "EVAL":
                 parseOnlyMode = false;
                 echoMode = false;
+                lisp.verbose(false);
                 System.err.println("Entering 'eval' mode ...");
                 break;
             case "ECHO":
@@ -143,6 +148,10 @@ public final class REPL {
                 break;
             case "LOAD":
                 loadAndEvalFromFile(args, lisp);
+                break;
+            case "VERBOSE":
+                lisp.verbose(true);
+                System.err.println("Verbose error output enabled ...");
                 break;
             case "QUIT":
                 System.exit(0);

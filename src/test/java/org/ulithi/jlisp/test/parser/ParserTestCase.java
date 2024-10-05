@@ -10,8 +10,10 @@ import org.ulithi.jlisp.parser.Parser;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -158,8 +160,9 @@ public class ParserTestCase {
     private static void parseAndValidate(final Parser parser,
                                          final List<String> tokens,
                                          final String expected) {
-        PTree ptree = parser.parse(tokens);
-        final String dpExpression = ptree.toString();
+        final Optional<PTree> ptree = parser.parse(tokens);
+        assertTrue(ptree.isPresent());
+        final String dpExpression = ptree.get().toString();
         assertEquals(expected, dpExpression);
     }
 }

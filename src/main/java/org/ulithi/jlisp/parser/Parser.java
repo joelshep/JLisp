@@ -8,6 +8,7 @@ import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.mem.Ref;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Stack;
 
 import static org.ulithi.jlisp.mem.NilReference.NIL;
@@ -24,17 +25,17 @@ public class Parser {
      * @param tokens An ordered list of LISP language tokens produced by lexical analysis of one
      *               or more LISP expressions.
      */
-    public PTree parse(final List<String> tokens) {
+    public Optional<PTree> parse(final List<String> tokens) {
         if (CollectionUtils.isEmpty(tokens)) {
-            return new PTree();
+            return Optional.empty();
         }
 
         if (tokens.size() == 1) {
             final Ref ref = parseToken(tokens.get(0));
-            return new PTree(Cell.createStorage(ref));
+            return Optional.of(new PTree(Cell.createStorage(ref)));
         }
 
-        return parseTokens(tokens);
+        return Optional.of(parseTokens(tokens));
     }
 
     /**
