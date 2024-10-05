@@ -8,6 +8,15 @@
 (EXPECT (+ 3 2) '5)
 (EXPECT (CDR (CAR (QUOTE ((1 2 3) (4 5 6))))) '(2 3))
 
+;; Quote and '
+(EXPECT (QUOTE (A B C)) '(A B C))
+
 ;; Forms for basic list operations.
 (EXPECT (CAR '(FAST COMPUTERS ARE NICE')) 'FAST)
+(EXPECT (CDR '(FAST COMPUTERS ARE NICE)) '(COMPUTERS ARE NICE))
 (EXPECT (CAR '(A B C)) 'A)
+(EXPECT (CDR '(A B C)) '(B C))
+(EXPECT (CAR '((A B) C)) '(A B))
+(EXPECT (CDR '((A B) C)) '(C))
+(EXPECT (CAR (CDR '(A B C))) 'B)
+(EXPECT (CAR '(CDR (A B C))) 'CDR)
