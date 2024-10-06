@@ -195,15 +195,23 @@ public class MathTestCase {
 
     @Test
     public void testDivideTwoNumbers() {
-        final String expression = "(QUOTIENT 72 8)";
-        final int result = UnitTestUtilities.evaluate(expression).toAtom().toI();
+        String expression = "(QUOTIENT 72 8)";
+        int result = UnitTestUtilities.evaluate(expression).toAtom().toI();
+        assertEquals(expression, 9, result);
+
+        expression = "(/ 72 8)";
+        result = UnitTestUtilities.evaluate(expression).toAtom().toI();
         assertEquals(expression, 9, result);
     }
 
     @Test
     public void testDivideFourNumbers() {
-        final String expression = "(QUOTIENT 200 4 5 5)";
-        final int result = UnitTestUtilities.evaluate(expression).toAtom().toI();
+        String expression = "(QUOTIENT 200 4 5 5)";
+        int result = UnitTestUtilities.evaluate(expression).toAtom().toI();
+        assertEquals(expression, 2, result);
+
+        expression = "(/ 200 4 5 5)";
+        result = UnitTestUtilities.evaluate(expression).toAtom().toI();
         assertEquals(expression, 2, result);
     }
 

@@ -48,7 +48,7 @@ public class Grammar {
     private static final Pattern NUMERIC_LITERAL_PATTERN = Pattern.compile(NUMERIC_LITERAL);
 
     /** Special syntax elements. TODO: Remove math operators. */
-    public static final String SYMBOL = "[().\\+\\*\\<\\>']";
+    public static final String SYMBOL = "[().\\+\\*\\<\\>/']";
 
     /** Dot symbol (for S-Expressions) **/
     public static final String DOT = ".";
