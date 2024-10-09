@@ -40,12 +40,12 @@ public interface Function extends Bindable {
     /**
      * Applies this {@link Function} the given {@link SExpression} and returns the result as a new
      * {@link SExpression}. Additionally, the function may modify the given {@link Environment} as
-     * a side effect. This is usually reserved for functions used to define new language
-     * elements (see {@code needsEnv()}). The elements of the given {@code sexp} are assumed
-     * to have been evaluated already: i.e., they are generally literals or symbolic
-     * <em>names</em>. For example, if the original expression was {@code (* (+ 2 3) (+ 3 4))}
-     * and this function was the {@code *} function, the given {@code sexp} would be (6 12).
-     * {@code Functions} generally do not evaluate their arguments.
+     * a side effect. This is usually reserved for functions used to define new language elements
+     * (see {@link #isDefining()}). The elements of the given {@code sexp} are assumed to have
+     * been evaluated already: i.e., they are generally literals or symbolic <em>names</em>. For
+     * example, if the original expression was {@code (* (+ 2 3) (+ 3 4))} and this function was
+     * the {@code *} function, the given {@code sexp} would be (6 12). {@code Functions} generally
+     * do not evaluate their arguments.
      *
      * @param sexp An {@link SExpression} representing the arguments to this {@link Function}.
      * @param environment Reference to the current runtime {@code Environment}.

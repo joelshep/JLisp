@@ -134,6 +134,7 @@ So iteratively follow the CDR references from that cell. If the CAR of the "next
 Atom, evaluate it and apply the operator. If the CAR of the "next" cell is a List, then recursively
 evaluate the list, and then apply the operator. So in pseudocode:
 
+```
 if (cell.CAR is a literal) {
    return cell.CAR.literalValue;
 }
@@ -157,6 +158,31 @@ if (cell.CAR is a symbol) {
 ERROR
 
 )
+```
+### Function Invocation
+
+There are three modes of function invocation:
+* Default: Most functions are invoked with a single List/Expression that contains all the fully
+evaluated arguments to the function. E.g., the TIMES function invoked via ```(* 4 5 6)``` receives
+its arguments as a single List: ```(2 3 4)```. A function like CDR, which takes a List as an
+argument, is invoked in a similar way: ```(CDR `(1 2 3))``` invokes the CDR function with
+```((1 2 3))```. It receives a List of arguments which has a single element: the list that CDR
+operates upon.
+* Defining functions: Functions which define symbols (including other functions) are invoked with
+List/Expression containing all the fully evaluated arguments, as well as a reference to the current
+runtime environment (see next section). Currently, there is a single defining function in JLISP:
+DEFUN. Evaluating ```(DEFUN plus2 (x) (+ x 2))``` results in a list of three elements being
+passed to the DEFUN function: ```(plus2 (x) (+ x 2))```. Note that none of the arguments have been
+evaluated as anything other than literals. This leads us to the third mode of function invocation ...
+* Special functions: Arguments for special functions are not evaluated before the function is
+invoked. In some cases, like QUOT and DEFUN, the arguments are treated as literal expressions. In
+other cases, like IF and SETQ, some arguments are treated as literals or as symbol names, while
+others are evaluated within the function implementation. Special functions that evaluate some of
+their arguments are additionally designated as *reentrant* (because they re-enter the eval routine
+as part of their normal evaluation).
+
+So, defining functions are always special functions, but some special functions are reentrant and
+others are not.
 
 ## The Environment
 
