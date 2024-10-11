@@ -11,6 +11,8 @@ import org.ulithi.jlisp.exception.UndefinedSymbolException;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.Ref;
 
+import java.util.Optional;
+
 /**
  * Implements the LISP {@code eval} function. The {@code eval} function accepts a "form" -- a list
  * whose first element is a symbol that identifies an operator or function -- and evaluates it
@@ -44,104 +46,115 @@ public class Eval {
         // Get the root cell's first element as an s-expression.
         final SExpression car = SExpression.fromRef(cell.getFirst());
 
-        // If the referee (the thing being referred to) is a list, recursively evaluate it
-        // and return the result.
+        // If the first element is a list, recursively evaluate it and return the result.
         if (car.isList()) { return apply((Cell) cell.getFirst()); }
 
-        // If the referee is a number, return it.
-        if (car.isAtom() && ((Atom)car).isNumber()) { return car.toAtom(); }
+        // If car is a number, return it.
+        final Atom atom = car.toAtom();
 
-        final String lexeme = car.toString();
+        if (atom.isNumber()) { return car; }
 
-        // See if the car referee is a defined function. If so, we'll use it below.
-        final Function func = resolveIfFunction(lexeme);
+        // See if car is a defined function. If so, we'll use it below.
+        final String lexeme = atom.toS();
 
-        // But if not then finally check to see if it's a literal: return it if it
-        // is and otherwise throw because we don't know what to do.
-        if (func == null) {
-            // If the car referee is a bound symbol, return its value.
-            SExpression val = resolveIfSymbol(lexeme);
-            if (val != null) { return val; }
-
-            val = resolveIfVariable(lexeme);
-            if (val != null) { return val; }
-
-            if (car.isAtom() && (car.toAtom()).isLiteral()) { return car.toAtom(); }
-            throw new UndefinedSymbolException("Unknown symbol: " + car);
-        }
-
-        Ref rest = cell.getRest();
-
-        if (func.isSpecial()) {
-            return invokeFunction(func, SExpression.fromRef(rest), env);
-        } else {
-            // Iterate over 'rest', evaluate each element, accumulate the results in a
-            // list, and then invoke the function at the end.
-            final List args = List.create();
-
-            while (!rest.isNil()) {
-                final Ref intermediate = apply((Cell) rest);
-                if (intermediate.isAtom()) {
-                    args.add(intermediate.toAtom());
-                } else if (intermediate.isList()) {
-                    args.add(intermediate.toList());
-                }
-                rest = ((Cell) rest).getRest();
-            }
-
-            return invokeFunction(func, args, env);
-        }
+        // If the lexeme resolves to a function, evaluate the function, otherwise try
+        // to evaluate it as a symbol or a literal.
+        return resolveFunction(lexeme)
+                .map(function -> evaluateFunction(function, cell.getRest()))
+                .orElseGet(() -> evaluateSymbolOrLiteral(atom));
     }
 
     /**
      * Attempts to resolve the binding in the current environment for the given name as a function.
      *
      * @param name The programmatic name to resolve.
-     * @return Returns the function bound to the given name or null if a binding doesn't exist or
-     *         is not a function binding.
+     * @return Returns an optional containing the function bound to the given name, or an empty
+     *         optional if a binding doesn't exist or is not a function binding.
      */
-    private Function resolveIfFunction(final String name) {
-        final Bindable binding = env.getBinding(name);
+    private Optional<Function> resolveFunction(final String name) {
+        return Optional.ofNullable(env.getBinding(name))
+                .filter(binding -> binding instanceof Function)
+                .map(binding -> (Function) binding);
+    }
 
-        if ((binding instanceof Function)) {
-            return (Function) binding;
+    /**
+     * Invokes the given Function on the argument(s) referred to by {@code rest}. If the function
+     * is "special", the argument(s) are passed directly to the function without evaluation.
+     * Otherwise, the argument(s) are evaluated recursively, and the function is invoked on the
+     * fully evaluated arguments.
+     *
+     * @param func The function to invoke.
+     * @param rest A Ref to the arguments for the function, typically a list.
+     * @return The resulting value of the evaluation.
+     */
+    private SExpression evaluateFunction(final Function func, final Ref rest) {
+        if (func.isSpecial()) {
+            return invokeFunction(func, SExpression.fromRef(rest), env);
         }
 
-        return null;
+        final List args = evaluateArgs(rest);
+
+        return invokeFunction(func, args, env);
+    }
+
+    /**
+     * Assumes the given Ref is a List of arguments to a function. Iterates over the list,
+     * recursively evaluates each element and accumulates the results.
+     * @param rest A Ref to a list of arguments to a LISP function.
+     * @return A List of the evaluated arguments.
+     */
+    private List evaluateArgs(final Ref rest) {
+        Ref it = rest;
+        final List args = List.create();
+
+        while (!it.isNil()) {
+            final Ref intermediate = apply((Cell) it);
+            if (intermediate.isAtom()) {
+                args.add(intermediate.toAtom());
+            } else if (intermediate.isList()) {
+                args.add(intermediate.toList());
+            }
+            it = ((Cell)it).getRest();
+        }
+
+        return args;
+    }
+
+    /**
+     * Attempts to evaluate the given Atom as a defined symbol, or as a literal.
+     * @param atom The Atom to evaluate.
+     * @return If the Atom represents a symbol, the value associated with the symbol. Otherwise,
+     *         if the Atom is a literal, returns the Atom itself.
+     */
+    private SExpression evaluateSymbolOrLiteral(final Atom atom) {
+        return resolveSymbol(atom.toS())
+                .orElseGet(() -> {
+                    if (atom.isLiteral()) {
+                        return atom;
+                    }
+                    throw new UndefinedSymbolException("Unknown symbol: " + atom);
+                });
     }
 
     /**
      * Attempts to resolve the binding in the current environment for the given name as a symbol.
      *
      * @param name The programmatic name to resolve.
-     * @return Returns the value of bound via a symbol definition to the given name or null if a
-     *         binding doesn't exist or is not a symbol binding.
+     * @return Returns an optional containing the value of the symbol bound to the given name,
+     *         or an empty optional if a binding doesn't exist or is not a symbol binding.
      */
-    private SExpression resolveIfSymbol(final String name) {
-        final Bindable binding = env.getBinding(name);
+    private Optional<SExpression> resolveSymbol(final String name) {
+        Bindable binding = env.getBinding(name);
 
-        if ((binding instanceof Symbol)) {
-            return ((Symbol) binding).eval();
+        if (binding instanceof Symbol) {
+            return Optional.of(((Symbol) binding).eval());
         }
-
-        return null;
-    }
-
-    /**
-     * Attempts to resolve the binding in the current environment for the given name as a variable.
-     *
-     * @param name The programmatic name to resolve.
-     * @return Returns the value bound to the given name or null if a binding doesn't exist or
-     *         is not a variable binding.
-     */
-    private SExpression resolveIfVariable(final String name) {
-        final Bindable binding = env.getBinding(name);
 
         if (binding instanceof SExpression) {
-            return (SExpression) binding;
+            return Optional.of((SExpression) binding);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     /**
