@@ -10,8 +10,6 @@ import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
 import org.ulithi.jlisp.primitive.Eval;
 
-import java.util.Arrays;
-
 /**
  * Built-in functions to support simple unit-testing of JLisp itself.
  */
@@ -21,7 +19,7 @@ public class UnitTest implements BindingProvider {
      */
     @Override
     public java.util.List<Binding> getBindings() {
-        return Arrays.asList(new Binding(new EXPECT()));
+        return java.util.List.of(new Binding(new EXPECT()));
     }
 
     /**
