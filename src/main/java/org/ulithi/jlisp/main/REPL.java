@@ -172,6 +172,7 @@ public final class REPL {
         System.err.println("\tECHO: Parse statement and print parsed statement without evaluating");
         System.err.println("\tEVAL: Return to normal evaluation mode");
         System.err.println("\tQUIT: Quit/exit the REPL");
+        System.err.println("\tVERBOSE: Dump stack trace in the event of a processing error");
         System.err.println("\tHELP: Print this message");
         System.err.flush();
     }
