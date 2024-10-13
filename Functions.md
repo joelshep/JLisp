@@ -28,6 +28,13 @@ Lang.java
 `(CDR (QUOTE (4 5 6)))` => `( 5 6 )`  
 `(CDR (QUOTE ()))` => `()`
 
+### COND
+Evaluates a series of conditionals: when one evaluates to true, evaluates and returns the result
+of the corresponding form. COND is similar to a select-case statement in other languages.  
+Lang.java  
+`(COND (( = s Y) T) ((= s y) T) ((= s N) F) ((= s n) F) (T nil))`  
+... returns T if s is 'y' or 'Y', F if s is 'n' or 'N', and `nil` otherwise.
+
 ### CONS
 Accepts two arguments and returns a `list` whose CAR is the first argument and the
 CDR of the `list` is the second argument.  
@@ -107,11 +114,25 @@ Math.java
 `(MINUS 72 12 7)` => `53`  
 `(MINUS 11 5)` => `6`
 
+### MINUSP
+Returns true if the argument is a negative integer; and false otherwise.  
+Predicate.java  
+`(MINUSP -3)` => `T`  
+`(MINUSP 4)` => `F`  
+`(MINUSP 0)` => `F`
+
 ### PLUS | +
 Returns the sum of the arguments.  
 Math.java  
 `(+ 2 3)` => `5`  
 `(+ 2 3 4 5)` => `14`
+
+### PLUSP
+Returns true if the argument is a positive integer; and false otherwise.  
+Predicate.java  
+`(PLUSP 3)` => `T`  
+`(PLUSP -4)` => `F`  
+`(PLUSP 0)` => `F`
 
 ### QUOTE
 Returns its argument as-is.  
@@ -145,3 +166,11 @@ Returns the product of the arguments.
 Math.java  
 `(* 4 5)` => `20`  
 `(TIMES (PLUS 1 2) (MINUS 7 3))` => `12`
+
+### ZEROP
+Returns true if the argument is the integer 0 (zero); and false otherwise.  
+Predicate.java  
+`(ZEROP (+ -3 3))` => `T`  
+`(ZEROP (+ -3 2))` => `F`  
+`(ZEROP (+ 3 -2))` => `F`  
+`(ZEROP 0)` => `T`
