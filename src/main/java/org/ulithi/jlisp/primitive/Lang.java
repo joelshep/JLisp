@@ -34,17 +34,12 @@ public class Lang implements BindingProvider {
      * Implements the LISP {@code CAR} function. The {@code CAR} function accepts a list and returns
      * the first element in the list.
      */
-    public static class CAR extends AbstractFunction {
+    public static class CAR extends AbstractListFunction {
         public CAR() { super("CAR"); }
+
         @Override
-        public SExpression apply(final SExpression sexp) {
-            final List arg = sexp.toList();
-
-            if (arg.lengthAsInt() != 1 || !arg.car().isList()) {
-                throw new EvaluationException("Argument to CAR must be a list");
-            }
-
-            return arg.car().toList().car();
+        public SExpression applyImpl(final List list) {
+            return list.car();
         }
     }
 
@@ -53,17 +48,12 @@ public class Lang implements BindingProvider {
      * the list except for the first item. If the list is a single element list, {@code CDR} returns
      * {@code NIL}.
      */
-    public static class CDR extends AbstractFunction {
+    public static class CDR extends AbstractListFunction {
         public CDR() { super("CDR"); }
+
         @Override
-        public SExpression apply(final SExpression sexp) {
-            final List arg = sexp.toList();
-
-            if (arg.lengthAsInt() != 1 || !arg.car().isList()) {
-                throw new EvaluationException("Argument to CDR must be a list");
-            }
-
-            return arg.car().toList().cdr();
+        public SExpression applyImpl(final List list) {
+            return list.cdr();
         }
     }
 
@@ -193,14 +183,14 @@ public class Lang implements BindingProvider {
 
         /** {@inheritDoc} */
         @Override
+        public boolean isSpecial() { return true; }
+
+        /** {@inheritDoc} */
+        @Override
         public SExpression apply(final SExpression sexp) {
             if (sexp.isAtom()) { return sexp.toAtom(); }
             return sexp.toList().car();
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean isSpecial() { return true; }
     }
 
     /**
@@ -209,7 +199,7 @@ public class Lang implements BindingProvider {
      * been defined previously (e.g. by {@code DEFVAR}), {@code SETQ} creates a corresponding
      * global variable.
      */
-    private static class SETQ extends AbstractFunction {
+    public static class SETQ extends AbstractFunction {
         public SETQ() { super("SETQ"); }
 
         @Override
