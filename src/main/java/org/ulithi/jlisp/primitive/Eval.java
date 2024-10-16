@@ -30,7 +30,7 @@ public class Eval {
      * @return The resulting value of the evaluation.
      */
     public SExpression apply(final SExpression sexp) {
-        return apply(sexp.toList().getRoot());
+        return sexp.isAtom() ? apply(Cell.create(sexp.toAtom())) : apply(sexp.toList().getRoot());
     }
 
     /**
