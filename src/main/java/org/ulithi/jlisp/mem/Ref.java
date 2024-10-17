@@ -7,7 +7,7 @@ import org.ulithi.jlisp.exception.TypeConversionException;
 
 /**
  * A {@link Ref} is the concrete representation of an <em>S-Expression</em>. An S-Expression is
- * either an {@link Atom Atoms} (literals and symbols) or a "cons cell", which here is represented
+ * either an {@link Atom Atom} (a literal or symbol) or a "cons cell", which here is represented
  * by a {@link List}.
  * <p>
  * The {@link Ref} interface is also a simple "marker" interface for things that can be referred

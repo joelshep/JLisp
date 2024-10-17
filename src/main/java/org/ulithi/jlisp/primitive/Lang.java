@@ -1,6 +1,7 @@
 package org.ulithi.jlisp.primitive;
 
 import org.ulithi.jlisp.core.AbstractFunction;
+import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;
 import org.ulithi.jlisp.core.Environment;
@@ -23,6 +24,7 @@ public class Lang implements BindingProvider {
     public java.util.List<Binding> getBindings() {
         return Arrays.asList(new Binding(new Lang.CAR()),
                              new Binding(new Lang.CDR()),
+                             new Binding(new Lang.COND()),
                              new Binding(new Lang.CONS()),
                              new Binding(new Lang.DEFUN()),
                              new Binding(new Lang.IF()),
@@ -54,6 +56,50 @@ public class Lang implements BindingProvider {
         @Override
         public SExpression applyImpl(final List list) {
             return list.cdr();
+        }
+    }
+
+    public static class COND extends AbstractFunction {
+        public COND() { super("COND");  }
+
+        @Override
+        public boolean isSpecial() { return true; }
+
+        @Override
+        public boolean isReentrant() { return true; }
+
+        /** {@inheritDoc */
+        @Override
+        public SExpression apply(final SExpression sexp, final Environment env, final Eval eval) {
+            // Expects a list of lists. Evaluates the first element in each list. If it evaluates
+            // to T, then evaluates and returns the value of the second element. Iterates through
+            // the list of lists start to finish and terminates on the first one that evaluates to T.
+            if (sexp.isAtom()) { return sexp; }
+
+            List args = sexp.toList();
+
+            while (!args.isEmpty()) {
+                final SExpression cond = args.car();
+
+                if (!cond.isList() || cond.isNil()) {
+                    throw new EvaluationException("Argument to COND must be a list, got: " + cond);
+                }
+
+                final List conditional = cond.toList();
+
+                final SExpression condition = conditional.car();
+
+                final SExpression truth = eval.apply(condition);
+
+                if (truth.toAtom().toB()) {
+                    final SExpression consequent = conditional.cdr();
+                    return consequent.isNil() ? truth : eval.apply(consequent);
+                }
+
+                args = args.cdr().toList();
+            }
+
+            return Atom.NIL;
         }
     }
 

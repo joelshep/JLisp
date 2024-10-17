@@ -117,6 +117,62 @@ public class LangTestCase {
     }
 
     @Test
+    public void testSimpleCond() {
+        String expression = "(COND ((EQL 2 2) SNOO) ((EQL 3 4) BOO) ((EQL 5 5) (+ 4 5)))";
+        SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertEquals("SNOO", sexp.toString());
+
+        expression = "(COND ((EQL 2 3) SNOO) ((EQL 4 4) BOO) ((EQL 5 5) (+ 4 5)))";
+        sexp = UnitTestUtilities.evaluate(expression);
+        assertEquals("BOO", sexp.toString());
+
+        expression = "(COND ((EQL 2 3) SNOO) ((EQL 3 4) BOO) ((EQL 5 5) (+ 4 5)))";
+        sexp = UnitTestUtilities.evaluate(expression);
+        assertEquals(9, sexp.toAtom().toI());
+    }
+
+    @Test
+    public void testCondDefun() {
+        final Eval eval = new Eval();
+        final String defun = "(defun abs (x) (COND ((minusp x) (- x)) (T x)))";
+        final SExpression defunResult = eval.apply(parse(defun).root());
+        assertEquals("abs", defunResult.toString());
+
+        // Now evaluate the 'abs' function that we just created.
+        SExpression abs = eval.apply(parse("(abs -4)").root());
+        assertEquals(4, abs.toAtom().toI());
+
+        abs = eval.apply(parse("(abs 5)").root());
+        assertEquals(5, abs.toAtom().toI());
+    }
+
+    @Test
+    public void testEmptyCond() {
+        final String expression = "(COND )";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isNil());
+    }
+
+    @Test
+    public void testCondWithAllFalseConditions() {
+        final String expression = "(COND ((EQL 1 2) 'foo) ((EQL 3 4) 'bar))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isNil());
+    }
+
+    @Test
+    public void testCondShortcutsEvaluation() {
+        final Eval eval = new Eval();
+        eval.apply(parse("(SETQ X 0)").root());
+        final SExpression sexp = eval.apply(parse("(COND ((EQ 1 1) 'foo) ((SETQ X 1) 'bar))").root());
+        assertTrue(sexp.isAtom());
+        assertEquals("foo", sexp.toAtom().toS());
+        final SExpression x = eval.apply(parse("X").root());
+        assertTrue(x.isAtom());
+        assertEquals(0, x.toAtom().toI());
+    }
+
+    @Test
     public void testConsAtoms() {
         final String expression = "(CONS 1 2 3)";
 
