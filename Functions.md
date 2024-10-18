@@ -9,6 +9,14 @@ Collections.java
 `(APPEND 'A)` => `A`  
 `(APPEND '((A) (B)) '((C) (D)))` => `( ( A ) ( B ) ( C ) ( D ) )`
 
+### ASSOC
+An association list (a.k.a. "alist") is a list of pairs. The ASSOC func takes a key value and an
+alist, and returns the first pair such that the given key is equal to the `car` of the pair, or
+`NIL` otherwise.  
+Collections.java  
+`(ASSOC 'oak '((pine cones) (oak acorns) (oak seeds)))` => `( oak acorns )`
+`(ASSOC 'birch '((pine cones) (oak acorns) (maple seeds)))` => `NIL`
+
 ### ATOM
 Returns true if the argument is an `atom`; and false otherwise.  
 `(ATOM (QUOTE 3))` => `T`  

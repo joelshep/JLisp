@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.core;
 
+import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.JLispRuntimeException;
 import org.ulithi.jlisp.exception.TypeConversionException;
 import org.ulithi.jlisp.mem.Cell;
@@ -183,6 +184,19 @@ public class List implements SExpression {
         if (ref.isNil()) { return List.create(); }
         if (ref.isCell()) { return List.create(ref); }
         throw new JLispRuntimeException("Don't know how to fetch CDR of ref: " + ref);
+    }
+
+    /**
+     * Returns a {@link SExpression} representing the {@code car} of the {@code cdr} of this list:
+     * i.e., the second element in the list.
+     * @return The {@code car} of the {@code cdr} of this list.
+     */
+    public SExpression cadr() {
+        if (isNil() || cdr() == null || cdr().isNil()) {
+            throw new EvaluationException("Cannot get cadr of a list with fewer than two elements");
+        }
+
+        return cdr().toList().car();
     }
 
     /**

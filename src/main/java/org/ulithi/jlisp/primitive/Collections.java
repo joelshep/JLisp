@@ -1,11 +1,13 @@
 package org.ulithi.jlisp.primitive;
 
 import org.ulithi.jlisp.core.AbstractFunction;
+import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
+import org.ulithi.jlisp.exception.WrongArgumentCountException;
 
 import java.util.Arrays;
 
@@ -19,6 +21,7 @@ public class Collections implements BindingProvider {
     @Override
     public java.util.List<Binding> getBindings() {
         return Arrays.asList(new Binding(new Collections.APPEND()),
+                             new Binding(new Collections.ASSOC()),
                              new Binding(new Collections.LENGTH()),
                              new Binding(new Collections.LIST()),
                              new Binding(new Collections.SIZE()));
@@ -68,6 +71,49 @@ public class Collections implements BindingProvider {
             }
 
             return result;
+        }
+    }
+
+    /**
+     * Implements the LISP {@code ASSOC} function, which returns the first association for a
+     * given key in an {@code alist} (associative list), by comparing the key to the {@code alist}
+     * elements via an {@code equal} comparison.
+     */
+    public static class ASSOC extends AbstractFunction {
+        public ASSOC() { super("ASSOC"); }
+
+        /** {@inheritDoc} */
+        @Override
+        public SExpression apply(final SExpression sexp) {
+            if (!sexp.isList() || sexp.toList().lengthAsInt() < 2) {
+                throw new WrongArgumentCountException("ASSOC requires at least two arguments");
+            }
+
+            final List args = sexp.toList();
+            final SExpression key = args.car();
+            final SExpression alist = args.cadr();
+
+            if (!alist.isList()) {
+                throw new EvaluationException("Second argument to ASSOC must be an association list");
+            }
+
+            List assocList = alist.toList();
+
+            while (!assocList.isEmpty()) {
+                SExpression expr = assocList.car();
+
+                if (!expr.isList() || expr.toList().isNil()) {
+                    throw new EvaluationException("Association list elements must be lists");
+                }
+
+                if (key.isEqual(expr.toList().car())) {
+                    return expr;
+                }
+
+                assocList = assocList.cdr().toList();
+            }
+
+            return Atom.NIL;
         }
     }
 

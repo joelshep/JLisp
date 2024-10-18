@@ -1,8 +1,11 @@
 package org.ulithi.jlisp.test.primitive;
 
 import org.junit.Test;
+import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
+import org.ulithi.jlisp.exception.TypeConversionException;
+import org.ulithi.jlisp.exception.WrongArgumentCountException;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 
 import static org.junit.Assert.assertEquals;
@@ -120,5 +123,52 @@ public class CollectionsTestCase {
         assertEquals("( ( A ) ( B ) ( C ) ( D ) )", sexp.toString());
     }
 
+    @Test
+    public void testAssocMatchesKey() {
+        final String expression = "(ASSOC 'oak '((pine cones) (oak acorns) (maple seeds)))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isList());
+        assertEquals("( oak acorns )", sexp.toString());
+    }
+
+    @Test
+    public void testAssocNoMatchForKey() {
+        final String expression = "(ASSOC 'birch '((pine cones) (oak acorns) (maple seeds)))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertEquals(Atom.NIL, sexp);
+    }
+
+    @Test
+    public void testEmptyAssocList() {
+        final SExpression sexp = UnitTestUtilities.evaluate("(ASSOC 'a '())");
+        assertEquals(Atom.NIL, sexp);
+    }
+
+    @Test
+    public void testAssocMatchesFirstMatch() {
+        final String expression = "(ASSOC 'oak '((pine cones) (oak acorns) (oak seeds)))";
+        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertTrue(sexp.isList());
+        assertEquals("( oak acorns )", sexp.toString());
+    }
+
+    @Test(expected = EvaluationException.class)
+    public void testInvalidAssocList() {
+        final String expression = "(ASSOC 'oak 'pine_cones)";
+        UnitTestUtilities.evaluate(expression);
+    }
+
+    @Test(expected = WrongArgumentCountException.class)
+    public void testInvalidAssocListWithSingleElement() {
+        final String expression = "(ASSOC 'oak)";
+        UnitTestUtilities.evaluate(expression);
+    }
+
+    @Test
+    public void testAssocWithNestedLists() {
+        final String expression = "(ASSOC 'x '((a 1) (b 2) (x (3 4 5))))";
+        SExpression sexp = UnitTestUtilities.evaluate(expression);
+        assertEquals("( x ( 3 4 5 ) )", sexp.toString());
+    }
 
 }
