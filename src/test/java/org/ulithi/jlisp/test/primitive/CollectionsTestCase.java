@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
-import org.ulithi.jlisp.exception.TypeConversionException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 
@@ -96,7 +95,7 @@ public class CollectionsTestCase {
     @Test(expected = EvaluationException.class)
     public void testAppendMultipleAtomsIsError() {
         final String expression = "(APPEND 'A 'B 'C)";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        UnitTestUtilities.evaluate(expression);
     }
 
     @Test
