@@ -14,14 +14,14 @@ public class LogicTestCase {
     @Test
     public void testT() {
         final String expression = "(T)";
-        final boolean result = UnitTestUtilities.evaluate(expression).toAtom().toB();
+        final boolean result = UnitTestUtilities.eval(expression).toAtom().toB();
         assertTrue(expression, result);
     }
 
     @Test
     public void testF() {
         final String expression = "(F)";
-        final boolean result = UnitTestUtilities.evaluate(expression).toAtom().toB();
+        final boolean result = UnitTestUtilities.eval(expression).toAtom().toB();
         assertFalse(expression, result);
     }
 }

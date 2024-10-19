@@ -10,13 +10,14 @@ import org.ulithi.jlisp.primitive.Eval;
  * Static helper methods for writing unit tests.
  */
 public class UnitTestUtilities {
+
     /**
      * Scans, parses, evaluates the given LISP {@code expression} and returns the result as a
      * {@code SExpression}.
      * @param expression The LISP expression to evaluate.
      * @return The result of the evaluation, as an {@link SExpression}.
      */
-    public static SExpression evaluate(final String expression) {
+    public static SExpression eval(final String expression) {
         final PTree ptree = parse(expression);
         final Eval eval = new Eval();
         return eval.apply(ptree.root());

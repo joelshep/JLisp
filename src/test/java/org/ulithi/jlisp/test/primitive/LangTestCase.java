@@ -22,7 +22,7 @@ public class LangTestCase {
         final String expression = "(CAR (QUOTE HELLO))";
 
         try {
-            UnitTestUtilities.evaluate(expression);
+            UnitTestUtilities.eval(expression);
             fail("CAR should throw exception if argument is not a list");
         } catch (final EvaluationException e) {
             // Expected.
@@ -32,35 +32,35 @@ public class LangTestCase {
     @Test
     public void testCAROfSingleElementList() {
         final String expression = "(CAR (QUOTE (HELLO)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals("HELLO", sexp.toAtom().toS());
     }
 
     @Test
     public void testCAROfSimpleList() {
         final String expression = "(CAR (QUOTE (4 5 6)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals(4, sexp.toAtom().toI());
     }
 
     @Test
     public void testCAROfSingleQuoteList() {
         final String expression = "(CAR '(A B C))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals("A", sexp.toAtom().toS());
     }
 
     @Test
     public void testCAROfListOfLists() {
         final String expression = "(CAR (QUOTE ((A B) (C D) (E F))))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals("( A B )", sexp.toList().toString()); //String.valueOf(list));
     }
 
     @Test
     public void testCAROfEmptyList() {
         final String expression = "(CAR (QUOTE ()))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isList());
         assertTrue(sexp.toList().isEmpty());
     }
@@ -71,7 +71,7 @@ public class LangTestCase {
         final String expression = "(CDR (QUOTE HELLO))";
 
         try {
-            UnitTestUtilities.evaluate(expression);
+            UnitTestUtilities.eval(expression);
             fail("CDR should throw exception if argument is not a list");
         } catch (final EvaluationException e) {
             // Expected.
@@ -81,7 +81,7 @@ public class LangTestCase {
     @Test
     public void testCDROfSingleElementList() {
         final String expression = "(CDR (QUOTE (HELLO)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isList());
         assertTrue(sexp.toList().isEmpty());
     }
@@ -89,21 +89,21 @@ public class LangTestCase {
     @Test
     public void testCDROfSimpleList() {
         final String expression = "(CDR (QUOTE (4 5 6)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals("( 5 6 )", sexp.toList().toString());
     }
 
     @Test
     public void testCDROfListOfLists() {
         final String expression = "(CDR (QUOTE ((A B) (C D) (E F))))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals("( ( C D ) ( E F ) )", sexp.toList().toString());
     }
 
     @Test
     public void testCDROfEmptyList() {
         final String expression = "(CDR (QUOTE ()))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isList());
         assertTrue(sexp.toList().isEmpty());
     }
@@ -111,7 +111,7 @@ public class LangTestCase {
     @Test
     public void testConsEmptyListToEmptyList() {
         final String expression = "(CONS () ())";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isList());
         assertTrue(sexp.toList().isEmpty());
     }
@@ -119,15 +119,15 @@ public class LangTestCase {
     @Test
     public void testSimpleCond() {
         String expression = "(COND ((EQL 2 2) SNOO) ((EQL 3 4) BOO) ((EQL 5 5) (+ 4 5)))";
-        SExpression sexp = UnitTestUtilities.evaluate(expression);
+        SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals("SNOO", sexp.toString());
 
         expression = "(COND ((EQL 2 3) SNOO) ((EQL 4 4) BOO) ((EQL 5 5) (+ 4 5)))";
-        sexp = UnitTestUtilities.evaluate(expression);
+        sexp = UnitTestUtilities.eval(expression);
         assertEquals("BOO", sexp.toString());
 
         expression = "(COND ((EQL 2 3) SNOO) ((EQL 3 4) BOO) ((EQL 5 5) (+ 4 5)))";
-        sexp = UnitTestUtilities.evaluate(expression);
+        sexp = UnitTestUtilities.eval(expression);
         assertEquals(9, sexp.toAtom().toI());
     }
 
@@ -149,14 +149,14 @@ public class LangTestCase {
     @Test
     public void testEmptyCond() {
         final String expression = "(COND )";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isNil());
     }
 
     @Test
     public void testCondWithAllFalseConditions() {
         final String expression = "(COND ((EQL 1 2) 'foo) ((EQL 3 4) 'bar))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isNil());
     }
 
@@ -177,7 +177,7 @@ public class LangTestCase {
         final String expression = "(CONS 1 2 3)";
 
         try {
-            UnitTestUtilities.evaluate(expression);
+            UnitTestUtilities.eval(expression);
             fail("Expected WrongArgumentCountException");
         } catch (final WrongArgumentCountException e) {
             // Expected.
@@ -188,7 +188,7 @@ public class LangTestCase {
     public void testConsAtomAndList() {
         // (CONS 1 (QUOTE (2 3))) => (1 2 3)
         final String expression = "(CONS 1 (QUOTE (2 3)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals("( 1 2 3 )", String.valueOf(sexp));
     }
 
@@ -196,7 +196,7 @@ public class LangTestCase {
     public void testConsLiteralToEmptyList() {
         // CONS HELLO () -> (HELLO)   (HELLO . NIL)
         final String expression = "(CONS HELLO ())";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals("( HELLO )", String.valueOf(sexp));
     }
 
@@ -204,7 +204,7 @@ public class LangTestCase {
     public void testConsListToEmptyList() {
         // CONS (PHONE HOME) () -> ((PHONE HOME))  ((PHONE . (HOME . NIL)) . NIL)
         final String expression = "(CONS (QUOTE (PHONE HOME)) ())";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals("( ( PHONE HOME ) )", String.valueOf(sexp));
     }
 
@@ -212,7 +212,7 @@ public class LangTestCase {
     public void testConsAtomToList() {
         // CONS BAR (BAZ) -> (BAR BAZ)  (BAR . (BAZ . ))
         final String expression = "(CONS (QUOTE BAR) (QUOTE (BAZ)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals("( BAR BAZ )", String.valueOf(sexp));
     }
 
@@ -220,7 +220,7 @@ public class LangTestCase {
     public void testConsAtomsToList() {
         // CONS FOO (CONS BAR (BAZ)) -> (FOO BAR BAZ)  (FOO . (BAR . (BAZ . NIL)))
         final String expression = "(CONS (QUOTE FOO) (CONS (QUOTE BAR) (QUOTE (BAZ))))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals("( FOO BAR BAZ )", String.valueOf(sexp));
     }
 
@@ -228,14 +228,14 @@ public class LangTestCase {
     public void testConsListToList() {
         // CONS (NOW IS) (THE TIME) -> ((NOW IS) THE TIME)  ((NOW . (IS . NIL)) . (THE . (TIME . NIL)))
         final String expression = "(CONS (QUOTE (NOW IS)) (QUOTE (THE TIME)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals("( ( NOW IS ) THE TIME )", String.valueOf(sexp));
         assertEquals(3, sexp.toList().length().toAtom().toI());
     }
 
     @Test
     public void evaluateCarExpression() {
-        final SExpression sexp = UnitTestUtilities.evaluate("( CAR () )");
+        final SExpression sexp = UnitTestUtilities.eval("( CAR () )");
         assertTrue(sexp.isList());
         assertTrue(sexp.toList().isEmpty());
     }
@@ -243,28 +243,28 @@ public class LangTestCase {
     @Test
     public void evaluateCarConsExpression() {
         final String expression = "(CAR (CONS x y))";
-        final String result = UnitTestUtilities.evaluate(expression).toAtom().toS();
+        final String result = UnitTestUtilities.eval(expression).toAtom().toS();
         assertEquals("x", result);
     }
 
     @Test
     public void evaluateCdrConsExpression() {
         final String expression = "(CDR (CONS x y))";
-        final String result = UnitTestUtilities.evaluate(expression).toList().toString();
+        final String result = UnitTestUtilities.eval(expression).toList().toString();
         assertEquals("( y )", result);
     }
 
     @Test
     public void evaluateCdrConsListExpression() {
         final String expression = "(CDR (CONS x (PLUS 1 2)))";
-        final String result = UnitTestUtilities.evaluate(expression).toList().toString();
+        final String result = UnitTestUtilities.eval(expression).toList().toString();
         assertEquals("( 3 )", result);
     }
 
     @Test
     public void evaluateConsExpression() {
         final String expression = "(CONS x y)";
-        final String result = UnitTestUtilities.evaluate(expression).toList().toString();
+        final String result = UnitTestUtilities.eval(expression).toList().toString();
         assertEquals("( x y )", result);
     }
 
@@ -331,14 +331,14 @@ public class LangTestCase {
     @Test
     public void testSimpleConditional() {
         final String expression = "(IF (> 1 2) (QUOTE BAZ) (QUOTE FOO) )";
-        final SExpression result = UnitTestUtilities.evaluate(expression);
+        final SExpression result = UnitTestUtilities.eval(expression);
         assertEquals("FOO", result.toString());
     }
 
     @Test
     public void testSingleQuoteStringLiteral() {
         final String expression = "'FOO";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertEquals("FOO", sexp.toString());
     }
@@ -347,7 +347,7 @@ public class LangTestCase {
     public void testQuoteStringLiteral() {
         //(QUOTE FOO) => FOO
         final String expression = "(QUOTE FOO)";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertEquals("FOO", sexp.toString());
     }
@@ -355,7 +355,7 @@ public class LangTestCase {
     @Test
     public void testSingleQuoteList() {
         final String expression = "'(FOO BAR)";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isList());
         assertEquals("( FOO BAR )", sexp.toString());
     }
@@ -363,7 +363,7 @@ public class LangTestCase {
     @Test
     public void testSingleQuoteListWithNestedQuote() {
         final String expression = "'(FOO BAR 'BAZ)";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isList());
         assertEquals("( FOO BAR ' BAZ )", sexp.toString());
     }
@@ -372,7 +372,7 @@ public class LangTestCase {
     public void testQuoteList() {
         // (QUOTE (FOO BAR)) => (FOO BAR)
         final String expression = "(QUOTE (FOO BAR))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isList());
         assertEquals("( FOO BAR )", sexp.toString());
     }
@@ -381,7 +381,7 @@ public class LangTestCase {
     public void testQuoteLists() {
         // (QUOTE ((FOO BAR) (BAZ QUX))) => ((FOO BAR) (BAZ QUX))
         final String expression = "(QUOTE ((FOO BAR) (BAZ QUX)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isList());
         assertEquals("( ( FOO BAR ) ( BAZ QUX ) )", sexp.toString());
         assertEquals(2, sexp.toList().length().toI());

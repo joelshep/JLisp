@@ -15,7 +15,7 @@ public class UtilTestCase {
     @Test
     public void testAtomsAreEq() {
         final String expression = "(EQL (QUOTE FOO) (QUOTE FOO))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertTrue(sexp.toAtom().toB());
     }
@@ -23,7 +23,7 @@ public class UtilTestCase {
     @Test
     public void testEqlIsCaseSensitive() {
         final String expression = "(EQL (QUOTE FOO) (QUOTE Foo))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertFalse(sexp.toAtom().toB());
     }
@@ -31,7 +31,7 @@ public class UtilTestCase {
     @Test
     public void testDifferentAtomsAreNotEql() {
         final String expression = "(EQL (QUOTE FOO) (QUOTE BAR))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertFalse(sexp.toAtom().toB());
     }
@@ -39,7 +39,7 @@ public class UtilTestCase {
     @Test
     public void testEqualListsAreNotEql() {
         final String expression = "(EQL (QUOTE (1 2 3)) (QUOTE (1 2 3)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertFalse(sexp.toAtom().toB());
     }
@@ -47,7 +47,7 @@ public class UtilTestCase {
     @Test
     public void testEmptyListsAreEql() {
         final String expression = "(EQL (QUOTE ()) (QUOTE ()))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertTrue(sexp.toAtom().toB());
     }
@@ -55,7 +55,7 @@ public class UtilTestCase {
     @Test
     public void testAtomsAreEqual() {
         final String expression = "(EQUAL (QUOTE FOO) (QUOTE FOO))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertTrue(sexp.toAtom().toB());
     }
@@ -63,7 +63,7 @@ public class UtilTestCase {
     @Test
     public void testEqualIsCaseSensitive() {
         final String expression = "(EQUAL (QUOTE FOO) (QUOTE Foo))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertFalse(sexp.toAtom().toB());
     }
@@ -71,7 +71,7 @@ public class UtilTestCase {
     @Test
     public void testDifferentAtomsAreNotEqual() {
         final String expression = "(EQUAL (QUOTE FOO) (QUOTE BAR))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertFalse(sexp.toAtom().toB());
     }
@@ -79,7 +79,7 @@ public class UtilTestCase {
     @Test
     public void testListsAreEqual() {
         final String expression = "(EQUAL (QUOTE (1 2 3)) (QUOTE (1 2 3)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertTrue(sexp.toAtom().toB());
     }
@@ -87,7 +87,7 @@ public class UtilTestCase {
     @Test
     public void testEmptyListsAreEqual() {
         final String expression = "(EQUAL (QUOTE ()) (QUOTE ()))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertTrue(sexp.toAtom().toB());
     }
@@ -95,7 +95,7 @@ public class UtilTestCase {
     @Test
     public void testListsOfDifferentSizeNotEqual() {
         final String expression = "(EQUAL (QUOTE (1 2 3)) (QUOTE (1 2)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertFalse(sexp.toAtom().toB());
     }
@@ -103,7 +103,7 @@ public class UtilTestCase {
     @Test
     public void testListsOfDifferentSizeNotEqual2() {
         final String expression = "(EQUAL (QUOTE (2 3)) (QUOTE (1 2 3)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertFalse(sexp.toAtom().toB());
     }
@@ -111,7 +111,7 @@ public class UtilTestCase {
     @Test
     public void testNestedListsAreEqual() {
         final String expression = "(EQUAL (QUOTE (1 2 (4 5) 3)) (QUOTE (1 2 (4 5) 3)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertTrue(sexp.toAtom().toB());
     }
@@ -119,7 +119,7 @@ public class UtilTestCase {
     @Test
     public void testMultipleListsAreEqual() {
         final String expression = "(EQUAL (QUOTE (1 2 3)) (QUOTE (1 2 3)) (QUOTE (1 2 3)) (QUOTE (1 2 3)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertTrue(sexp.toAtom().toB());
     }
@@ -127,7 +127,7 @@ public class UtilTestCase {
     @Test
     public void testMultipleUnequalLists() {
         final String expression = "(EQUAL (QUOTE (1 2 3)) (QUOTE (1 2 3)) (QUOTE (1 2)) (QUOTE (1 2 3)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertFalse(sexp.toAtom().toB());
     }
@@ -135,7 +135,7 @@ public class UtilTestCase {
     @Test
     public void testExpectIsAtom() {
         final String expression = "(EXPECT (+ 1 2) 3)";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertTrue(sexp.toAtom().toB());
     }
@@ -143,7 +143,7 @@ public class UtilTestCase {
     @Test
     public void testExpectFailure() {
         final String expression = "(EXPECT (+ 1 2) 4)";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertFalse(sexp.toAtom().toB());
     }
@@ -151,7 +151,7 @@ public class UtilTestCase {
     @Test
     public void testExpectIsList() {
         final String expression = "(EXPECT (APPEND '(A) '() '(B) '()) '(A B))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertTrue(sexp.isAtom());
         assertTrue(sexp.toAtom().toB());
     }

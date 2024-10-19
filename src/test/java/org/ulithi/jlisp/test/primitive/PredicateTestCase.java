@@ -17,93 +17,93 @@ public class PredicateTestCase {
     @Test
     public void testNumericLiteralIsAtom() {
         final String expression = "(ATOM (QUOTE 3))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals(Atom.T, sexp);
     }
 
     @Test
     public void testListOfNumbersIsNotAtom() {
         final String expression = "(ATOM (QUOTE (1 2 3)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals(Atom.F, sexp);
     }
 
     @Test
     public void testStringLiteralIsAtom() {
         final String expression = "(ATOM (QUOTE HELLO))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals(Atom.T, sexp);
     }
 
     @Test
     public void testNumericLiteralIsInteger() {
         final String expression = "(INTEGERP (QUOTE 3))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals(Atom.T, sexp);
     }
 
     @Test
     public void testStringLiteralIsNotInteger() {
         final String expression = "(INTEGERP (QUOTE HELLO))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals(Atom.F, sexp);
     }
 
     @Test
     public void testListIsNotInteger() {
         final String expression = "(INTEGERP (QUOTE (1 2 3)))";
-        final SExpression sexp = UnitTestUtilities.evaluate(expression);
+        final SExpression sexp = UnitTestUtilities.eval(expression);
         assertEquals(Atom.F, sexp);
     }
 
     @Test
     public void testMinusP() {
-        assertEquals(Atom.T, UnitTestUtilities.evaluate("(MINUSP -2)"));
-        assertEquals(Atom.F, UnitTestUtilities.evaluate("(MINUSP 0)"));
-        assertEquals(Atom.F, UnitTestUtilities.evaluate("(MINUSP 4)"));
+        assertEquals(Atom.T, UnitTestUtilities.eval("(MINUSP -2)"));
+        assertEquals(Atom.F, UnitTestUtilities.eval("(MINUSP 0)"));
+        assertEquals(Atom.F, UnitTestUtilities.eval("(MINUSP 4)"));
     }
 
     @Test(expected = EvaluationException.class)
     public void testMinusPThrowsOnNonNumericArgument() {
-        UnitTestUtilities.evaluate("(MINUSP 'FOO)");
+        UnitTestUtilities.eval("(MINUSP 'FOO)");
     }
 
     @Test(expected = WrongArgumentCountException.class)
     public void testMinusPThrowsOnMultipleArguments() {
-        UnitTestUtilities.evaluate("(MINUSP -2 -2)");
+        UnitTestUtilities.eval("(MINUSP -2 -2)");
     }
 
     @Test
     public void testPlusP() {
-        assertEquals(Atom.F, UnitTestUtilities.evaluate("(PLUSP -2)"));
-        assertEquals(Atom.F, UnitTestUtilities.evaluate("(PLUSP 0)"));
-        assertEquals(Atom.T, UnitTestUtilities.evaluate("(PLUSP 4)"));
+        assertEquals(Atom.F, UnitTestUtilities.eval("(PLUSP -2)"));
+        assertEquals(Atom.F, UnitTestUtilities.eval("(PLUSP 0)"));
+        assertEquals(Atom.T, UnitTestUtilities.eval("(PLUSP 4)"));
     }
 
     @Test(expected = EvaluationException.class)
     public void testPlusPThrowsOnNonNumericArgument() {
-        UnitTestUtilities.evaluate("(PLUSP 'FOO)");
+        UnitTestUtilities.eval("(PLUSP 'FOO)");
     }
 
     @Test(expected = WrongArgumentCountException.class)
     public void testPlusPThrowsOnMultipleArguments() {
-        UnitTestUtilities.evaluate("(PLUSP 2 2)");
+        UnitTestUtilities.eval("(PLUSP 2 2)");
     }
 
     @Test
     public void testZeroP() {
-        assertEquals(Atom.F, UnitTestUtilities.evaluate("(ZEROP -2)"));
-        assertEquals(Atom.T, UnitTestUtilities.evaluate("(ZEROP 0)"));
-        assertEquals(Atom.F, UnitTestUtilities.evaluate("(ZEROP 4)"));
+        assertEquals(Atom.F, UnitTestUtilities.eval("(ZEROP -2)"));
+        assertEquals(Atom.T, UnitTestUtilities.eval("(ZEROP 0)"));
+        assertEquals(Atom.F, UnitTestUtilities.eval("(ZEROP 4)"));
     }
 
     @Test(expected = EvaluationException.class)
     public void testZeroPThrowsOnNonNumericArgument() {
-        UnitTestUtilities.evaluate("(ZEROP 'FOO)");
+        UnitTestUtilities.eval("(ZEROP 'FOO)");
     }
 
     @Test(expected = WrongArgumentCountException.class)
     public void testZeroPThrowsOnMultipleArguments() {
-        UnitTestUtilities.evaluate("(ZEROP 0 0)");
+        UnitTestUtilities.eval("(ZEROP 0 0)");
     }
 }
