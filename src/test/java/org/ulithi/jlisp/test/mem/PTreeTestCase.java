@@ -2,11 +2,11 @@ package org.ulithi.jlisp.test.mem;
 
 import org.junit.Test;
 import org.ulithi.jlisp.mem.PTree;
-import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.ulithi.jlisp.test.suite.UnitTestUtilities.parse;
 
 /**
  * Unit tests for {@link org.ulithi.jlisp.mem.PTree}.
@@ -27,8 +27,7 @@ public class PTreeTestCase {
 
     @Test
     public void testNestedUnparse() {
-        final String expression = "(+ (* 2 4) (* 3 6))";
-        final PTree pTree = UnitTestUtilities.parse(expression);
+        final PTree pTree = parse("(+ (* 2 4) (* 3 6))");
         assertFalse(pTree.isEmpty());
         final String unparsed = pTree.unparse();
         assertEquals("( + ( * 2 4 ) ( * 3 6 ) )", unparsed);
@@ -36,8 +35,7 @@ public class PTreeTestCase {
 
     @Test
     public void testQuoteUnparse() {
-        final String expression = "(QUOTE (A B C))";
-        final PTree pTree = UnitTestUtilities.parse(expression);
+        final PTree pTree = parse("(QUOTE (A B C))");
         assertFalse(pTree.isEmpty());
         final String unparsed = pTree.unparse();
         assertEquals("( QUOTE ( A B C ) )", unparsed);
@@ -45,19 +43,15 @@ public class PTreeTestCase {
 
     @Test
     public void testSingleQuoteUnparse() {
-        final String expression = "'A";
-        final PTree pTree = UnitTestUtilities.parse(expression);
+        final PTree pTree = parse("'A");
         assertFalse(pTree.isEmpty());
         final String unparsed = pTree.unparse();
         assertEquals("( QUOTE A )", unparsed);
     }
 
-
-
     @Test
     public void testSingleQuoteListUnparse() {
-        final String expression = "'(A B C)";
-        final PTree pTree = UnitTestUtilities.parse(expression);
+        final PTree pTree = parse("'(A B C)");
         assertFalse(pTree.isEmpty());
         final String unparsed = pTree.unparse();
         assertEquals("( QUOTE ( A B C ) )", unparsed);
@@ -65,8 +59,7 @@ public class PTreeTestCase {
 
     @Test
     public void testNestedNestedUnparse() {
-        final String expression = "(CAR (CDR '(A B C)))";
-        final PTree pTree = UnitTestUtilities.parse(expression);
+        final PTree pTree = parse("(CAR (CDR '(A B C)))");
         assertFalse(pTree.isEmpty());
         final String unparsed = pTree.unparse();
         assertEquals("( CAR ( CDR ( QUOTE ( A B C ) ) ) )", unparsed);

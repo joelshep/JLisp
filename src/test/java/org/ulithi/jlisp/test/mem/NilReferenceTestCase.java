@@ -29,7 +29,6 @@ public class NilReferenceTestCase {
         final Atom atom = NilReference.NIL.toAtom();
         assertTrue(atom.isAtom());
         assertTrue(atom.isNil());
-        assertEquals("NIL", atom.toString());
-
+        assertEquals(Atom.NIL, atom);
     }
 }

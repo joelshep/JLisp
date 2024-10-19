@@ -2,12 +2,10 @@ package org.ulithi.jlisp.test.primitive;
 
 import org.junit.Test;
 import org.ulithi.jlisp.exception.EvaluationException;
-import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.ulithi.jlisp.test.suite.UnitTestUtilities.eval;
 
 /**
@@ -17,93 +15,80 @@ public class MathTestCase {
 
     @Test
     public void testSingleValueIsLessThan() {
-        final String expression = "(< -1)";
-        final boolean result = UnitTestUtilities.eval(expression).toAtom().toB();
-        assertTrue(expression, result);
+        final boolean result = eval("(< -1)").toAtom().toB();
+        assertTrue(result);
     }
 
     @Test
     public void testIsLessThan() {
-        final String expression = "(< 5 8)";
-        final boolean result = UnitTestUtilities.eval(expression).toAtom().toB();
-        assertTrue(expression, result);
+        final boolean result = eval("(< 5 8)").toAtom().toB();
+        assertTrue(result);
     }
 
     @Test
     public void testNotLessThan() {
-        final String expression = "(< 8 5)";
-        final boolean result = UnitTestUtilities.eval(expression).toAtom().toB();
-        assertFalse(expression, result);
+        final boolean result = eval("(< 8 5)").toAtom().toB();
+        assertFalse(result);
     }
 
     @Test
     public void testEqualNotLessThan() {
-        final String expression = "(< 8 8)";
-        final boolean result = UnitTestUtilities.eval(expression).toAtom().toB();
-        assertFalse(expression, result);
+        final boolean result = eval("(< 8 8)").toAtom().toB();
+        assertFalse(result);
     }
 
     @Test
     public void testIncreasingOrderIsLessThan() {
-        final String expression = "(< -4 8 23 67 98 104)";
-        final boolean result = UnitTestUtilities.eval(expression).toAtom().toB();
-        assertTrue(expression, result);
+        final boolean result = eval("(< -4 8 23 67 98 104)").toAtom().toB();
+        assertTrue(result);
     }
 
     @Test
     public void testNotIncreasingOrderIsNotLessThan() {
-        final String expression = "(< -4 8 23 67 48 104)";
-        final boolean result = UnitTestUtilities.eval(expression).toAtom().toB();
-        assertFalse(expression, result);
+        final boolean result = eval("(< -4 8 23 67 48 104)").toAtom().toB();
+        assertFalse(result);
     }
 
     @Test
     public void testLastNotIncreasingOrderIsNotLessThan() {
-        final String expression = "(< -4 8 23 67 98 97)";
-        final boolean result = UnitTestUtilities.eval(expression).toAtom().toB();
-        assertFalse(expression, result);
+        final boolean result = eval("(< -4 8 23 67 98 97)").toAtom().toB();
+        assertFalse(result);
     }
 
     @Test
     public void testSingleValueIsGreaterThan() {
-        final String expression = "(> -1000000)";
-        final boolean result = UnitTestUtilities.eval(expression).toAtom().toB();
-        assertTrue(expression, result);
+        final boolean result = eval("(> -1000000)").toAtom().toB();
+        assertTrue(result);
     }
 
     @Test
     public void testIsGreaterThan() {
-        final String expression = "(> 34 24)";
-        final boolean result = UnitTestUtilities.eval(expression).toAtom().toB();
-        assertTrue(expression, result);
+        final boolean result = eval("(> 34 24)").toAtom().toB();
+        assertTrue(result);
     }
 
     @Test
     public void testNotGreaterThan() {
-        final String expression = "(> 63 102)";
-        final boolean result = UnitTestUtilities.eval(expression).toAtom().toB();
-        assertFalse(expression, result);
+        final boolean result = eval("(> 63 102)").toAtom().toB();
+        assertFalse(result);
     }
 
     @Test
     public void testEqualNotGreaterThan() {
-        final String expression = "(> 63 63)";
-        final boolean result = UnitTestUtilities.eval(expression).toAtom().toB();
-        assertFalse(expression, result);
+        final boolean result = eval("(> 63 63)").toAtom().toB();
+        assertFalse(result);
     }
 
     @Test
     public void testDecreasingOrderIsGreaterThan() {
-        final String expression = "(> 104 98 67 23 8 -4)";
-        final boolean result = UnitTestUtilities.eval(expression).toAtom().toB();
-        assertTrue(expression, result);
+        final boolean result = eval("(> 104 98 67 23 8 -4)").toAtom().toB();
+        assertTrue(result);
     }
 
     @Test
     public void testLastNotDecreasingOrderIsNotGreaterThan() {
-        final String expression = "(> 104 98 67 23 8 8)";
-        final boolean result = UnitTestUtilities.eval(expression).toAtom().toB();
-        assertFalse(expression, result);
+        final boolean result = eval("(> 104 98 67 23 8 8)").toAtom().toB();
+        assertFalse(result);
     }
 
     /**
@@ -111,9 +96,8 @@ public class MathTestCase {
      */
     @Test
     public void testAddTwoNumbers() {
-        final String expression = "(+ 2 3)";
-        final int result = UnitTestUtilities.eval(expression).toAtom().toI();
-        assertEquals(expression, 5, result);
+        final int result = eval("(+ 2 3)").toAtom().toI();
+        assertEquals(5, result);
     }
 
     /**
@@ -121,9 +105,8 @@ public class MathTestCase {
      */
     @Test
     public void testAddFourNumbers() {
-        final String expression = "(+ 2 3 4 5)";
-        final int result = UnitTestUtilities.eval(expression).toAtom().toI();
-        assertEquals(expression, 14, result);
+        final int result = eval("(+ 2 3 4 5)").toAtom().toI();
+        assertEquals(14, result);
     }
 
     /**
@@ -131,16 +114,14 @@ public class MathTestCase {
      */
     @Test
     public void testMultiplyThenAdd() {
-        final String expression = "(+ 2 (* 2 3))";
-        final int result = UnitTestUtilities.eval(expression).toAtom().toI();
-        assertEquals(expression, 8, result);
+        final int result = eval("(+ 2 (* 2 3))").toAtom().toI();
+        assertEquals(8, result);
     }
 
     @Test
     public void testAddThenMultiply() {
-        final String expression = "(TIMES (PLUS 1 2) (MINUS 7 3))";
-        final int result = eval(expression).toAtom().toI();
-        assertEquals(expression, 12, result);
+        final int result = eval("(TIMES (PLUS 1 2) (MINUS 7 3))").toAtom().toI();
+        assertEquals(12, result);
     }
 
     /**
@@ -149,9 +130,8 @@ public class MathTestCase {
      */
     @Test
     public void testMultiplyTwiceThenAdd() {
-        final String expression = "(+ (* 4 5) (* 2 3))";
-        final int result = UnitTestUtilities.eval(expression).toAtom().toI();
-        assertEquals(expression, 26, result);
+        final int result = eval("(+ (* 4 5) (* 2 3))").toAtom().toI();
+        assertEquals(26, result);
     }
 
     /**
@@ -160,91 +140,72 @@ public class MathTestCase {
      */
     @Test
     public void testAddMultipleThenAdd() {
-        final String expression = "(+ (* 4 (+ 2 3)) (* 2 3))";
-        final int result = UnitTestUtilities.eval(expression).toAtom().toI();
-        assertEquals(expression, 26, result);
+        final int result = eval("(+ (* 4 (+ 2 3)) (* 2 3))").toAtom().toI();
+        assertEquals(26, result);
     }
 
     @Test
     public void testSubtractTwoNumbers() {
-        final String expression = "(MINUS 11 5)";
-        final int result = UnitTestUtilities.eval(expression).toAtom().toI();
-        assertEquals(expression, 6, result);
+        final int result = eval("(MINUS 11 5)").toAtom().toI();
+        assertEquals(6, result);
     }
 
     @Test
     public void testSubtractFromZero() {
-        final String expression = "(MINUS 0 12)";
-        final int result = UnitTestUtilities.eval(expression).toAtom().toI();
-        assertEquals(expression, -12, result);
+        final int result = eval("(MINUS 0 12)").toAtom().toI();
+        assertEquals(-12, result);
     }
 
     @Test
     public void testSubtractThreeNumbers() {
-        final String expression = "(MINUS 72 12 7)";
-        final int result = UnitTestUtilities.eval(expression).toAtom().toI();
-        assertEquals(expression, 53, result);
+        final int result = eval("(MINUS 72 12 7)").toAtom().toI();
+        assertEquals(53, result);
     }
 
     @Test
     public void testSubtractSingleNumberNegates() {
-        final String expression = "(MINUS 47)";
-        final int result = UnitTestUtilities.eval(expression).toAtom().toI();
-        assertEquals(expression, -47, result);
+        final int result = eval("(MINUS 47)").toAtom().toI();
+        assertEquals(-47, result);
     }
 
     @Test
     public void testDivideTwoNumbers() {
-        String expression = "(QUOTIENT 72 8)";
-        int result = UnitTestUtilities.eval(expression).toAtom().toI();
-        assertEquals(expression, 9, result);
+        int result = eval("(QUOTIENT 72 8)").toAtom().toI();
+        assertEquals(9, result);
 
-        expression = "(/ 72 8)";
-        result = UnitTestUtilities.eval(expression).toAtom().toI();
-        assertEquals(expression, 9, result);
+        result = eval("(/ 72 8)").toAtom().toI();
+        assertEquals(9, result);
     }
 
     @Test
     public void testDivideFourNumbers() {
-        String expression = "(QUOTIENT 200 4 5 5)";
-        int result = UnitTestUtilities.eval(expression).toAtom().toI();
-        assertEquals(expression, 2, result);
+        int result = eval("(QUOTIENT 200 4 5 5)").toAtom().toI();
+        assertEquals(2, result);
 
-        expression = "(/ 200 4 5 5)";
-        result = UnitTestUtilities.eval(expression).toAtom().toI();
-        assertEquals(expression, 2, result);
+        result = eval("(/ 200 4 5 5)").toAtom().toI();
+        assertEquals(2, result);
     }
 
-    @Test
+    @Test(expected = EvaluationException.class)
     public void testDivideByZero() {
-        final String expression = "(QUOTIENT 7 0)";
-
-        try {
-            UnitTestUtilities.eval(expression);
-            fail("Expected EvaluationException");
-        } catch (final EvaluationException e) {
-            // Expected.
-        }
+        eval("(QUOTIENT 7 0)");
     }
 
     @Test
     public void testRemainderOfTwoNumbers() {
-        final String expression = "(REMAINDER 77 8)";
-        final int result = UnitTestUtilities.eval(expression).toAtom().toI();
-        assertEquals(expression, 5, result);
+        final int result = eval("(REMAINDER 77 8)").toAtom().toI();
+        assertEquals(5, result);
     }
 
     @Test
     public void testRemainderOfThreeNumbers() {
-        final String expression = "(REMAINDER 77 8 3)";
-        final int result = UnitTestUtilities.eval(expression).toAtom().toI();
-        assertEquals(expression, 2, result);
+        final int result = eval("(REMAINDER 77 8 3)").toAtom().toI();
+        assertEquals(2, result);
     }
 
     @Test
     public void testRemainderWithLargerDivisor() {
-        final String expression = "(REMAINDER 8 77)";
-        final int result = UnitTestUtilities.eval(expression).toAtom().toI();
-        assertEquals(expression, 8, result);
+        final int result = eval("(REMAINDER 8 77)").toAtom().toI();
+        assertEquals(8, result);
     }
 }

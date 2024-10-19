@@ -12,6 +12,40 @@ import org.ulithi.jlisp.primitive.Eval;
 public class UnitTestUtilities {
 
     /**
+     * Thin wrapper around {@link Eval} that maintains state between evaluations (environment
+     * especially) so tests can do things like creating a user-defined function or variable in
+     * one step and then reference it (e.g. invoke the function, read the variable) later on.
+     */
+    public static class Session {
+        private final Eval eval = new Eval();
+
+        // No makee: use the newSession() factory method instead.
+        private Session() { }
+
+        /**
+         * Evaluates the given expression and returns the result, retaining any state created
+         * by the expression or previous expressions evaluated by the same session.
+         *
+         * @param expression The LISP expression to evaluate.
+         * @return The result of the evaluation, as an {@link SExpression}.
+         */
+        public SExpression eval(final String expression) {
+            final PTree pTree = parse(expression);
+            return eval.apply(pTree.root());
+        }
+    }
+
+    /**
+     * Creates and returns a new {@link Session} instance, to support tests that need to maintain
+     * state across multiple evals.
+     *
+     * @return A new {@code Session} instance with a newly initialized runtime environment.
+     */
+    public static Session newSession() {
+        return new Session();
+    }
+
+    /**
      * Scans, parses, evaluates the given LISP {@code expression} and returns the result as a
      * {@code SExpression}.
      * @param expression The LISP expression to evaluate.

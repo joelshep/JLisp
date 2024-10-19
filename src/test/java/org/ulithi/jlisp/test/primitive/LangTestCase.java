@@ -4,267 +4,216 @@ import org.junit.Test;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
-import org.ulithi.jlisp.primitive.Eval;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities;
+import org.ulithi.jlisp.test.suite.UnitTestUtilities.Session;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.ulithi.jlisp.test.suite.UnitTestUtilities.parse;
+import static org.ulithi.jlisp.test.suite.UnitTestUtilities.eval;
+import static org.ulithi.jlisp.test.suite.UnitTestUtilities.newSession;
 
 /**
  * Unit tests for {@link org.ulithi.jlisp.primitive.Lang}.
  */
 public class LangTestCase {
 
-    @Test
+    @Test(expected = EvaluationException.class)
     public void testCAROfLiteral() {
-        final String expression = "(CAR (QUOTE HELLO))";
-
-        try {
-            UnitTestUtilities.eval(expression);
-            fail("CAR should throw exception if argument is not a list");
-        } catch (final EvaluationException e) {
-            // Expected.
-        }
+        // CAR should throw exception if argument is not a list
+        eval("(CAR (QUOTE HELLO))");
     }
 
     @Test
     public void testCAROfSingleElementList() {
-        final String expression = "(CAR (QUOTE (HELLO)))";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(CAR (QUOTE (HELLO)))");
         assertEquals("HELLO", sexp.toAtom().toS());
     }
 
     @Test
     public void testCAROfSimpleList() {
-        final String expression = "(CAR (QUOTE (4 5 6)))";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(CAR (QUOTE (4 5 6)))");
         assertEquals(4, sexp.toAtom().toI());
     }
 
     @Test
     public void testCAROfSingleQuoteList() {
-        final String expression = "(CAR '(A B C))";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(CAR '(A B C))");
         assertEquals("A", sexp.toAtom().toS());
     }
 
     @Test
     public void testCAROfListOfLists() {
-        final String expression = "(CAR (QUOTE ((A B) (C D) (E F))))";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
-        assertEquals("( A B )", sexp.toList().toString()); //String.valueOf(list));
+        final SExpression sexp = eval("(CAR (QUOTE ((A B) (C D) (E F))))");
+        assertEquals("( A B )", sexp.toList().toString());
     }
 
     @Test
     public void testCAROfEmptyList() {
-        final String expression = "(CAR (QUOTE ()))";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(CAR (QUOTE ()))");
         assertTrue(sexp.isList());
         assertTrue(sexp.toList().isEmpty());
     }
 
-
-    @Test
+    @Test(expected = EvaluationException.class)
     public void testCDROfLiteral() {
-        final String expression = "(CDR (QUOTE HELLO))";
-
-        try {
-            UnitTestUtilities.eval(expression);
-            fail("CDR should throw exception if argument is not a list");
-        } catch (final EvaluationException e) {
-            // Expected.
-        }
+        // CDR should throw exception if argument is not a list
+        eval("(CDR (QUOTE HELLO))");
     }
 
     @Test
     public void testCDROfSingleElementList() {
-        final String expression = "(CDR (QUOTE (HELLO)))";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(CDR (QUOTE (HELLO)))");
         assertTrue(sexp.isList());
         assertTrue(sexp.toList().isEmpty());
     }
 
     @Test
     public void testCDROfSimpleList() {
-        final String expression = "(CDR (QUOTE (4 5 6)))";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(CDR (QUOTE (4 5 6)))");
         assertEquals("( 5 6 )", sexp.toList().toString());
     }
 
     @Test
     public void testCDROfListOfLists() {
-        final String expression = "(CDR (QUOTE ((A B) (C D) (E F))))";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(CDR (QUOTE ((A B) (C D) (E F))))");
         assertEquals("( ( C D ) ( E F ) )", sexp.toList().toString());
     }
 
     @Test
     public void testCDROfEmptyList() {
-        final String expression = "(CDR (QUOTE ()))";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(CDR (QUOTE ()))");
         assertTrue(sexp.isList());
         assertTrue(sexp.toList().isEmpty());
     }
 
     @Test
     public void testConsEmptyListToEmptyList() {
-        final String expression = "(CONS () ())";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(CONS () ())");
         assertTrue(sexp.isList());
         assertTrue(sexp.toList().isEmpty());
     }
 
     @Test
     public void testSimpleCond() {
-        String expression = "(COND ((EQL 2 2) SNOO) ((EQL 3 4) BOO) ((EQL 5 5) (+ 4 5)))";
-        SExpression sexp = UnitTestUtilities.eval(expression);
+        SExpression sexp = eval("(COND ((EQL 2 2) SNOO) ((EQL 3 4) BOO) ((EQL 5 5) (+ 4 5)))");
         assertEquals("SNOO", sexp.toString());
 
-        expression = "(COND ((EQL 2 3) SNOO) ((EQL 4 4) BOO) ((EQL 5 5) (+ 4 5)))";
-        sexp = UnitTestUtilities.eval(expression);
+        sexp = UnitTestUtilities.eval("(COND ((EQL 2 3) SNOO) ((EQL 4 4) BOO) ((EQL 5 5) (+ 4 5)))");
         assertEquals("BOO", sexp.toString());
 
-        expression = "(COND ((EQL 2 3) SNOO) ((EQL 3 4) BOO) ((EQL 5 5) (+ 4 5)))";
-        sexp = UnitTestUtilities.eval(expression);
+        sexp = UnitTestUtilities.eval("(COND ((EQL 2 3) SNOO) ((EQL 3 4) BOO) ((EQL 5 5) (+ 4 5)))");
         assertEquals(9, sexp.toAtom().toI());
     }
 
     @Test
     public void testCondDefun() {
-        final Eval eval = new Eval();
-        final String defun = "(defun abs (x) (COND ((minusp x) (- x)) (T x)))";
-        final SExpression defunResult = eval.apply(parse(defun).root());
+        final Session session = newSession();
+        final SExpression defunResult = session.eval("(defun abs (x) (COND ((minusp x) (- x)) (T x)))");
         assertEquals("abs", defunResult.toString());
 
         // Now evaluate the 'abs' function that we just created.
-        SExpression abs = eval.apply(parse("(abs -4)").root());
+        SExpression abs = session.eval("(abs -4)");
         assertEquals(4, abs.toAtom().toI());
 
-        abs = eval.apply(parse("(abs 5)").root());
+        abs = session.eval("(abs 5)");
         assertEquals(5, abs.toAtom().toI());
     }
 
     @Test
     public void testEmptyCond() {
-        final String expression = "(COND )";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(COND )");
         assertTrue(sexp.isNil());
     }
 
     @Test
     public void testCondWithAllFalseConditions() {
-        final String expression = "(COND ((EQL 1 2) 'foo) ((EQL 3 4) 'bar))";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(COND ((EQL 1 2) 'foo) ((EQL 3 4) 'bar))");
         assertTrue(sexp.isNil());
     }
 
     @Test
     public void testCondShortcutsEvaluation() {
-        final Eval eval = new Eval();
-        eval.apply(parse("(SETQ X 0)").root());
-        final SExpression sexp = eval.apply(parse("(COND ((EQ 1 1) 'foo) ((SETQ X 1) 'bar))").root());
+        final Session session = newSession();
+        session.eval("(SETQ X 0)");
+        final SExpression sexp = session.eval("(COND ((EQ 1 1) 'foo) ((SETQ X 1) 'bar))");
         assertTrue(sexp.isAtom());
         assertEquals("foo", sexp.toAtom().toS());
-        final SExpression x = eval.apply(parse("X").root());
+        final SExpression x = session.eval("X");
         assertTrue(x.isAtom());
         assertEquals(0, x.toAtom().toI());
     }
 
-    @Test
+    @Test(expected = WrongArgumentCountException.class)
     public void testConsAtoms() {
-        final String expression = "(CONS 1 2 3)";
-
-        try {
-            UnitTestUtilities.eval(expression);
-            fail("Expected WrongArgumentCountException");
-        } catch (final WrongArgumentCountException e) {
-            // Expected.
-        }
+        eval("(CONS 1 2 3)");
     }
 
     @Test
     public void testConsAtomAndList() {
-        // (CONS 1 (QUOTE (2 3))) => (1 2 3)
-        final String expression = "(CONS 1 (QUOTE (2 3)))";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(CONS 1 (QUOTE (2 3)))");
         assertEquals("( 1 2 3 )", String.valueOf(sexp));
     }
 
     @Test
     public void testConsLiteralToEmptyList() {
-        // CONS HELLO () -> (HELLO)   (HELLO . NIL)
-        final String expression = "(CONS HELLO ())";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(CONS HELLO ())");
         assertEquals("( HELLO )", String.valueOf(sexp));
     }
 
     @Test
     public void testConsListToEmptyList() {
-        // CONS (PHONE HOME) () -> ((PHONE HOME))  ((PHONE . (HOME . NIL)) . NIL)
-        final String expression = "(CONS (QUOTE (PHONE HOME)) ())";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(CONS (QUOTE (PHONE HOME)) ())");
         assertEquals("( ( PHONE HOME ) )", String.valueOf(sexp));
     }
 
     @Test
     public void testConsAtomToList() {
-        // CONS BAR (BAZ) -> (BAR BAZ)  (BAR . (BAZ . ))
-        final String expression = "(CONS (QUOTE BAR) (QUOTE (BAZ)))";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(CONS (QUOTE BAR) (QUOTE (BAZ)))");
         assertEquals("( BAR BAZ )", String.valueOf(sexp));
     }
 
     @Test
     public void testConsAtomsToList() {
-        // CONS FOO (CONS BAR (BAZ)) -> (FOO BAR BAZ)  (FOO . (BAR . (BAZ . NIL)))
-        final String expression = "(CONS (QUOTE FOO) (CONS (QUOTE BAR) (QUOTE (BAZ))))";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(CONS (QUOTE FOO) (CONS (QUOTE BAR) (QUOTE (BAZ))))");
         assertEquals("( FOO BAR BAZ )", String.valueOf(sexp));
     }
 
     @Test
     public void testConsListToList() {
-        // CONS (NOW IS) (THE TIME) -> ((NOW IS) THE TIME)  ((NOW . (IS . NIL)) . (THE . (TIME . NIL)))
-        final String expression = "(CONS (QUOTE (NOW IS)) (QUOTE (THE TIME)))";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(CONS (QUOTE (NOW IS)) (QUOTE (THE TIME)))");
         assertEquals("( ( NOW IS ) THE TIME )", String.valueOf(sexp));
         assertEquals(3, sexp.toList().length().toAtom().toI());
     }
 
     @Test
     public void evaluateCarExpression() {
-        final SExpression sexp = UnitTestUtilities.eval("( CAR () )");
+        final SExpression sexp = eval("( CAR () )");
         assertTrue(sexp.isList());
         assertTrue(sexp.toList().isEmpty());
     }
 
     @Test
     public void evaluateCarConsExpression() {
-        final String expression = "(CAR (CONS x y))";
-        final String result = UnitTestUtilities.eval(expression).toAtom().toS();
+        final String result = eval("(CAR (CONS x y))").toAtom().toS();
         assertEquals("x", result);
     }
 
     @Test
     public void evaluateCdrConsExpression() {
-        final String expression = "(CDR (CONS x y))";
-        final String result = UnitTestUtilities.eval(expression).toList().toString();
+        final String result = eval("(CDR (CONS x y))").toList().toString();
         assertEquals("( y )", result);
     }
 
     @Test
     public void evaluateCdrConsListExpression() {
-        final String expression = "(CDR (CONS x (PLUS 1 2)))";
-        final String result = UnitTestUtilities.eval(expression).toList().toString();
+        final String result = eval("(CDR (CONS x (PLUS 1 2)))").toList().toString();
         assertEquals("( 3 )", result);
     }
 
     @Test
     public void evaluateConsExpression() {
-        final String expression = "(CONS x y)";
-        final String result = UnitTestUtilities.eval(expression).toList().toString();
+        final String result = eval("(CONS x y)").toList().toString();
         assertEquals("( x y )", result);
     }
 
@@ -276,13 +225,13 @@ public class LangTestCase {
     @Test
     public void testSimpleDefun() {
         // Evaluate defun, which should create the 'average' function and return its name.
-        final Eval eval = new Eval();
+        final Session session = newSession();
         final String defun = "(defun average (x y) (QUOTIENT (PLUS x y) 2))";
-        final SExpression defunResult = eval.apply(parse(defun).root());
+        final SExpression defunResult = session.eval(defun);
         assertEquals("average", defunResult.toString());
 
         // Now evaluate the 'average' function that we just created.
-        final SExpression avg = eval.apply(parse("(average 7 5)").root());
+        final SExpression avg = session.eval("(average 7 5)");
         assertEquals(6, avg.toAtom().toI());
     }
 
@@ -291,13 +240,12 @@ public class LangTestCase {
      */
     @Test
     public void testZeroArgDefun() {
-        final Eval eval = new Eval();
-        final String defun = "(defun eleven () (QUOTE 11))";
-        final SExpression defunResult = eval.apply(parse(defun).root());
+        final Session session = newSession();
+        final SExpression defunResult = session.eval("(defun eleven () (QUOTE 11))");
         assertEquals("eleven", defunResult.toString());
 
         // Now evaluate the 'average' function that we just created.
-        final SExpression avg = eval.apply(parse("(eleven)").root());
+        final SExpression avg = session.eval("(eleven)");
         assertEquals(11, avg.toAtom().toI());
     }
 
@@ -308,20 +256,20 @@ public class LangTestCase {
     @Test
     public void testDefunParameterCountMismatch() {
         // Evaluate defun, which should create the 'average' function and return its name.
-        final Eval eval = new Eval();
+        final Session session = newSession();
         final String defun = "(defun average (x y) (QUOTIENT (PLUS x y) 2))";
-        final SExpression result = eval.apply(parse(defun).root());
+        final SExpression result = session.eval(defun);
         assertEquals("average", result.toString());
 
         try {
-            eval.apply(parse("(average 7)").root());
+            session.eval("(average 7)");
             fail("Expected EvaluationException");
         } catch (final EvaluationException e) {
             assertTrue(e.getMessage().startsWith("Expected 2"));
         }
 
         try {
-            eval.apply(parse("(average 7 5 3)").root());
+            session.eval("(average 7 5 3)");
             fail("Expected EvaluationException");
         } catch (final EvaluationException e) {
             assertTrue(e.getMessage().startsWith("Expected 2"));
@@ -330,15 +278,13 @@ public class LangTestCase {
 
     @Test
     public void testSimpleConditional() {
-        final String expression = "(IF (> 1 2) (QUOTE BAZ) (QUOTE FOO) )";
-        final SExpression result = UnitTestUtilities.eval(expression);
+        final SExpression result = eval("(IF (> 1 2) (QUOTE BAZ) (QUOTE FOO) )");
         assertEquals("FOO", result.toString());
     }
 
     @Test
     public void testSingleQuoteStringLiteral() {
-        final String expression = "'FOO";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("'FOO");
         assertTrue(sexp.isAtom());
         assertEquals("FOO", sexp.toString());
     }
@@ -346,42 +292,35 @@ public class LangTestCase {
     @Test
     public void testQuoteStringLiteral() {
         //(QUOTE FOO) => FOO
-        final String expression = "(QUOTE FOO)";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(QUOTE FOO)");
         assertTrue(sexp.isAtom());
         assertEquals("FOO", sexp.toString());
     }
 
     @Test
     public void testSingleQuoteList() {
-        final String expression = "'(FOO BAR)";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("'(FOO BAR)");
         assertTrue(sexp.isList());
         assertEquals("( FOO BAR )", sexp.toString());
     }
 
     @Test
     public void testSingleQuoteListWithNestedQuote() {
-        final String expression = "'(FOO BAR 'BAZ)";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("'(FOO BAR 'BAZ)");
         assertTrue(sexp.isList());
         assertEquals("( FOO BAR ' BAZ )", sexp.toString());
     }
 
     @Test
     public void testQuoteList() {
-        // (QUOTE (FOO BAR)) => (FOO BAR)
-        final String expression = "(QUOTE (FOO BAR))";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(QUOTE (FOO BAR))");
         assertTrue(sexp.isList());
         assertEquals("( FOO BAR )", sexp.toString());
     }
 
     @Test
     public void testQuoteLists() {
-        // (QUOTE ((FOO BAR) (BAZ QUX))) => ((FOO BAR) (BAZ QUX))
-        final String expression = "(QUOTE ((FOO BAR) (BAZ QUX)))";
-        final SExpression sexp = UnitTestUtilities.eval(expression);
+        final SExpression sexp = eval("(QUOTE ((FOO BAR) (BAZ QUX)))");
         assertTrue(sexp.isList());
         assertEquals("( ( FOO BAR ) ( BAZ QUX ) )", sexp.toString());
         assertEquals(2, sexp.toList().length().toI());
@@ -389,42 +328,37 @@ public class LangTestCase {
 
     @Test
     public void testSetQQuoteList() {
-        final Eval eval = new Eval();
-        final String setq = "(SETQ X '(A B))";
-        final SExpression result = eval.apply(parse(setq).root());
+        final Session session = newSession();
+        final SExpression result = session.eval("(SETQ X '(A B))");
         assertTrue(result.isList());
         assertEquals("( A B )", result.toString());
-        final SExpression X = eval.apply(parse("X").root());
+        final SExpression X = session.eval("X");
         assertEquals("( A B )", X.toString());
     }
 
     @Test
     public void testSetQExpression() {
-        final Eval eval = new Eval();
-        final String setq = "(SETQ X (+ (* 2 3) (* 3 4)))";
-        final SExpression result = eval.apply(parse(setq).root());
+        final Session session = newSession();
+        final SExpression result = session.eval("(SETQ X (+ (* 2 3) (* 3 4)))");
         assertTrue(result.isAtom());
         assertEquals("18", result.toString());
-        final SExpression X = eval.apply(parse("X").root());
+        final SExpression X = session.eval("X");
         assertEquals("18", X.toString());
     }
 
     @Test
     public void testSetQVariableTwice() {
-        final Eval eval = new Eval();
-        String setq = "(SETQ X '(A B))";
-        SExpression result = eval.apply(parse(setq).root());
+        final Session session = newSession();
+        SExpression result = session.eval("(SETQ X '(A B))");
         assertTrue(result.isList());
         assertEquals("( A B )", result.toString());
-        SExpression X = eval.apply(parse("X").root());
+        SExpression X = session.eval("X");
         assertEquals("( A B )", X.toString());
 
-        setq = "(SETQ X '(C D))";
-        result = eval.apply(parse(setq).root());
+        result = session.eval("(SETQ X '(C D))");
         assertTrue(result.isList());
         assertEquals("( C D )", result.toString());
-        X = eval.apply(parse("X").root());
+        X = session.eval("X");
         assertEquals("( C D )", X.toString());
-
     }
 }

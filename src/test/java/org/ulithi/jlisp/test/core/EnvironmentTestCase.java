@@ -12,7 +12,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * Unit tests for {@link org.ulithi.jlisp.core.Environment}.
@@ -37,18 +36,12 @@ public class EnvironmentTestCase {
         assertNull(function);
     }
 
-    @Test
+    @Test(expected = EvaluationException.class)
     public void testScopeIndexUnderflow() {
         final Environment env = new Environment();
         env.startScope();
         env.endScope();
-
-        try {
-            env.endScope();
-            fail("Expected EvaluationException");
-        } catch (final EvaluationException e) {
-            // Expected.
-        }
+        env.endScope();
     }
 
     @Test
@@ -114,28 +107,18 @@ public class EnvironmentTestCase {
         assertNull(env.getBinding("foo"));
     }
 
-    @Test
+    @Test(expected = EvaluationException.class)
     public void testAddingBindingOutsideAScopeThrows() {
         final Environment env = new Environment();
-        try {
-            env.addBinding("foo", createFunction("foo"));
-            fail("Expected EvaluationException");
-        } catch (final EvaluationException e) {
-            // Expected.
-        }
+        env.addBinding("foo", createFunction("foo"));
     }
 
-    @Test
+    @Test(expected = EvaluationException.class)
     public void testBindingPackageProvidedNameThrows() {
         final Environment env = new Environment();
         env.startScope();
         env.addBinding("foo", createFunction("foo"));
-        try {
-            env.addBinding("PLUS", createFunction("bar"));
-            fail("Expected EvaluationException");
-        } catch (final EvaluationException e) {
-            // Expected.
-        }
+        env.addBinding("PLUS", createFunction("bar"));
     }
 
     private static Function createFunction(final String name) {
