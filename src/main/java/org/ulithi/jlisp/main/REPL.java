@@ -71,9 +71,10 @@ public final class REPL {
 		// Prompt for input and interpret it line by line, until either a
 		// fatal error occurs or the VM exits.
 		//
+        System.out.print(PROMPT);
+
 		while (true)  {
-			System.out.print(PROMPT);
-			boolean ok = false;
+			Boolean ok = false;
 
 			try {
 				String input = term.readLine().trim();
@@ -83,11 +84,11 @@ public final class REPL {
                 if (isReplCommand(input)) {
                     ok = processReplCommand(input, lisp);
                 } else if (parseOnlyMode) {
-                    ok = lisp.parse(input);
+                    ok = lisp.parseOnly(input).orElse(null);
                 } else if (echoMode) {
-                    ok = lisp.parseAndEcho(input);
+                    ok = lisp.parseAndEcho(input).orElse(null);
                 } else {
-                    ok = lisp.offer(input);
+                    ok = lisp.offer(input).orElse(null);
                 }
 			} catch (final Exception e) {
                 System.err.println("An exception occurred: " + e.getMessage());
@@ -97,10 +98,12 @@ public final class REPL {
 				System.err.flush();
 				safeSleep(20); // Blech. But it helps ...
 
-				if (!ok) {
+				if (ok != null && !ok) {
 					System.out.println();
 				}
 			}
+
+            if (ok == null) { System.out.print("   "); } else { System.out.print(PROMPT); }
 		}
 	}
 

@@ -2,12 +2,14 @@ package org.ulithi.jlisp.test.parser;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.ulithi.jlisp.exception.ParseException;
 import org.ulithi.jlisp.parser.Lexer;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -138,6 +140,72 @@ public class LexerTestCase {
                      tokenize("(+ 1 2) ; Multi-line input, yo\n(+ 3 4)"));
     }
 
+    @Test(expected = ParseException.class)
+    public void testTooManyCloseParensThrows() {
+        tokenize("(+ 1 2 (* 2 3)))");
+    }
+
+    @Test
+    public void testMissingCloseParensIsIncompleteForm() {
+        final Lexer lexer = new Lexer();
+        lexer.append("(+ 1 2 (* 2 3)");
+        assertFalse(lexer.isComplete());
+    }
+
+    @Test
+    public void testMultiAppendExpression() {
+        final Lexer lexer = new Lexer();
+        lexer.append("(\n");
+        assertFalse(lexer.isComplete());
+        lexer.append("+ 2\n");
+        assertFalse(lexer.isComplete());
+        lexer.append("3\n");
+        assertFalse(lexer.isComplete());
+        lexer.append(")\n");
+        assertTrue(lexer.isComplete());
+        assertEquals(toList("(", "+", "2", "3", ")"), lexer.getTokens());
+    }
+
+    @Test
+    public void testMultiAppendExpressionWithQuote() {
+        final Lexer lexer = new Lexer();
+        lexer.append("(CAR\n");
+        lexer.append(" '( 1 2\n");
+        lexer.append("3");
+        lexer.append("))\n");
+        assertTrue(lexer.isComplete());
+        assertEquals(toList("(", "CAR", "(", "QUOTE", "(", "1", "2", "3", ")", ")", ")"), lexer.getTokens());
+    }
+
+    @Test
+    public void testMultiAppendExpressionWithComment() {
+        final Lexer lexer = new Lexer();
+        lexer.append("(+\n");
+        lexer.append(" '( 1 2  ;; Oops - forgot the 3\n");
+        lexer.append("3");
+        lexer.append("))\n");
+        assertTrue(lexer.isComplete());
+        assertEquals(toList("(", "+", "(", "QUOTE", "(", "1", "2", "3", ")", ")", ")"), lexer.getTokens());
+    }
+
+    @Test
+    public void testNewLexer() {
+        final Lexer lexer = new Lexer();
+        assertFalse(lexer.isComplete());
+        assertTrue(lexer.getTokens().isEmpty());
+    }
+
+    @Test
+    public void testLexerReset() {
+        final Lexer lexer = new Lexer();
+        lexer.append("(+ 1 2");
+        assertFalse(lexer.isComplete());
+        assertFalse(lexer.getTokens().isEmpty());
+        lexer.reset();
+        assertFalse(lexer.isComplete());
+        assertTrue(lexer.getTokens().isEmpty());
+    }
+
     /**
      * Invokes the lexer on the given string and returns the resulting token list.
      *
@@ -145,7 +213,9 @@ public class LexerTestCase {
      * @return An ordered list of tokens extracted from the given string.
      */
     private static List<String> tokenize(final String expr) {
-        return (new Lexer(expr)).getTokens();
+        final Lexer lexer = new Lexer();
+        lexer.append(expr);
+        return lexer.getTokens();
     }
 
     private static List<String> toList(final String... tokens) {

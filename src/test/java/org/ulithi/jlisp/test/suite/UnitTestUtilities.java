@@ -64,7 +64,8 @@ public class UnitTestUtilities {
      * @return The result of the parsing, as a {@code PTree}.
      */
     public static PTree parse(final String expression) {
-        final Lexer lexer = new Lexer(expression);
+        final Lexer lexer = new Lexer();
+        lexer.append(expression);
         final Parser p = new Parser();
         return p.parse(lexer.getTokens()).orElseThrow();
     }

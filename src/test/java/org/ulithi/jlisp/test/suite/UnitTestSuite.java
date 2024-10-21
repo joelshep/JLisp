@@ -9,6 +9,7 @@ import org.ulithi.jlisp.test.core.EnvironmentTestCase;
 import org.ulithi.jlisp.test.core.ListTestCase;
 import org.ulithi.jlisp.test.core.SExpressionTestCase;
 import org.ulithi.jlisp.test.core.AtomTestCase;
+import org.ulithi.jlisp.test.main.InterpreterTestCase;
 import org.ulithi.jlisp.test.mem.CellTestCase;
 import org.ulithi.jlisp.test.mem.NilReferenceTestCase;
 import org.ulithi.jlisp.test.mem.PTreeTestCase;
@@ -34,6 +35,7 @@ import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
         CollectionsTestCase.class,
         EnvironmentTestCase.class,
         GrammarTestCase.class,
+        InterpreterTestCase.class,
         LangTestCase.class,
         LexerTestCase.class,
         ListTestCase.class,
