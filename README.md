@@ -238,3 +238,8 @@ comments on NIL, atoms and lists
 * http://www-formal.stanford.edu/jmc/history/lisp/node3.html - McCarthy's history of LISP
 * https://dept-info.labri.fr/~strandh/Teaching/MTP/Common/David-Lamkins/contents.html - Learning LISP
 * https://en.wikipedia.org/wiki/Greenspun%27s_tenth_rule
+* https://stackoverflow.com/questions/3482389/how-many-primitives-does-it-take-to-build-a-lisp-machine-ten-seven-or-five
+... which has me thinking I need to stop implementing functions in Java for a bit, start baking
+in LISP primitives like eval, and see if the interpreter encourages a little more LISP in terms
+of LISP ...
+* https://paulgraham.com/ - Thoughts on LISP and other things

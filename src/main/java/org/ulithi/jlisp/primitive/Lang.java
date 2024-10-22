@@ -27,6 +27,7 @@ public class Lang implements BindingProvider {
                              new Binding(new Lang.COND()),
                              new Binding(new Lang.CONS()),
                              new Binding(new Lang.DEFUN()),
+                             new Binding(new Lang.EVAL()),
                              new Binding(new Lang.IF()),
                              new Binding(new Lang.QUOTE()),
                              new Binding(new Lang.SETQ()));
@@ -174,6 +175,31 @@ public class Lang implements BindingProvider {
             env.addUserBinding(new Binding(name.toAtom().toS(), function));
 
             return name.toAtom();
+        }
+    }
+
+    /**
+     * Implements the LISP {@code EVAL} function. The {@code EVAL} function evaluates a form and
+     * returns the result. Note that the form itself is the result of evaluating the arguments
+     * to EVAL: e.g., with {@code (EVAL '(+ 1 2 3))}, the EVAL function receives {@code (+ 1 2 3)}
+     * as its argument (the result of evaluating {@code (QUOTE (1 2 3))}.
+     */
+    public static class EVAL extends AbstractFunction {
+        public EVAL() { super("EVAL"); }
+
+        @Override
+        public boolean isReentrant() { return true; }
+
+        /** {@inheritDoc */
+        @Override
+        public SExpression apply(final SExpression sexp, final Environment env, final Eval eval) {
+            final List arg = sexp.toList();
+
+            if (!(arg.lengthAsInt() == 1 || arg.isNil())) {
+                throw new EvaluationException("Argument to " + name() + " must be a single form");
+            }
+
+            return eval.apply(arg.car());
         }
     }
 

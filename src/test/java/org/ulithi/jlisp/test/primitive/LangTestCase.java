@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.test.primitive;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
@@ -249,6 +250,14 @@ public class LangTestCase {
         assertEquals(11, avg.toAtom().toI());
     }
 
+    @Test
+    public void testRecursiveDefun() {
+        final Session session = newSession();
+        assertEquals("factorial",
+                     session.eval(" (defun factorial (x) (if (eql x 0) 1 (* x (factorial (- x 1)))))").toAtom().toS());
+        assertEquals(120, session.eval("(factorial 5)").toAtom().toI());
+    }
+
     /**
      * Creates a user function that takes two arguments, invokes it with one and three arguments,
      * and verifies that both cause an EvaluationException to be thrown.
@@ -274,6 +283,36 @@ public class LangTestCase {
         } catch (final EvaluationException e) {
             assertTrue(e.getMessage().startsWith("Expected 2"));
         }
+    }
+
+    @Test
+    public void testSimpleEval() {
+        final SExpression result = eval("(EVAL '(+ 1 2 3))");
+        assertEquals(6, result.toAtom().toI());
+    }
+
+    @Ignore  // NIL argument is appearing as an empty list and not being passed to the function.
+    @Test
+    public void testEvalNil() {
+        final SExpression result = eval("(EVAL NIL)");
+        assertTrue(result.isNil());
+    }
+
+    @Test
+    public void testEvalVariableDereference() {
+        Session session = UnitTestUtilities.newSession();
+        session.eval("(SETQ A 'B)");
+        session.eval("(SETQ B 'C)");
+        assertEquals("B", session.eval("A").toAtom().toS());
+        assertEquals("C", session.eval("B").toAtom().toS());
+        assertEquals("C", session.eval("(EVAL A)").toAtom().toS());
+    }
+
+    @Test
+    public void testEvalRecursiveFunction() {
+        Session session = UnitTestUtilities.newSession();
+        session.eval(" (defun factorial (x) (if (eql x 0) 1 (* x (factorial (- x 1)))))");
+        assertEquals(720, session.eval("(EVAL '(factorial 6))").toAtom().toI());
     }
 
     @Test
