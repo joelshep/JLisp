@@ -2,12 +2,15 @@ package org.ulithi.jlisp.test.main;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.SystemErrRule;
+import org.junit.contrib.java.lang.system.SystemOutRule;
 import org.ulithi.jlisp.main.Interpreter;
 
 import java.util.Optional;
-import java.util.function.Function;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -16,16 +19,26 @@ import static org.junit.Assert.assertTrue;
  */
 public class InterpreterTestCase {
 
+    @Rule
+    public final SystemErrRule systemErrRule = new SystemErrRule().enableLog();
+
+    @Rule
+    public final SystemOutRule systemOutRule = new SystemOutRule().enableLog();
+
     private Interpreter lisp;
 
     @Before
     public void setUp() {
         lisp = new Interpreter();
+        systemErrRule.muteForSuccessfulTests();
+        systemOutRule.mute();
     }
 
     @After
     public void tearDown() {
         lisp = null;
+        systemErrRule.clearLog();
+        systemOutRule.clearLog();
     }
 
     @Test
@@ -44,6 +57,7 @@ public class InterpreterTestCase {
     public void testOfferSimpleForm() {
         final Optional<Boolean> result = lisp.offer("(+ 1 2 3)");
         assertTrue(result.isPresent() && result.get());
+        assertEquals("6", systemOutRule.getLog().trim());
     }
 
     @Test
@@ -55,12 +69,14 @@ public class InterpreterTestCase {
         assertFalse(result.isPresent());
         result = lisp.offer(")");
         assertTrue(result.isPresent() && result.get());
+        assertEquals("3", systemOutRule.getLog().trim());
     }
 
     @Test
     public void testOfferWithError() {
         final Optional<Boolean> result = lisp.offer("+ 1 2 A");
         assertTrue(result.isPresent() && !result.get());
+        assertEquals("Can't convert string literal to number", systemErrRule.getLog().trim());
     }
 
     @Test
@@ -77,6 +93,7 @@ public class InterpreterTestCase {
         Optional<Boolean> result;
         result = lisp.offer("(+ 1 2 'A)");
         assertTrue(result.isPresent() && !result.get());
+        assertEquals("Can't convert string literal to number", systemErrRule.getLog().trim());
         lisp.reset();
         result = lisp.offer("(+ 1 2 3)");
         assertTrue(result.isPresent() && result.get());
