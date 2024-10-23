@@ -63,4 +63,4 @@ public interface Ref extends Bindable {
      * @return True if this is a {@code NIL} reference, false otherwise.
      */
     default boolean isNil() { return this == NilReference.NIL; }
-}
+ }

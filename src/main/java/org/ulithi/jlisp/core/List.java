@@ -154,6 +154,14 @@ public class List implements SExpression {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isNil() {
+        return root.isNil();
+    }
+
+    /**
      * Indicates if this {@link List} is empty.
      * @return True if this list is empty, false otherwise.
      */

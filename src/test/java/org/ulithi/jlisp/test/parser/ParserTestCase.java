@@ -69,9 +69,8 @@ public class ParserTestCase {
      */
     @Test
     public void parseNumericLiteral() {
-        // 43 => (43 . null)
         final List<String> tokens = Collections.singletonList("43");
-        final String expected = "(43 . null)";
+        final String expected = "(43 . NIL)";
         parseAndValidate(parser, tokens, expected);
     }
 
@@ -80,7 +79,6 @@ public class ParserTestCase {
      */
     @Test
     public void parseEmptyList() {
-        // ( ) => (NIL . null)
         final List<String> tokens = Arrays.asList("(", ")");
         final String expected = "(NIL . NIL)";
         parseAndValidate(parser, tokens, expected);

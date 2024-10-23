@@ -291,7 +291,6 @@ public class LangTestCase {
         assertEquals(6, result.toAtom().toI());
     }
 
-    @Ignore  // NIL argument is appearing as an empty list and not being passed to the function.
     @Test
     public void testEvalNil() {
         final SExpression result = eval("(EVAL NIL)");
