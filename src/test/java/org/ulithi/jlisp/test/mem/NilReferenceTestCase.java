@@ -2,6 +2,7 @@ package org.ulithi.jlisp.test.mem;
 
 import org.junit.Test;
 import org.ulithi.jlisp.core.Atom;
+import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.mem.NilReference;
 import org.ulithi.jlisp.mem.Ref;
 
@@ -30,5 +31,17 @@ public class NilReferenceTestCase {
         assertTrue(atom.isAtom());
         assertTrue(atom.isNil());
         assertEquals(Atom.NIL, atom);
+    }
+
+    @Test
+    public void testNilReferenceToList() {
+        final List list = NilReference.NIL.toList();
+        assertTrue(list.isList());
+        assertTrue(list.isNil());
+        assertEquals(0, list.lengthAsInt());
+        assertTrue(list.endp());
+        assertTrue(list.isEmpty());
+        assertTrue(list.car().isNil());
+        assertTrue(list.cdr().isNil());
     }
 }

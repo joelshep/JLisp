@@ -147,6 +147,24 @@ public class ParserTestCase {
         parseAndValidate(parser, tokens, expected);
     }
 
+    @Test
+    public void testListWithNilAsElement() {
+        final List<String> tokens = Arrays.asList("(", "NIL", ")");
+        final String expected = "(NIL . NIL)";
+        parseAndValidate(parser, tokens, expected);
+    }
+
+    @Test
+    public void testNilIsCaseInsensitive() {
+        final String expected = "(NIL . NIL)";
+        List<String> tokens = Arrays.asList("(", "NIL", ")");
+        parseAndValidate(parser, tokens, expected);
+        tokens = Arrays.asList("(", "nil", ")");
+        parseAndValidate(parser, tokens, expected);
+        tokens = Arrays.asList("(", "NiL", ")");
+        parseAndValidate(parser, tokens, expected);
+    }
+
     /**
      * Parses the given list of tokens and compares the resulting dotted-pair representation
      * to the expected result.

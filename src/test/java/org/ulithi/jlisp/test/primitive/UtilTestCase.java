@@ -1,6 +1,11 @@
 package org.ulithi.jlisp.test.primitive;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.SystemErrRule;
+import org.junit.contrib.java.lang.system.SystemOutRule;
 import org.ulithi.jlisp.core.SExpression;
 
 import static org.junit.Assert.assertFalse;
@@ -11,6 +16,23 @@ import static org.ulithi.jlisp.test.suite.UnitTestUtilities.eval;
  * Unit tests for {@link org.ulithi.jlisp.primitive.Util}.
  */
 public class UtilTestCase {
+    @Rule
+    public final SystemErrRule systemErrRule = new SystemErrRule().enableLog();
+
+    @Rule
+    public final SystemOutRule systemOutRule = new SystemOutRule().enableLog();
+
+    @Before
+    public void setUp() {
+        systemErrRule.muteForSuccessfulTests();
+        systemOutRule.mute();
+    }
+
+    @After
+    public void tearDown() {
+        systemErrRule.clearLog();
+        systemOutRule.clearLog();
+    }
 
     @Test
     public void testAtomsAreEq() {
