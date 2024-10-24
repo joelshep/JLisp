@@ -2,9 +2,12 @@ package org.ulithi.jlisp.test.primitive;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.ulithi.jlisp.core.Atom;
+import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
+import org.ulithi.jlisp.mem.NilReference;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities.Session;
 
@@ -23,6 +26,13 @@ public class LangTestCase {
     public void testCAROfLiteral() {
         // CAR should throw exception if argument is not a list
         eval("(CAR (QUOTE HELLO))");
+    }
+
+    @Test
+    public void testCAROfNIL() {
+        final SExpression sexp = eval("(CAR NIL)");
+        assertTrue(sexp.isList());
+        assertTrue(sexp.isNil());
     }
 
     @Test
@@ -47,6 +57,13 @@ public class LangTestCase {
     public void testCAROfListOfLists() {
         final SExpression sexp = eval("(CAR (QUOTE ((A B) (C D) (E F))))");
         assertEquals("( A B )", sexp.toList().toString());
+    }
+
+    @Test
+    public void testCDROfNIL() {
+        final SExpression sexp = eval("(CDR NIL)");
+        assertTrue(sexp.isList());
+        assertTrue(sexp.isNil());
     }
 
     @Test

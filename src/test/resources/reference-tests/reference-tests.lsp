@@ -20,3 +20,7 @@
 (EXPECT (CDR '((A B) C)) '(C))
 (EXPECT (CAR (CDR '(A B C))) 'B)
 (EXPECT (CAR '(CDR (A B C))) 'CDR)
+
+;; Forms for NIL.
+(EXPECT (CAR NIL) NIL)
+(EXPECT (CDR NIL) NIL)
