@@ -42,7 +42,7 @@ public interface SExpression extends Ref {
         }
 
         if (!(this.isList() && rhs.isList())) {
-            return false;
+            return this.isNil() && rhs.isNil();
         }
 
         return listEqual(this.toList(), rhs.toList());
