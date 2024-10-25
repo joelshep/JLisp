@@ -178,5 +178,6 @@ public class Lexer {
         }
 
         state.tokens.addAll(tokens);
+        state.inComment = false;
     }
 }
