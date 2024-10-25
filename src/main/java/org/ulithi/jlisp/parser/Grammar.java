@@ -50,6 +50,9 @@ public class Grammar {
     /** Special syntax elements. TODO: Remove math operators. */
     public static final String SYMBOL = "[().\\+\\*\\<\\>/']";
 
+    /** Regular expression for line/expression that is whitespace and a comment. */
+    public static final String FULL_LINE_COMMENT = "^\\s*;+.*$";
+
     /** Dot symbol (for S-Expressions) **/
     public static final String DOT = ".";
 
