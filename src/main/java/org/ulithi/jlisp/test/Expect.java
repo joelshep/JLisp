@@ -13,7 +13,7 @@ import org.ulithi.jlisp.primitive.Eval;
 /**
  * Built-in functions to support simple unit-testing of JLisp itself.
  */
-public class UnitTest implements BindingProvider {
+public class Expect implements BindingProvider {
     /**
      * {@inheritDoc}
      */

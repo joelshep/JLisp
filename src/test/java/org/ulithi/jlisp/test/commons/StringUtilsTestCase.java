@@ -1,4 +1,4 @@
-package org.ulithi.jlisp.test.utils;
+package org.ulithi.jlisp.test.commons;
 
 import org.ulithi.jlisp.commons.StringUtils;
 import org.junit.After;

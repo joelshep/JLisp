@@ -23,7 +23,8 @@ import org.ulithi.jlisp.test.primitive.LogicTestCase;
 import org.ulithi.jlisp.test.primitive.MathTestCase;
 import org.ulithi.jlisp.test.primitive.PredicateTestCase;
 import org.ulithi.jlisp.test.reference.ReferenceTestCase;
-import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
+import org.ulithi.jlisp.test.commons.StringUtilsTestCase;
+import org.ulithi.jlisp.test.test.ExpectTestCase;
 
 /**
  * Junit test suite for JLisp unit tests.
@@ -34,6 +35,7 @@ import org.ulithi.jlisp.test.utils.StringUtilsTestCase;
         CellTestCase.class,
         CollectionsTestCase.class,
         EnvironmentTestCase.class,
+        ExpectTestCase.class,
         GrammarTestCase.class,
         InterpreterTestCase.class,
         LangTestCase.class,
