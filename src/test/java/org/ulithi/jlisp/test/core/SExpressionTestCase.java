@@ -2,6 +2,7 @@ package org.ulithi.jlisp.test.core;
 
 import org.junit.Test;
 import org.ulithi.jlisp.core.Atom;
+import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.NilReference;
@@ -27,19 +28,40 @@ public class SExpressionTestCase {
     }
 
     @Test
-    public void testNilCell() {
-        final Cell cell = Cell.create();
-        final SExpression sexp = SExpression.fromRef(cell);
-        assertTrue(sexp.isAtom());
-        assertEquals(Atom.NIL, sexp.toAtom());
-    }
-
-    @Test
     public void testNilRef() {
         final Ref ref = Cell.create().getFirst();
         final SExpression sexp = SExpression.fromRef(ref);
         assertTrue(sexp.isAtom());
         assertEquals(Atom.NIL, sexp.toAtom());
+    }
+
+    @Test
+    public void testNilCell() {
+        final Cell cell = Cell.create();
+        final SExpression sexp = SExpression.fromRef(cell);
+        assertTrue(sexp.isAtom());
+        assertTrue(Atom.NIL.isEqual(sexp));
+        assertTrue(sexp.isEqual(Atom.NIL));
+    }
+
+    @Test
+    public void testNilAtomsAreEqual() {
+        assertTrue(Atom.NIL.isEqual(Atom.NIL));
+        assertTrue(Atom.NIL.isEqual(Atom.create(NilReference.NIL)));
+        assertTrue(Atom.create(NilReference.NIL).isEqual(Atom.NIL));
+    }
+
+    @Test
+    public void testEmptyListsAreEqual() {
+        assertTrue(List.create().isEqual(List.create()));
+        assertTrue(List.create().isEqual(List.create(NilReference.NIL)));
+        assertTrue(List.create(NilReference.NIL).isEqual(List.create()));
+    }
+
+    @Test
+    public void testNilAtomAndEmptyListAreEqual() {
+        assertTrue(List.create().isEqual(Atom.NIL));
+        assertTrue(Atom.NIL.isEqual(List.create()));
     }
 
     @Test

@@ -37,15 +37,17 @@ public interface SExpression extends Ref {
      * @return True if this and the given {@code SExpression} are isomorphic, false otherwise.
      */
     default boolean isEqual(final SExpression rhs) {
+        if (this.isNil() && rhs.isNil()) { return true; }
+
         if (this.isAtom() && rhs.isAtom()) {
             return this.toAtom().eql(rhs.toAtom());
         }
 
-        if (!(this.isList() && rhs.isList())) {
-            return this.isNil() && rhs.isNil();
+        if (this.isList() && rhs.isList()) {
+            return listEqual(this.toList(), rhs.toList());
         }
 
-        return listEqual(this.toList(), rhs.toList());
+        return false;
     }
 
     /**
