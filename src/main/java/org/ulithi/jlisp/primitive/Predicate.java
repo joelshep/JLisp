@@ -1,6 +1,6 @@
 package org.ulithi.jlisp.primitive;
 
-import org.ulithi.jlisp.core.AbstractFunction;
+import org.ulithi.jlisp.core.BindableFunction;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;
@@ -32,7 +32,7 @@ public class Predicate implements BindingProvider {
      * Implements the LISP {@code ATOM} function. The {@code ATOM} function accepts a value and
      * returns true if the value is an atom, false otherwise.
      */
-    public static class ATOM extends AbstractFunction {
+    public static class ATOM extends BindableFunction {
         public ATOM() { super("ATOM"); }
         @Override
         public SExpression apply(final SExpression sexp) {
@@ -50,7 +50,7 @@ public class Predicate implements BindingProvider {
      * Implements the LISP {@code INTEGERP} function. The {@code INTEGERP} function accepts a value
      * and returns true if the value is an integer, false otherwise.
      */
-    public static class INTEGERP extends AbstractFunction {
+    public static class INTEGERP extends BindableFunction {
         public INTEGERP() { super("INTEGERP"); }
 
         @Override
@@ -73,7 +73,7 @@ public class Predicate implements BindingProvider {
      * Implements the LISP {@code MINUSP} function. The {@code MINUSP} function accepts an
      * integer value and returns true if the value is strictly negative, false otherwise.
      */
-    public static class MINUSP extends AbstractFunction {
+    public static class MINUSP extends BindableFunction {
         public MINUSP() { super("MINUSP"); }
 
         @Override
@@ -86,7 +86,7 @@ public class Predicate implements BindingProvider {
      * Implements the LISP {@code PLUSP} function. The {@code PLUSP} function accepts an
      * integer value and returns true if the value is strictly positive, false otherwise.
      */
-    public static class PLUSP extends AbstractFunction {
+    public static class PLUSP extends BindableFunction {
         public PLUSP() { super("PLUSP"); }
 
         @Override
@@ -99,7 +99,7 @@ public class Predicate implements BindingProvider {
      * Implements the LISP {@code ZEROP} function. The {@code ZEROP} function accepts an
      * integer value and returns true if the value is zero, false otherwise.
      */
-    public static class ZEROP extends AbstractFunction {
+    public static class ZEROP extends BindableFunction {
         public ZEROP() { super("ZEROP"); }
 
         @Override

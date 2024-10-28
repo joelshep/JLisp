@@ -1,12 +1,14 @@
 package org.ulithi.jlisp.primitive;
 
-import org.ulithi.jlisp.core.AbstractFunction;
+import org.ulithi.jlisp.core.BindableFunction;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;
 import org.ulithi.jlisp.core.Environment;
+import org.ulithi.jlisp.core.LambdaFunction;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
+import org.ulithi.jlisp.core.UserFunction;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
 
@@ -29,6 +31,7 @@ public class Lang implements BindingProvider {
                              new Binding(new Lang.DEFUN()),
                              new Binding(new Lang.EVAL()),
                              new Binding(new Lang.IF()),
+                             new Binding((new Lang.LAMBDA())),
                              new Binding(new Lang.QUOTE()),
                              new Binding(new Lang.SETQ()));
     }
@@ -60,7 +63,7 @@ public class Lang implements BindingProvider {
         }
     }
 
-    public static class COND extends AbstractFunction {
+    public static class COND extends BindableFunction {
         public COND() { super("COND");  }
 
         @Override
@@ -109,7 +112,7 @@ public class Lang implements BindingProvider {
      * and returns a {@link List} such that the {@code CAR} of the list is the first argument and the
      * {@code CDR} of the list is the second element.
      */
-    public static class CONS extends AbstractFunction {
+    public static class CONS extends BindableFunction {
         public CONS() { super("CONS"); }
 
         @Override
@@ -147,7 +150,7 @@ public class Lang implements BindingProvider {
      * Implements the LISP {@code DEFUN} function. Returns a literal {@code Atom} representing
      * the name of the newly created function.
      */
-    public static class DEFUN extends AbstractFunction {
+    public static class DEFUN extends BindableFunction {
         public DEFUN() { super("DEFUN"); }
 
         @Override
@@ -184,7 +187,7 @@ public class Lang implements BindingProvider {
      * to EVAL: e.g., with {@code (EVAL '(+ 1 2 3))}, the EVAL function receives {@code (+ 1 2 3)}
      * as its argument (the result of evaluating {@code (QUOTE (1 2 3))}.
      */
-    public static class EVAL extends AbstractFunction {
+    public static class EVAL extends BindableFunction {
         public EVAL() { super("EVAL"); }
 
         @Override
@@ -214,7 +217,7 @@ public class Lang implements BindingProvider {
      * one will be evaluated when the {@code IF} function is invoked, depending on the value of
      * {@code test-sexp}.
      */
-    public static class IF extends AbstractFunction {
+    public static class IF extends BindableFunction {
         public IF() { super("IF"); }
 
         @Override
@@ -246,11 +249,30 @@ public class Lang implements BindingProvider {
     }
 
     /**
+     * Implements the LISP {@code LAMBDA} function (macro). Accepts a list of formal parameters --
+     * potentially empty -- and a form representing a function body, and returns a
+     * {@link org.ulithi.jlisp.core.Function} object.
+     */
+    public static class LAMBDA extends BindableFunction {
+        public LAMBDA() { super("LAMBDA"); }
+
+        @Override
+        public boolean isSpecial() { return true; }
+
+        public SExpression apply(final SExpression sexp) {
+            final List args = sexp.toList();
+            final SExpression arguments = args.car();
+            final SExpression definition = args.cadr();
+            return new LambdaFunction(arguments, definition);
+        }
+    }
+
+    /**
      * Implements the LISP {@code QUOTE} function. The {@code QUOTE} function returns its arguments
      * as-is, and is therefore a "special" function. In modern LISP, the {@code '} token is
      * shorthand for {@code QUOTE}.
      */
-    public static class QUOTE extends AbstractFunction {
+    public static class QUOTE extends BindableFunction {
         public QUOTE() { super("QUOTE"); }
 
         /** {@inheritDoc} */
@@ -271,7 +293,7 @@ public class Lang implements BindingProvider {
      * been defined previously (e.g. by {@code DEFVAR}), {@code SETQ} creates a corresponding
      * global variable.
      */
-    public static class SETQ extends AbstractFunction {
+    public static class SETQ extends BindableFunction {
         public SETQ() { super("SETQ"); }
 
         @Override

@@ -21,10 +21,10 @@ public class Binding {
     private final Bindable bindable;
 
     /**
-     * Creates a new {@link Binding} for the specified {@link Function}.
-     * @param function The {@code Function} that the {@code Binding} will refer to.
+     * Creates a new {@link Binding} for the specified {@link BindableFunction}.
+     * @param function The bindable {@code Function} that the {@code Binding} will refer to.
      */
-    public Binding (final Function function) {
+    public Binding (final BindableFunction function) {
         this (function.name(), function.synonyms(), function);
     }
 

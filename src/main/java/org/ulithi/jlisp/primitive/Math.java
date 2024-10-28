@@ -1,6 +1,6 @@
 package org.ulithi.jlisp.primitive;
 
-import org.ulithi.jlisp.core.AbstractFunction;
+import org.ulithi.jlisp.core.BindableFunction;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;
@@ -31,7 +31,7 @@ public class Math implements BindingProvider {
      * The {@code LESS} function, a.k.a. {@code <}. The value of {@code <} is {@code T} (true) if
      * the numbers are in strictly increasing order; otherwise it is {@code F} (false).
      */
-    public static final class LESS extends AbstractFunction {
+    public static final class LESS extends BindableFunction {
         public LESS() { super("<"); }
 
         private static final BinaryArithmeticOperator<Boolean> op =
@@ -59,7 +59,7 @@ public class Math implements BindingProvider {
      * The {@code GREATER} function, a.k.a. {@code >}. The value of {@code >} is {@code T} (true)
      * if the numbers are in strictly decreasing order; otherwise it is {@code F} (false).
      */
-    public static final class GREATER extends AbstractFunction {
+    public static final class GREATER extends BindableFunction {
         public GREATER() { super(">"); }
 
         private static final BinaryArithmeticOperator<Boolean> op =
@@ -86,7 +86,7 @@ public class Math implements BindingProvider {
     /**
      * The {@code PLUS} function, a.k.a. {@code +}.
      */
-    public static final class PLUS extends AbstractFunction {
+    public static final class PLUS extends BindableFunction {
         public PLUS() { super("PLUS"); }
 
         @Override
@@ -105,7 +105,7 @@ public class Math implements BindingProvider {
     /**
      * The {@code MINUS} function.
      */
-    public static final class MINUS extends AbstractFunction {
+    public static final class MINUS extends BindableFunction {
         public MINUS() { super("MINUS"); }
 
         @Override
@@ -132,7 +132,7 @@ public class Math implements BindingProvider {
     /**
      * The {@code TIMES} function, a.k.a. {@code *}.
      */
-    public static class TIMES extends AbstractFunction {
+    public static class TIMES extends BindableFunction {
         public TIMES() { super("TIMES"); }
 
         @Override
@@ -151,7 +151,7 @@ public class Math implements BindingProvider {
     /**
      * The {@code QUOTIENT} function, a.k.a. division.
      */
-    public static class QUOTIENT extends AbstractFunction {
+    public static class QUOTIENT extends BindableFunction {
         public QUOTIENT() { super("QUOTIENT"); }
 
         @Override
@@ -170,7 +170,7 @@ public class Math implements BindingProvider {
     /**
      * The {@code REMAINDER} function, a.k.a. modulo.
      */
-    public static class REMAINDER extends AbstractFunction {
+    public static class REMAINDER extends BindableFunction {
         public REMAINDER() { super("REMAINDER"); }
 
         @Override

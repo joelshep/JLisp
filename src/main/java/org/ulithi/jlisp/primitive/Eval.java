@@ -7,6 +7,7 @@ import org.ulithi.jlisp.core.Function;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.core.Symbol;
+import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.UndefinedSymbolException;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.Ref;
@@ -41,27 +42,36 @@ public class Eval {
      * @return The resulting value of the evaluation.
      */
     public SExpression apply(final Cell cell) {
-        if ( cell.isNil() ) { return List.create(); }
+        if (cell.isNil()) { return List.create(); }
 
         // Get the root cell's first element as an s-expression.
-        final SExpression car = SExpression.fromRef(cell.getFirst());
+        SExpression car = SExpression.fromRef(cell.getFirst());
 
-        // If the first element is a list, recursively evaluate it and return the result.
-        if (car.isList()) { return apply((Cell) cell.getFirst()); }
+        // If the first element is a list, recursively evaluate it: it's expected
+        // to evaluate to a function to apply to remainder of the parsed expression.
+        if (car.isList()) {
+            car = apply((Cell) cell.getFirst());
+            return car.isFunction() ? evaluateFunction((Function) car, cell.getRest()) : car;
+        }
 
-        // If car is a number, return it.
-        final Atom atom = car.toAtom();
+        if (car.isAtom()) {
+            // If car is a number, return it.
+            final Atom atom = car.toAtom();
+            if (atom.isNumber()) {
+                return car;
+            }
 
-        if (atom.isNumber()) { return car; }
+            // See if car is a defined function. If so, we'll use it below.
+            final String lexeme = atom.toS();
 
-        // See if car is a defined function. If so, we'll use it below.
-        final String lexeme = atom.toS();
+            // If the lexeme resolves to a function, evaluate the function, otherwise try
+            // to evaluate it as a symbol or a literal.
+            return resolveFunction(lexeme)
+                    .map(function -> evaluateFunction(function, cell.getRest()))
+                    .orElseGet(() -> evaluateSymbolOrLiteral(atom));
+        }
 
-        // If the lexeme resolves to a function, evaluate the function, otherwise try
-        // to evaluate it as a symbol or a literal.
-        return resolveFunction(lexeme)
-                .map(function -> evaluateFunction(function, cell.getRest()))
-                .orElseGet(() -> evaluateSymbolOrLiteral(atom));
+        throw new EvaluationException(String.format("Unexpected car %s in form %s", car, cell));
     }
 
     /**

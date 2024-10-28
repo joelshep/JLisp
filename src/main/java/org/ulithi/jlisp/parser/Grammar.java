@@ -38,6 +38,11 @@ public class Grammar {
 
     private static final Pattern FUNCTION_NAME_PATTERN = Pattern.compile(FUNCTION_NAME);
 
+    /** Special syntax elements. TODO: Remove math operators. */
+    public static final String SYMBOL = "[().\\+\\*\\<\\>/']";
+
+    private static final Pattern SYMBOL_PATTERN = Pattern.compile(SYMBOL);
+
     /** Regular expression for the start of a number (integer). */
     public static final String NUMERIC_LITERAL_START = "[\\d\\+\\-]";
 
@@ -46,9 +51,6 @@ public class Grammar {
 
     /** Pre-compiled Pattern for matching on the NUMERIC_LITERAL regex. */
     private static final Pattern NUMERIC_LITERAL_PATTERN = Pattern.compile(NUMERIC_LITERAL);
-
-    /** Special syntax elements. TODO: Remove math operators. */
-    public static final String SYMBOL = "[().\\+\\*\\<\\>/']";
 
     /** Regular expression for line/expression that is whitespace and a comment. */
     public static final String FULL_LINE_COMMENT = "^\\s*;+.*$";
@@ -99,7 +101,9 @@ public class Grammar {
      * @return True if {@code token} is a syntactically valid function name,  false otherwise.
      */
     public static boolean isFunctionName(final String token) {
-        return FUNCTION_NAME_PATTERN.matcher(token).matches();
+        return FUNCTION_NAME_PATTERN.matcher(token).matches()
+                ||
+                SYMBOL_PATTERN.matcher(token).matches();
     }
 
     /**

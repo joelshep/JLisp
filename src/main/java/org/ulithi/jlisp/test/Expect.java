@@ -1,6 +1,6 @@
 package org.ulithi.jlisp.test;
 
-import org.ulithi.jlisp.core.AbstractFunction;
+import org.ulithi.jlisp.core.BindableFunction;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;
@@ -28,7 +28,7 @@ public class Expect implements BindingProvider {
      * representing the expected output of the first expression. If the output matches the second
      * expression, returns T. Otherwise, writes a warning to STDERR and returns F.
      */
-    public static class EXPECT extends AbstractFunction {
+    public static class EXPECT extends BindableFunction {
         public EXPECT() {
             super("EXPECT");
         }

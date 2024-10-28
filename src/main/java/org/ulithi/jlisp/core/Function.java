@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.core;
 
+import org.ulithi.jlisp.exception.TypeConversionException;
 import org.ulithi.jlisp.primitive.Eval;
 
 /**
@@ -9,14 +10,7 @@ import org.ulithi.jlisp.primitive.Eval;
  * "special" functions: most functions are not special and their arguments are recursively
  * evaluated before the function itself is invoked.
  */
-public interface Function extends Bindable {
-
-    /**
-     * Returns the programmatic name for this {@link Function}.
-     * @return The programmatic name for this {@code Function}.
-     */
-    String name();
-
+public interface Function extends SExpression {
     /**
      * Returns synonyms that can be used to refer to this {@link Function}: alternate programmatic
      * names. Most functions do not have synonyms.
@@ -95,4 +89,24 @@ public interface Function extends Bindable {
      * @return True if this function is used to define another language element, false otherwise.
      */
     default boolean isDefining() { return false; }
+
+    /** {@inheritDoc} */
+    @Override
+    default boolean isNil() { return false; }
+
+    /** {@inheritDoc} */
+    @Override
+    default boolean isFunction() { return true; }
+
+    /** {@inheritDoc} */
+    @Override
+    default Atom toAtom() {
+        throw new TypeConversionException("Function is not an Atom");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    default List toList() {
+        throw new TypeConversionException("Function is not a List");
+    }
 }

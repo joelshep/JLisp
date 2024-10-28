@@ -2,6 +2,7 @@ package org.ulithi.jlisp.test.core;
 
 import org.junit.Test;
 import org.ulithi.jlisp.core.Atom;
+import org.ulithi.jlisp.core.BindableFunction;
 import org.ulithi.jlisp.core.Environment;
 import org.ulithi.jlisp.core.Function;
 import org.ulithi.jlisp.core.SExpression;
@@ -24,7 +25,7 @@ public class EnvironmentTestCase {
         assertTrue(env.isDefined("plus"));
         assertTrue(env.isDefined("PLUS"));
         assertTrue(env.isDefined("+"));
-        final Function function = (Function) env.getBinding("plus");
+        final BindableFunction function = (BindableFunction) env.getBinding("plus");
         assertEquals("plus", function.name().toLowerCase());
     }
 
@@ -50,7 +51,7 @@ public class EnvironmentTestCase {
         env.startScope();
         env.addBinding("foo", createFunction("foo"));
 
-        final Function func = (Function) env.getBinding("foo");
+        final BindableFunction func = (BindableFunction) env.getBinding("foo");
         assertNotNull(func);
         assertEquals("foo", func.name());
 
@@ -67,18 +68,18 @@ public class EnvironmentTestCase {
         env.startScope();
         env.addBinding("bar", createFunction("bar"));
 
-        final Function foo = (Function) env.getBinding("foo");
+        final BindableFunction foo = (BindableFunction) env.getBinding("foo");
         assertNotNull(foo);
         assertEquals("foo", foo.name());
 
-        final Function bar = (Function) env.getBinding("bar");
+        final BindableFunction bar = (BindableFunction) env.getBinding("bar");
         assertNotNull(bar);
         assertEquals("bar", bar.name());
 
         env.endScope();
         assertNull(env.getBinding("bar"));
         assertNotNull(env.getBinding("foo"));
-        assertEquals("foo", ((Function)env.getBinding("foo")).name());
+        assertEquals("foo", ((BindableFunction)env.getBinding("foo")).name());
 
         env.endScope();
         assertNull(env.getBinding("bar"));
@@ -94,14 +95,14 @@ public class EnvironmentTestCase {
         env.startScope();
         env.addBinding("foo", createFunction("bar"));
 
-        final Function bar = (Function) env.getBinding("foo");
+        final BindableFunction bar = (BindableFunction) env.getBinding("foo");
         assertNotNull(bar);
         assertEquals("bar", bar.name());
 
         env.endScope();
 
         assertNotNull(env.getBinding("foo"));
-        assertEquals("foo", ((Function)env.getBinding("foo")).name());
+        assertEquals("foo", ((BindableFunction)env.getBinding("foo")).name());
 
         env.endScope();
         assertNull(env.getBinding("foo"));
@@ -121,10 +122,8 @@ public class EnvironmentTestCase {
         env.addBinding("PLUS", createFunction("bar"));
     }
 
-    private static Function createFunction(final String name) {
-        return new Function() {
-            @Override
-            public String name() { return name; }
+    private static BindableFunction createFunction(final String name) {
+        return new BindableFunction(name) {
 
             @Override
             public SExpression apply(SExpression sexp) {

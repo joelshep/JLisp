@@ -1,6 +1,6 @@
 package org.ulithi.jlisp.primitive;
 
-import org.ulithi.jlisp.core.AbstractFunction;
+import org.ulithi.jlisp.core.BindableFunction;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
@@ -8,7 +8,7 @@ import org.ulithi.jlisp.exception.EvaluationException;
 /**
  * Helper extension for functions like CAR and CDR that operate on a single list argument.
  */
-public abstract class AbstractListFunction extends AbstractFunction {
+public abstract class AbstractListFunction extends BindableFunction {
 
     /**
      * Constructs a new {@link AbstractListFunction} with the specified programmatic {@code name}.

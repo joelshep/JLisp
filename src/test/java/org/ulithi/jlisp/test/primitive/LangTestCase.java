@@ -1,13 +1,9 @@
 package org.ulithi.jlisp.test.primitive;
 
-import org.junit.Ignore;
 import org.junit.Test;
-import org.ulithi.jlisp.core.Atom;
-import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
-import org.ulithi.jlisp.mem.NilReference;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities.Session;
 
@@ -335,6 +331,13 @@ public class LangTestCase {
     public void testSimpleConditional() {
         final SExpression result = eval("(IF (> 1 2) (QUOTE BAZ) (QUOTE FOO) )");
         assertEquals("FOO", result.toString());
+    }
+
+    @Test
+    public void testSimpleLambda() {
+        final SExpression result = eval("((LAMBDA (x) (+ x x)) 17)");
+        assertTrue(result.isAtom());
+        assertEquals(34, result.toAtom().toI());
     }
 
     @Test

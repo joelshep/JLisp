@@ -1,6 +1,6 @@
 package org.ulithi.jlisp.primitive;
 
-import org.ulithi.jlisp.core.AbstractFunction;
+import org.ulithi.jlisp.core.BindableFunction;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;
@@ -29,7 +29,7 @@ public class Util implements BindingProvider {
      * other elements are equal if they occupy the same memory, and otherwise they are not
      * equal.
      */
-    public static class EQL extends AbstractFunction {
+    public static class EQL extends BindableFunction {
         public EQL() { super("EQL"); }
 
         /** {@inheritDoc} */
@@ -67,7 +67,7 @@ public class Util implements BindingProvider {
      * structurally similar (isomorphic). A rough rule of thumb is that two objects are equal
      * if and only if their printed representations are the same.
      */
-    public static class EQUAL extends AbstractFunction {
+    public static class EQUAL extends BindableFunction {
         public EQUAL() { super("EQUAL"); }
 
         /**

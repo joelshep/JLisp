@@ -1,6 +1,6 @@
 package org.ulithi.jlisp.primitive;
 
-import org.ulithi.jlisp.core.AbstractFunction;
+import org.ulithi.jlisp.core.BindableFunction;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;
@@ -32,7 +32,7 @@ public class Collections implements BindingProvider {
      * list. APPEND special-cases the case where the only argument is a single atom, returning just
      * the atom.
      */
-    public static class APPEND extends AbstractFunction {
+    public static class APPEND extends BindableFunction {
         public APPEND() { super("APPEND"); }
 
         /** {@inheritDoc} */
@@ -79,7 +79,7 @@ public class Collections implements BindingProvider {
      * given key in an {@code alist} (associative list), by comparing the key to the {@code alist}
      * elements via an {@code equal} comparison.
      */
-    public static class ASSOC extends AbstractFunction {
+    public static class ASSOC extends BindableFunction {
         public ASSOC() { super("ASSOC"); }
 
         /** {@inheritDoc} */
@@ -122,7 +122,7 @@ public class Collections implements BindingProvider {
      * in a given list. If the list is empty/NIL, returns 0. Throws if the given {@code sexp} is
      * not a list.
      */
-    public static class LENGTH extends AbstractFunction {
+    public static class LENGTH extends BindableFunction {
         public LENGTH() { super("LENGTH"); }
 
         /** {@inheritDoc} */
@@ -138,7 +138,7 @@ public class Collections implements BindingProvider {
      * Implements the LISP {@code LIST} function, which constructs a list whose elements are the
      * given arguments.
      */
-    public static class LIST extends AbstractFunction {
+    public static class LIST extends BindableFunction {
         public LIST() { super("LIST"); }
 
         /** {@inheritDoc} */
@@ -153,7 +153,7 @@ public class Collections implements BindingProvider {
      * in a given list, including elements in any nested lists. If the list is empty/NIL, returns
      * 0. Throws if the given {@code sexpr} is not a list.
      */
-    public static class SIZE extends AbstractFunction {
+    public static class SIZE extends BindableFunction {
         public SIZE() { super("SIZE"); }
 
         /** {@inheritDoc} */

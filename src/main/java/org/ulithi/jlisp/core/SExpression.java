@@ -70,4 +70,13 @@ public interface SExpression extends Ref {
 
         return lhs.car().isEqual(rhs.car()) && lhs.cdr().isEqual(rhs.cdr());
     }
+
+    /**
+     * Indicates if this {@link SExpression} represents a {@link Function}.
+     * <p>
+     * Note: This may be the wrong abstraction ... not sure at this point.
+     *
+     * @return True if this represents a {@code Function}, false otherwise.
+     */
+    default boolean isFunction() { return false; }
 }
