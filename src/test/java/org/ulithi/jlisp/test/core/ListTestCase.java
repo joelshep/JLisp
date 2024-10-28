@@ -3,6 +3,7 @@ package org.ulithi.jlisp.test.core;
 import org.junit.Test;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.List;
+import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.mem.Cell;
 
 import static org.junit.Assert.assertEquals;
@@ -106,6 +107,39 @@ public class ListTestCase {
                 .add(innerList);
 
         assertEquals(6, outerList.size().toI());
+    }
+
+    @Test
+    public void testNthElementOfList() {
+        final List list = List.create()
+                .add(Atom.create(1))
+                .add(Atom.create(2))
+                .add(Atom.create(3))
+                .add(Atom.create(4));
+
+        assertEquals(1, list.nth(0).toAtom().toI());
+        assertEquals(2, list.nth(1).toAtom().toI());
+        assertEquals(3, list.nth(2).toAtom().toI());
+        assertEquals(4, list.nth(3).toAtom().toI());
+        assertEquals(Atom.NIL, list.nth(list.lengthAsInt()));
+        assertEquals(Atom.NIL, list.nth(list.lengthAsInt() + 1));
+    }
+
+    @Test
+    public void testNthWithEmptyList() {
+        final List list = List.create();
+        assertEquals(Atom.NIL, list.nth(0));
+        assertEquals(Atom.NIL, list.nth(1));
+    }
+
+    @Test(expected = EvaluationException.class)
+    public void testNthWithNegativeIndex() {
+        final List list = List.create()
+                .add(Atom.create(1))
+                .add(Atom.create(2))
+                .add(Atom.create(3))
+                .add(Atom.create(4));
+        list.nth(-1);
     }
 
     private static List newSublist(final String lhs, final String rhs) {

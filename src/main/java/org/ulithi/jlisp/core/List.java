@@ -176,10 +176,7 @@ public class List implements SExpression {
      */
     public SExpression car() {
         final Ref ref = root.getFirst();
-        if (ref.isNil()) { return List.create(); }
-        if (ref.isAtom()) { return ref.toAtom(); }
-        if (ref.isCell()) { return List.create(ref); }
-        throw new JLispRuntimeException("Don't know how to fetch CAR of ref: " + ref);
+        return refToSExpression(ref);
     }
 
     /**
@@ -189,9 +186,7 @@ public class List implements SExpression {
      */
     public SExpression cdr() {
         final Ref ref = root.getRest();
-        if (ref.isNil()) { return List.create(); }
-        if (ref.isCell()) { return List.create(ref); }
-        throw new JLispRuntimeException("Don't know how to fetch CDR of ref: " + ref);
+        return refToSExpression(ref);
     }
 
     /**
@@ -205,6 +200,45 @@ public class List implements SExpression {
         }
 
         return cdr().toList().car();
+    }
+
+    /**
+     * Returns the n-th top-level element of this list, where the {@code car} of the list is the
+     * zero-th element. Returns {@code NIL} if the given {@code index} is greater than or equal
+     * to the length of this list.
+     *
+     * @param index The zero-based index of the element to return.
+     * @return The list element at the given index.
+     */
+    public SExpression nth(final int index) {
+        if (index <0) {
+            throw new EvaluationException("Index " + index + " out of bounds");
+        }
+
+        int i = 0;
+        Ref curr = root;
+
+        while (!curr.isNil()) {
+            if (i == index) {
+                return refToSExpression(curr.toCell().getFirst());
+            }
+            i++;
+            curr = curr.toCell().getRest();
+        }
+
+        return Atom.NIL;
+    }
+
+    /**
+     * Attempts to convert the given Ref to an SExpression.
+     * @param ref The Ref to convert.
+     * @return A NIL, List or Atom representation of the Ref.
+     */
+    private static SExpression refToSExpression(final Ref ref) {
+        if (ref.isNil()) { return List.create(); }
+        if (ref.isAtom()) { return ref.toAtom(); }
+        if (ref.isCell()) { return List.create(ref); }
+        throw new JLispRuntimeException("Don't know how to convert ref: " + ref);
     }
 
     /**
