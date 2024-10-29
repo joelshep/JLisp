@@ -24,6 +24,7 @@ public class Collections implements BindingProvider {
                              new Binding(new Collections.ASSOC()),
                              new Binding(new Collections.LENGTH()),
                              new Binding(new Collections.LIST()),
+                             new Binding(new Collections.NTH()),
                              new Binding(new Collections.SIZE()));
     }
 
@@ -145,6 +146,34 @@ public class Collections implements BindingProvider {
         @Override
         public SExpression apply(final SExpression sexp) {
             return sexp.toList();
+        }
+    }
+
+    /**
+     * Implements the LISP {@code NTH} function, which returns the n-th top-level element of
+     * a list, using a zero-based index.
+     */
+    public static class NTH extends BindableFunction {
+        public NTH() { super("NTH"); }
+
+        /** {@inheritDoc} */
+        @Override
+        public SExpression apply(final SExpression sexp) {
+            final List args = sexp.toList();
+
+            if (!args.car().isAtom()) {
+                throw new EvaluationException("First argumwnt to NTH must be a non-negative integer");
+            }
+
+            int index = args.car().toAtom().toI();
+
+            if (index < 0) {
+                throw new EvaluationException("First argumwnt to NTH must be a non-negative integer");
+            }
+
+            final List list = args.cadr().toList();
+
+            return list.nth(index);
         }
     }
 

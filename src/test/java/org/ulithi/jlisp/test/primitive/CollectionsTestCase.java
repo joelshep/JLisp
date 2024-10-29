@@ -149,4 +149,31 @@ public class CollectionsTestCase {
         SExpression sexp = eval("(ASSOC 'x '((a 1) (b 2) (x (3 4 5))))");
         assertEquals("( x ( 3 4 5 ) )", sexp.toString());
     }
+
+    @Test
+    public void testNthOfEmptyList() {
+        assertEquals(Atom.NIL, eval("(nth 0 ())"));
+        assertEquals(Atom.NIL, eval("(nth 1 ())"));
+    }
+
+    @Test
+    public void testNthOfSimpleList() {
+        assertEquals("A", eval("(nth 0 '(A B C D))").toAtom().toS());
+        assertEquals("B", eval("(nth 1 '(A B C D))").toAtom().toS());
+        assertEquals("C", eval("(nth 2 '(A B C D))").toAtom().toS());
+        assertEquals("D", eval("(nth 3 '(A B C D))").toAtom().toS());
+        assertEquals(Atom.NIL, eval("(nth 4 '(A B C D))").toAtom());
+    }
+
+    @Test(expected = EvaluationException.class)
+    public void testNthWithInvalidIndex() {
+        eval("(nth -1 '(A B C D))");
+    }
+
+    @Test
+    public void testNthWithCompoundExpression() {
+        assertEquals("( E F )", eval("(nth 2 '((A B) (C D) (E F) (G H)))").toList().toString());
+        assertEquals("( A B )", eval("(nth 0 '((A B) (C D) (E F) (G H)))").toList().toString());
+        assertEquals(Atom.NIL, eval("(nth 4 '((A B) (C D) (E F) (G H)))"));
+    }
 }
