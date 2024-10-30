@@ -144,7 +144,7 @@ public class Interpreter implements Runnable {
      *         expression wasn't evaluated. Evaluation errors are handled by the caller.
      */
     private Optional<Boolean> offerImpl(final PTree pTree) {
-            SExpression ret = eval.apply(pTree.root());
+            SExpression ret = eval.eval(pTree.root());
             System.out.println(" " + ret);
             return Optional.of(Boolean.TRUE);
     }

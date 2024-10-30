@@ -54,8 +54,8 @@ public class Expect implements BindingProvider {
             final SExpression lhs = it.car();
             final SExpression rhs = it.cdr();
 
-            final SExpression actual = eval.apply(lhs);
-            final SExpression expected = eval.apply(rhs);
+            final SExpression actual = eval.eval(lhs);
+            final SExpression expected = eval.eval(rhs);
 
             if (actual.isEqual(expected)) {
                 return Atom.T;

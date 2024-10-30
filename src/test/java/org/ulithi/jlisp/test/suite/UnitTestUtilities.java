@@ -31,7 +31,7 @@ public class UnitTestUtilities {
          */
         public SExpression eval(final String expression) {
             final PTree pTree = parse(expression);
-            return eval.apply(pTree.root());
+            return eval.eval(pTree.root());
         }
     }
 
@@ -54,7 +54,7 @@ public class UnitTestUtilities {
     public static SExpression eval(final String expression) {
         final PTree ptree = parse(expression);
         final Eval eval = new Eval();
-        return eval.apply(ptree.root());
+        return eval.eval(ptree.root());
     }
 
     /**

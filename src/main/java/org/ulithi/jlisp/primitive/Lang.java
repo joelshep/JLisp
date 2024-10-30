@@ -93,11 +93,11 @@ public class Lang implements BindingProvider {
 
                 final SExpression condition = conditional.car();
 
-                final SExpression truth = eval.apply(condition);
+                final SExpression truth = eval.eval(condition);
 
                 if (truth.toAtom().toB()) {
                     final SExpression consequent = conditional.cdr();
-                    return consequent.isNil() ? truth : eval.apply(consequent);
+                    return consequent.isNil() ? truth : eval.eval(consequent);
                 }
 
                 args = args.cdr().toList();
@@ -202,7 +202,7 @@ public class Lang implements BindingProvider {
                 throw new EvaluationException("Argument to " + name() + " must be a single form");
             }
 
-            return eval.apply(arg.car());
+            return eval.eval(arg.car());
         }
     }
 
@@ -235,15 +235,15 @@ public class Lang implements BindingProvider {
                 throw new WrongArgumentCountException("IF expects two or three arguments");
             }
 
-            final SExpression testSexp = eval.apply(args.car());
+            final SExpression testSexp = eval.eval(args.car());
 
             final boolean condition = (testSexp.isList() && !testSexp.toList().isEmpty()) ||
                                       (testSexp.isAtom() && testSexp.toAtom().toB());
 
             if (condition) {
-                return eval.apply(args.cdr().toList().car());
+                return eval.eval(args.cdr().toList().car());
             } else {
-                return eval.apply(args.cdr().toList().cdr());
+                return eval.eval(args.cdr().toList().cdr());
             }
         }
     }
@@ -313,7 +313,7 @@ public class Lang implements BindingProvider {
                 throw new EvaluationException("First argument to SETQ must be a symbol: received " + varNameAtom);
             }
 
-            final SExpression definition = eval.apply(args.cdr());
+            final SExpression definition = eval.eval(args.cdr());
             env.addUserBinding(new Binding(varNameAtom.toString(), definition));
 
             return definition;

@@ -69,7 +69,7 @@ public class UserFunction extends BindableFunction {
 			environment.addBinding(entry.getKey(), entry.getValue());
 		}
 
-		return eval.apply(body);
+		return eval.eval(body);
 	}
 
 	/**

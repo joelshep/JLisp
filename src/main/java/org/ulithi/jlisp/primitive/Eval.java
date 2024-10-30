@@ -30,8 +30,8 @@ public class Eval {
      * @param sexp An {@code SExpression} representing the LISP form to evaluate.
      * @return The resulting value of the evaluation.
      */
-    public SExpression apply(final SExpression sexp) {
-        return sexp.isAtom() ? apply(Cell.create(sexp.toAtom())) : apply(sexp.toList().getRoot());
+    public SExpression eval(final SExpression sexp) {
+        return sexp.isAtom() ? eval(Cell.create(sexp.toAtom())) : eval(sexp.toList().getRoot());
     }
 
     /**
@@ -41,7 +41,7 @@ public class Eval {
      * @param cell The root {@link Cell} of the parsed expression to evaluate.
      * @return The resulting value of the evaluation.
      */
-    public SExpression apply(final Cell cell) {
+    public SExpression eval(final Cell cell) {
         if (cell.isNil()) { return List.create(); }
 
         // Get the root cell's first element as an s-expression.
@@ -50,8 +50,8 @@ public class Eval {
         // If the first element is a list, recursively evaluate it: it's expected
         // to evaluate to a function to apply to remainder of the parsed expression.
         if (car.isList()) {
-            car = apply((Cell) cell.getFirst());
-            return car.isFunction() ? evaluateFunction((Function) car, cell.getRest()) : car;
+            car = eval((Cell) cell.getFirst());
+            return car.isFunction() ? apply((Function) car, cell.getRest()) : car;
         }
 
         if (car.isAtom()) {
@@ -67,7 +67,7 @@ public class Eval {
             // If the lexeme resolves to a function, evaluate the function, otherwise try
             // to evaluate it as a symbol or a literal.
             return resolveFunction(lexeme)
-                    .map(function -> evaluateFunction(function, cell.getRest()))
+                    .map(function -> apply(function, cell.getRest()))
                     .orElseGet(() -> evaluateSymbolOrLiteral(atom));
         }
 
@@ -88,16 +88,16 @@ public class Eval {
     }
 
     /**
-     * Invokes the given Function on the argument(s) referred to by {@code rest}. If the function
+     * Applies the given Function to the argument(s) referred to by {@code rest}. If the function
      * is "special", the argument(s) are passed directly to the function without evaluation.
      * Otherwise, the argument(s) are evaluated recursively, and the function is invoked on the
      * fully evaluated arguments.
      *
      * @param func The function to invoke.
      * @param rest A Ref to the arguments for the function, typically a list.
-     * @return The resulting value of the evaluation.
+     * @return The value resulting from applying the function to the arguments.
      */
-    private SExpression evaluateFunction(final Function func, final Ref rest) {
+    private SExpression apply(final Function func, final Ref rest) {
         if (func.isSpecial()) {
             return invokeFunction(func, SExpression.fromRef(rest), env);
         }
@@ -118,7 +118,7 @@ public class Eval {
         final List args = List.create();
 
         while (!it.isNil()) {
-            final Ref intermediate = apply((Cell) it);
+            final Ref intermediate = eval((Cell) it);
             if (intermediate.isAtom()) {
                 args.add(intermediate.toAtom());
             } else if (intermediate.isList()) {
