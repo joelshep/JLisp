@@ -18,6 +18,16 @@ import static org.ulithi.jlisp.test.suite.UnitTestUtilities.newSession;
  */
 public class LangTestCase {
 
+    @Test
+    public void testSimpleApply() {
+        assertEquals(9, eval("(APPLY PLUS (2 3 4))").toAtom().toI());
+    }
+
+    @Test
+    public void testSimpleApplyWithLambda() {
+        assertEquals(8, eval("(APPLY (LAMBDA (X) (+ 5 X)) (3))").toAtom().toI());
+    }
+
     @Test(expected = EvaluationException.class)
     public void testCAROfLiteral() {
         // CAR should throw exception if argument is not a list

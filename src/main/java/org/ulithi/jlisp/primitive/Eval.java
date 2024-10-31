@@ -45,33 +45,60 @@ public class Eval {
         if (cell.isNil()) { return List.create(); }
 
         // Get the root cell's first element as an s-expression.
-        SExpression car = SExpression.fromRef(cell.getFirst());
+        final SExpression car = SExpression.fromRef(cell.getFirst());
+
+        if (car.isAtom()) {
+            return resolveFunction(car.toAtom().toS())
+                    .map(f -> applyImpl(f, cell.getRest()))
+                    .orElseGet(() -> evaluateSymbolOrLiteral(car.toAtom()));
+        }
 
         // If the first element is a list, recursively evaluate it: it's expected
         // to evaluate to a function to apply to remainder of the parsed expression.
         if (car.isList()) {
-            car = eval((Cell) cell.getFirst());
-            return car.isFunction() ? apply((Function) car, cell.getRest()) : car;
+            final SExpression evaluated = eval((Cell) cell.getFirst());
+            return evaluated.isFunction() ? applyImpl((Function) evaluated, cell.getRest())
+                                          : evaluated;
         }
 
-        if (car.isAtom()) {
-            // If car is a number, return it.
-            final Atom atom = car.toAtom();
-            if (atom.isNumber()) {
-                return car;
-            }
-
-            // See if car is a defined function. If so, we'll use it below.
-            final String lexeme = atom.toS();
-
-            // If the lexeme resolves to a function, evaluate the function, otherwise try
-            // to evaluate it as a symbol or a literal.
-            return resolveFunction(lexeme)
-                    .map(function -> apply(function, cell.getRest()))
-                    .orElseGet(() -> evaluateSymbolOrLiteral(atom));
+        if (car.isFunction()) {
+            return applyImpl((Function) car, cell.getRest());
         }
 
         throw new EvaluationException(String.format("Unexpected car %s in form %s", car, cell));
+    }
+
+    /**
+     * Applies a function named or specified by {@code funcSpec} to the given arguments.
+     *
+     * @param funcSpec A {@link Function}, the name of a function, or a lambda expression.
+     * @param args A list of arguments to the function. The arguments will be recursively
+     *             evaluated before the specified function is applied.
+     * @return The result of applying the function to this arguments.
+     */
+    public SExpression apply(final SExpression funcSpec, final List args) {
+        final Function function = resolveFunction(funcSpec);
+        return applyImpl(function, args.getRoot());
+    }
+
+    /**
+     * Given a Function, function name, or lambda expression, returns the corresponding
+     * function object.
+     *
+     * @param funcSpec A Function, function name or lambda expression.
+     * @return A Function object corresponding the given funcSpec.
+     */
+    private Function resolveFunction(final SExpression funcSpec) {
+        if (funcSpec.isAtom()) {
+            return resolveFunction(funcSpec.toAtom().toS())
+                    .orElseThrow(() -> new UndefinedSymbolException("No function named " + funcSpec + " found"));
+        }
+
+        if (funcSpec.isList()) { return (Function) eval(funcSpec); }
+
+        if (funcSpec.isFunction()) { return (Function) funcSpec; }
+
+        throw new UndefinedSymbolException("Undefined function " + funcSpec);
     }
 
     /**
@@ -97,7 +124,7 @@ public class Eval {
      * @param rest A Ref to the arguments for the function, typically a list.
      * @return The value resulting from applying the function to the arguments.
      */
-    private SExpression apply(final Function func, final Ref rest) {
+    private SExpression applyImpl(final Function func, final Ref rest) {
         if (func.isSpecial()) {
             return invokeFunction(func, SExpression.fromRef(rest), env);
         }

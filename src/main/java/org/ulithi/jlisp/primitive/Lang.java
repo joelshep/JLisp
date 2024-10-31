@@ -24,7 +24,8 @@ public class Lang implements BindingProvider {
      */
     @Override
     public java.util.List<Binding> getBindings() {
-        return Arrays.asList(new Binding(new Lang.CAR()),
+        return Arrays.asList(new Binding(new Lang.APPLY()),
+                             new Binding(new Lang.CAR()),
                              new Binding(new Lang.CDR()),
                              new Binding(new Lang.COND()),
                              new Binding(new Lang.CONS()),
@@ -32,8 +33,42 @@ public class Lang implements BindingProvider {
                              new Binding(new Lang.EVAL()),
                              new Binding(new Lang.IF()),
                              new Binding((new Lang.LAMBDA())),
+                             new Binding((new Lang.MAPCAR())),
                              new Binding(new Lang.QUOTE()),
                              new Binding(new Lang.SETQ()));
+    }
+
+    /**
+     * Implements the LISP {@code APPLY} function. The {@code APPLY} function takes two arguments:
+     * a function specification (a function object, a function name or a lambda expression), and a
+     * list of arguments for a single invocation of the function. Returns the result of applying
+     * the function to the arguments.
+     */
+    public static class APPLY extends BindableFunction {
+        public APPLY() { super("APPLY"); }
+
+        @Override
+        public boolean isSpecial() { return true; }
+
+        @Override
+        public boolean isReentrant() { return true; }
+
+        @Override
+        public SExpression apply(final SExpression sexp, final Environment env, final Eval eval) {
+            List args = sexp.toList();
+
+            if (args.lengthAsInt() != 2) {
+                throw new WrongArgumentCountException("Expected 2 arguments: received " + args.length());
+            }
+
+            if (!args.nth(1).isList()) {
+                throw new WrongArgumentCountException("Second argument to APPLY must be list of arguments");
+            }
+
+            final SExpression function = args.nth(0);
+            final List parameters = args.nth(1).toList();
+            return eval.apply(function, parameters);
+        }
     }
 
     /**
@@ -170,9 +205,9 @@ public class Lang implements BindingProvider {
         public SExpression apply(final SExpression sexp, final Environment env) {
             final List args = sexp.toList();
 
-            final SExpression name = args.car();
-            final SExpression arguments = args.cdr().toList().car();
-            final SExpression definition = args.cdr().toList().cdr().toList().car();
+            final SExpression name = args.nth(0);
+            final SExpression arguments = args.nth(1);
+            final SExpression definition = args.nth(2);
             final UserFunction function = new UserFunction(name.toString(), arguments, definition);
 
             env.addUserBinding(new Binding(name.toAtom().toS(), function));
@@ -261,9 +296,29 @@ public class Lang implements BindingProvider {
 
         public SExpression apply(final SExpression sexp) {
             final List args = sexp.toList();
-            final SExpression arguments = args.car();
-            final SExpression definition = args.cadr();
+            final SExpression arguments = args.nth(0);
+            final SExpression definition = args.nth(1);
             return new LambdaFunction(arguments, definition);
+        }
+    }
+
+    public static class MAPCAR extends BindableFunction {
+        public MAPCAR() {
+            super("MAPCAR");
+        }
+
+        public SExpression apply(final SExpression sexp) {
+            final List args = sexp.toList();
+            final SExpression function = args.nth(0);
+            final List[] argLists = new List[args.lengthAsInt()-1];
+
+            for (int i = 0; i < argLists.length; i++) {
+                argLists[i] = args.nth(i + 1).toList();
+            }
+
+            // TODO
+            return sexp;
+
         }
     }
 
