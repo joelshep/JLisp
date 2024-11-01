@@ -9,6 +9,16 @@ Collections.java
 `(APPEND 'A)` => `A`  
 `(APPEND '((A) (B)) '((C) (D)))` => `( ( A ) ( B ) ( C ) ( D ) )`
 
+### APPLY
+Applies a function to an argument list. The argument list should contain the arguments needed for
+a single function execution. To apply a function iteratively to one more argument lists, use
+MAPCAR (coming soon!). Note that JLisp's implementation of APPLY may be non-standard in that
+functions may be passed by reference (e.g. `CDR` instead of `'CDR`). If this proves to be
+problematic, it may change.  
+Lang.java  
+`(APPLY + (1 2 3 4))` => `10`  
+`(APPLY CDR ('(A B C)))` => `( B C )`
+
 ### ASSOC
 An association list (a.k.a. "alist") is a list of pairs. The ASSOC func takes a key value and an
 alist, and returns the first pair such that the given key is equal to the `car` of the pair, or
@@ -19,6 +29,7 @@ Collections.java
 
 ### ATOM
 Returns true if the argument is an `atom`; and false otherwise.  
+Predicate.java  
 `(ATOM (QUOTE 3))` => `T`  
 `(ATOM (QUOTE (1 2 3)))` => `F`
 
@@ -62,6 +73,13 @@ Util.java
 
 ### EQL
 Util.java
+
+### EVAL
+Evaluates a form and returns the result. Note that the form itself is the result of
+evaluating the arguments to EVAL.  
+Lang.java  
+`(EVAL '(+ 1 2 3))` => `6`  
+`(SETQ A 'B) (SETQ B 'C)") (EVAL A)` => `C`
 
 ### EXPECT
 Non-standard function. Evaluates to arguments and returns `T` if they are `EQUAL`, and logs to
@@ -128,6 +146,14 @@ Predicate.java
 `(MINUSP -3)` => `T`  
 `(MINUSP 4)` => `F`  
 `(MINUSP 0)` => `F`
+
+### NTH
+Returns the list element at the given zero-based index, or NIL if the index is greater than
+or equal to the length of the list.  
+Collections.java  
+`(NTH 2 '(A B C D))` => `C`  
+`(NTH 0 '((A B) (C D) (E F) (G H)))` => `( A B )`  
+`(NTH 4 '((A B) (C D) (E F) (G H)))` => `NIL`
 
 ### PLUS | +
 Returns the sum of the arguments.  

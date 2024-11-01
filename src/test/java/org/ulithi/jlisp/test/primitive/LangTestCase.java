@@ -28,6 +28,11 @@ public class LangTestCase {
         assertEquals(8, eval("(APPLY (LAMBDA (X) (+ 5 X)) (3))").toAtom().toI());
     }
 
+    @Test
+    public void testApplyToListArgument() {
+        assertEquals("( B C )", eval("(APPLY CDR ('(A B C)))").toList().toString());
+    }
+
     @Test(expected = EvaluationException.class)
     public void testCAROfLiteral() {
         // CAR should throw exception if argument is not a list
