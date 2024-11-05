@@ -18,10 +18,6 @@ import static org.ulithi.jlisp.mem.NilReference.NIL;
  * representing the next element in the list, or the {@code NIL} atom representing the end of the
  * list. A reference can refer to an {@link Atom} or another {@code Cell}.
  * <p>
- * Cells can also be used as "pure storage": as just a holder for a value. In a storage-only cell,
- * the {@code first} reference is the value; the {@code rest} reference is undefined (but typically
- * {@code null}).
- * <p>
  * The type of value held in a cell's {@code first} element can be determined by the {@code isAtom()},
  * {@code isList()} and {@code isNil()} methods.
  * <p>
@@ -68,12 +64,6 @@ public class Cell implements Ref {
     private Ref rest;
 
     /**
-     * Indicates if this cell is being used purely for storage. If so, only the "first" reference
-     * is valid; the "rest" reference is undefined.
-     */
-    private final boolean isStorage;
-
-    /**
      * Creates a {@link Cell} representing a terminal list node with the given {@link Ref}
      * as its value.
      *
@@ -96,18 +86,6 @@ public class Cell implements Ref {
     }
 
     /**
-     * Creates a new storage-only {@link Cell} with a literal {@link Atom} for the given
-     * {@code token} as the {@code first} element and {@code NULL_REF} as the {@code rest}
-     * element.
-     *
-     * @param token A literal used to construct the Atom for the new cell's first element.
-     * @return A new storage-only {@code Cell} of the form {@code (ATOM . NULL_REF)}.
-     */
-    public static Cell createStorage(final String token) {
-        return createStorage(Atom.create(token));
-    }
-
-    /**
      * Constructs a new list {@link Cell} with a literal {@link Atom} for the given integer value as
      * the {@code first} element and {@code NIL} as the {@code rest} element.
      *
@@ -119,17 +97,6 @@ public class Cell implements Ref {
     }
 
     /**
-     * Creates a new storage-only {@link Cell} with a literal {@link Atom} for the given integer
-     * value as the {@code first} element and {@code NULL_REF} as the {@code rest} element.
-     *
-     * @param value An integer used to construct the Atom for the new cell's first element.
-     * @return A new storage-only {@code Cell} of the form {@code (ATOM . NULL_REF)}.
-     */
-    public static Cell createStorage(final int value) {
-        return createStorage(Atom.create(value));
-    }
-
-    /**
      * Constructs a new list{@link Cell} with a literal {@link Atom} for the given Boolean value as
      * the {@code first} element and {@code NIL} as the {@code rest} element.
      *
@@ -138,30 +105,6 @@ public class Cell implements Ref {
      */
     public static Cell create(final boolean bool) {
         return create(Atom.create(bool));
-    }
-
-    /**
-     * Creates a new storage-only {@link Cell} with a literal {@link Atom} for the given Boolean
-     * value as the {@code first} element and {@code NULL_REF} as the {@code rest} element.
-     *
-     * @param bool A Boolean used to construct the Atom for the new cell's first element.
-     * @return A new storage-only {@code Cell} of the form {@code (ATOM . NULL_REF)}.
-     */
-    public static Cell createStorage(final boolean bool) {
-        return createStorage(Atom.create(bool));
-    }
-
-    /**
-     * Constructs a new storage-only {@link Cell} with the given {@link Ref} -- assumed to be a
-     * pure atom or NIL, not a node of a list -- as the {@code first} element and {@code NIL} as the
-     * {@code rest} element. A {@link Cell} created by this method cannot be part of a {@code List}.
-     * @param ref The {@link Ref} that this cell provides memory storage for.
-     * @return A new storage-only {@code Cell} of the form {@code (ref . NULL_REF)}.
-     */
-    public static Cell createStorage(final Ref ref) {
-        if (ref.isNil()) { return create(Atom.NIL); }
-        if (ref.isAtom()) { return new Cell(ref); }
-        throw new IllegalArgumentException();
     }
 
     /**
@@ -192,20 +135,6 @@ public class Cell implements Ref {
         Objects.requireNonNull(first);
         this.first = first;
         this.rest = rest;
-        this.isStorage = false;
-    }
-
-    /**
-     * Private constructor for making a storage-only cell. Use one of the {@code create} methods to
-     * create a new Cell.
-     *
-     * @param first The new Cell's {@code first} element.
-     */
-    private Cell(final Ref first) {
-        Objects.requireNonNull(first);
-        this.first = first;
-        this.rest = null;
-        this.isStorage = true;
     }
 
     /**
@@ -222,14 +151,6 @@ public class Cell implements Ref {
     @Override
     public Function toFunction() {
         return null;  // TODO - This is suss.
-    }
-
-    /**
-     * Indicates if this {@link Cell} is a storage-only {@code Cell}.
-     * @return True if this {@code Cell} is storage-only, false otherwise.
-     */
-    public boolean isStorage() {
-        return this.isStorage;
     }
 
     /**

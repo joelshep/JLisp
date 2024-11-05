@@ -8,7 +8,6 @@ import org.ulithi.jlisp.mem.NilReference;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -30,7 +29,6 @@ public class CellTestCase {
         assertTrue(cell.isAtom());
         assertTrue(cell.isList());
         assertTrue(cell.isNil());
-        assertFalse(cell.isStorage());
         final Atom atom = cell.toAtom();
         assertEquals(Atom.NIL, atom);
         final List list = List.create(cell);
@@ -52,7 +50,6 @@ public class CellTestCase {
         assertTrue(cell.getFirst().isAtom());
         assertFalse(cell.isList());
         assertFalse(cell.isNil());
-        assertFalse(cell.isStorage());
         assertEquals(Atom.F, cell.toAtom());
         final List list = List.create(cell);
         assertFalse(list.isEmpty());
@@ -70,7 +67,6 @@ public class CellTestCase {
         assertTrue(cell.getFirst().isAtom());
         assertFalse(cell.isList());
         assertFalse(cell.isNil());
-        assertFalse(cell.isStorage());
         assertEquals(atom, cell.toAtom());
         assertEquals("(HELLO . NIL)", cell.toString());
     }
@@ -87,7 +83,6 @@ public class CellTestCase {
         assertFalse(listCell.isAtom());
         assertTrue(listCell.isList());
         assertFalse(listCell.isNil());
-        assertFalse(listCell.isStorage());
         assertEquals(atom, cell.toAtom());
         assertEquals("((HELLO . NIL) . NIL)", listCell.toString());
     }
@@ -102,20 +97,6 @@ public class CellTestCase {
         assertTrue(cell.getFirst().isAtom());
         assertFalse(cell.isList());
         assertFalse(cell.isNil());
-        assertFalse(cell.isStorage());
-        assertEquals("HELLO", cell.toAtom().toS());
-    }
-
-    @Test
-    public void testCreateStorageForStringLiteral() {
-        final Cell cell = Cell.createStorage("HELLO");
-        assertTrue(cell.isCell());
-        assertTrue(cell.getFirst() instanceof Atom);
-        assertNull(cell.getRest());
-        assertTrue(cell.isAtom());
-        assertFalse(cell.isList());
-        assertFalse(cell.isNil());
-        assertTrue(cell.isStorage());
         assertEquals("HELLO", cell.toAtom().toS());
     }
 
@@ -129,20 +110,6 @@ public class CellTestCase {
         assertTrue(cell.getFirst().isAtom());
         assertFalse(cell.isList());
         assertFalse(cell.isNil());
-        assertFalse(cell.isStorage());
-        assertEquals(989, cell.toAtom().toI());
-    }
-
-    @Test
-    public void testCreateStorageForNumericLiteral() {
-        final Cell cell = Cell.createStorage(989);
-        assertTrue(cell.isCell());
-        assertTrue(cell.getFirst() instanceof Atom);
-        assertNull(cell.getRest());
-        assertTrue(cell.isAtom());
-        assertFalse(cell.isList());
-        assertFalse(cell.isNil());
-        assertTrue(cell.isStorage());
         assertEquals(989, cell.toAtom().toI());
     }
 
@@ -156,7 +123,6 @@ public class CellTestCase {
         assertTrue(cell.getFirst().isAtom());
         assertFalse(cell.isList());
         assertFalse(cell.isNil());
-        assertFalse(cell.isStorage());
         assertTrue(cell.toAtom().toB());
     }
 
@@ -170,7 +136,6 @@ public class CellTestCase {
         assertTrue(cell.getFirst().isAtom());
         assertFalse(cell.isList());
         assertFalse(cell.isNil());
-        assertFalse(cell.isStorage());
         assertFalse(cell.toAtom().toB());
     }
 }
