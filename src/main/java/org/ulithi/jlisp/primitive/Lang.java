@@ -126,12 +126,12 @@ public class Lang implements BindingProvider {
 
                 final List conditional = cond.toList();
 
-                final SExpression condition = conditional.car();
+                final SExpression condition = conditional.nth(0);
 
                 final SExpression truth = eval.eval(condition);
 
                 if (truth.toAtom().toB()) {
-                    final SExpression consequent = conditional.cdr();
+                    final SExpression consequent = conditional.nth(1);
                     return consequent.isNil() ? truth : eval.eval(consequent);
                 }
 
@@ -270,15 +270,15 @@ public class Lang implements BindingProvider {
                 throw new WrongArgumentCountException("IF expects two or three arguments");
             }
 
-            final SExpression testSexp = eval.eval(args.car());
+            final SExpression testSexp = eval.eval(args.nth(0));
 
             final boolean condition = (testSexp.isList() && !testSexp.toList().isEmpty()) ||
                                       (testSexp.isAtom() && testSexp.toAtom().toB());
 
             if (condition) {
-                return eval.eval(args.cdr().toList().car());
+                return eval.eval(args.nth(1));
             } else {
-                return eval.eval(args.cdr().toList().cdr());
+                return eval.eval(args.nth(2));
             }
         }
     }
@@ -303,11 +303,12 @@ public class Lang implements BindingProvider {
     }
 
     public static class MAPCAR extends BindableFunction {
-        public MAPCAR() {
-            super("MAPCAR");
-        }
+        public MAPCAR() { super("MAPCAR"); }
 
-        public SExpression apply(final SExpression sexp) {
+        @Override
+        public boolean isReentrant() { return true; }
+
+        public SExpression apply(final SExpression sexp, final Environment environment, final Eval eval) {
             final List args = sexp.toList();
             final SExpression function = args.nth(0);
             final List[] argLists = new List[args.lengthAsInt()-1];
@@ -316,9 +317,19 @@ public class Lang implements BindingProvider {
                 argLists[i] = args.nth(i + 1).toList();
             }
 
-            // TODO
-            return sexp;
+            final List result = List.create();
 
+            for (int i = 0; i < argLists[0].lengthAsInt(); i++) {
+                final List invocationArgs = List.create();
+                for (int j = 0; j < argLists.length; j++) {
+                    final SExpression arg = argLists[j].nth(i);
+                    invocationArgs.add(arg);
+                }
+
+                result.add(eval.apply(function, invocationArgs));
+            }
+
+            return result;
         }
     }
 
@@ -362,13 +373,13 @@ public class Lang implements BindingProvider {
         public SExpression apply(final SExpression sexp, final Environment env, final Eval eval) {
             final List args = sexp.toList();
 
-            final SExpression varNameAtom = args.car();
+            final SExpression varNameAtom = args.nth(0);
 
             if (!varNameAtom.isAtom()) {
                 throw new EvaluationException("First argument to SETQ must be a symbol: received " + varNameAtom);
             }
 
-            final SExpression definition = eval.eval(args.cdr());
+            final SExpression definition = eval.eval(args.nth(1));
             env.addUserBinding(new Binding(varNameAtom.toString(), definition));
 
             return definition;

@@ -96,13 +96,17 @@ public interface Function extends SExpression {
 
     /** {@inheritDoc} */
     @Override
+    default Atom toAtom() {
+        throw new TypeConversionException("Function is not an Atom");
+    }
+
+    /** {@inheritDoc} */
+    @Override
     default boolean isFunction() { return true; }
 
     /** {@inheritDoc} */
     @Override
-    default Atom toAtom() {
-        throw new TypeConversionException("Function is not an Atom");
-    }
+    default Function toFunction() { return this; }
 
     /** {@inheritDoc} */
     @Override

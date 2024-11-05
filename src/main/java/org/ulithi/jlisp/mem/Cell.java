@@ -1,7 +1,7 @@
 package org.ulithi.jlisp.mem;
 
-import org.apache.commons.lang3.Validate;
 import org.ulithi.jlisp.core.Atom;
+import org.ulithi.jlisp.core.Function;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.parser.Grammar;
 
@@ -214,6 +214,14 @@ public class Cell implements Ref {
     @Override
     public Cell toCell() {
         return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Function toFunction() {
+        return null;  // TODO - This is suss.
     }
 
     /**

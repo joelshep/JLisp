@@ -25,6 +25,15 @@ public class Eval {
     private final Environment env = new Environment();
 
     /**
+     * Flags indicating the context in which evalImpl() is being called. The primary difference is
+     * that in "arg" context, no attempt is made to apply S-expressions that evaluate to a function
+     * to following arguments, while in "function" context (i.e., where the S-expression being
+     * evaluated is expected to resolve to a function of some sort), it is.
+     */
+    private static final boolean FUNCTION_CONTEXT = false;
+    private static final boolean ARG_CONTEXT = true;
+
+    /**
      * Given a "form" as an {@link SExpression}, evaluates the form and returns the result.
      *
      * @param sexp An {@code SExpression} representing the LISP form to evaluate.
@@ -42,6 +51,10 @@ public class Eval {
      * @return The resulting value of the evaluation.
      */
     public SExpression eval(final Cell cell) {
+        return evalImpl(cell, FUNCTION_CONTEXT);
+    }
+
+    private SExpression evalImpl(final Cell cell, final boolean asArg) {
         if (cell.isNil()) { return List.create(); }
 
         // Get the root cell's first element as an s-expression.
@@ -57,8 +70,7 @@ public class Eval {
         // to evaluate to a function to apply to remainder of the parsed expression.
         if (car.isList()) {
             final SExpression evaluated = eval((Cell) cell.getFirst());
-            return evaluated.isFunction() ? applyImpl((Function) evaluated, cell.getRest())
-                                          : evaluated;
+            return asArg ? evaluated : applyImpl(evaluated.toFunction(), cell.getRest());
         }
 
         if (car.isFunction()) {
@@ -145,12 +157,8 @@ public class Eval {
         final List args = List.create();
 
         while (!it.isNil()) {
-            final Ref intermediate = eval((Cell) it);
-            if (intermediate.isAtom()) {
-                args.add(intermediate.toAtom());
-            } else if (intermediate.isList()) {
-                args.add(intermediate.toList());
-            }
+            final SExpression intermediate = evalImpl((Cell) it, ARG_CONTEXT);
+            args.add(intermediate);
             it = ((Cell)it).getRest();
         }
 

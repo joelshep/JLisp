@@ -20,6 +20,7 @@ public class LangTestCase {
 
     @Test
     public void testSimpleApply() {
+        // In common lisp, (apply '+ '(2 3 4)) works.
         assertEquals(9, eval("(APPLY PLUS (2 3 4))").toAtom().toI());
     }
 
@@ -344,6 +345,12 @@ public class LangTestCase {
 
     @Test
     public void testSimpleConditional() {
+        final SExpression result = eval("(IF (> 2 1) (QUOTE BAZ) (QUOTE FOO) )");
+        assertEquals("BAZ", result.toString());
+    }
+
+    @Test
+    public void testSimpleConditionalElse() {
         final SExpression result = eval("(IF (> 1 2) (QUOTE BAZ) (QUOTE FOO) )");
         assertEquals("FOO", result.toString());
     }
@@ -353,6 +360,28 @@ public class LangTestCase {
         final SExpression result = eval("((LAMBDA (x) (+ x x)) 17)");
         assertTrue(result.isAtom());
         assertEquals(34, result.toAtom().toI());
+    }
+
+    @Test
+    public void testMapcarWithLambda() {
+        final SExpression result = eval("(MAPCAR (LAMBDA (x) (+ x 2)) '(3 5 7))");
+        assertEquals("( 5 7 9 )", result.toString());
+        System.out.println(result);
+    }
+
+    @Test
+    public void testMapcarWithTwoArguments() {
+        final SExpression result = eval("(MAPCAR 'PLUS '(3 5 7) '(4 5 6))");
+        assertEquals("( 7 10 13 )", result.toString());
+        System.out.println(result);
+    }
+
+    @Test
+    public void testMapcarWithListVariable() {
+        final Session session = newSession();
+        session.eval(" (SETQ a '(1 2 3))");
+        final SExpression result = session.eval("(MAPCAR (LAMBDA (x) (+ 5 x)) a)");
+        assertEquals("( 6 7 8 )", result.toString());
     }
 
     @Test

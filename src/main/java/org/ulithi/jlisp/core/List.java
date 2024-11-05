@@ -63,7 +63,18 @@ public class List implements SExpression {
      */
     @Override
     public Atom toAtom() {
-        throw new TypeConversionException("Can't convert List to Atom");
+        throw new TypeConversionException("Can't convert List " + this + " to Atom");
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation throws a {@link TypeConversionException} because a {@code List} is not
+     * an {@code Function}.
+     */
+    @Override
+    public Function toFunction() {
+        throw new TypeConversionException("Can't convert List " + this + " to Function");
     }
 
     /**
@@ -82,6 +93,48 @@ public class List implements SExpression {
         return root;
     }
 
+    /**
+     * Convenience function that casts the given {@link SExpression} to an atom, list or function,
+     * and appends it to this list accordingly.
+     *
+     * @param sexp The {@code SExpression} to append to this {@code List}.
+     * @return This {@code List} with the given {@code SExpression} appended.
+     */
+    public List add(final SExpression sexp) {
+        if (sexp.isAtom()) {
+            add(sexp.toAtom());
+        } else if (sexp.isList()) {
+            add(sexp.toList());
+        } else {
+            add(sexp.toFunction());
+        }
+
+        return this;
+    }
+
+    /**
+     * Extends this {@link List} with the given {@link Atom}. If this is an empty list, the
+     * {@code Atom} becomes the first element in this list. If this is not an empty list, the
+     * {@code Atom} is appended via a cell to this {@code list}.
+     *
+     * @param function The {@code Atom} to append to this {@code List}.
+     * @return This {@code List} with the given {@code Atom} appended.
+     */
+    public List add(final Function function) {
+        assert function != null : "function is null";
+
+        final Cell cell = Cell.create(function);
+
+        if (root.isNil()) {
+            root = cell;
+            end = root;
+        } else {
+            end.setRest(cell);
+            end = cell;
+        }
+
+        return this;
+    }
     /**
      * Extends this {@link List} with the given {@link Atom}. If this is an empty list, the
      * {@code Atom} becomes the first element in this list. If this is not an empty list, the
@@ -238,6 +291,7 @@ public class List implements SExpression {
         if (ref.isNil()) { return List.create(); }
         if (ref.isAtom()) { return ref.toAtom(); }
         if (ref.isCell()) { return List.create(ref); }
+        if (ref.isFunction()) { return ref.toFunction(); }
         throw new JLispRuntimeException("Don't know how to convert ref: " + ref);
     }
 

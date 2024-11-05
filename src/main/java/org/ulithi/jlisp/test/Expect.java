@@ -51,8 +51,8 @@ public class Expect implements BindingProvider {
                 throw new WrongArgumentCountException("Expected 2 arguments: received " + it.length());
             }
 
-            final SExpression lhs = it.car();
-            final SExpression rhs = it.cdr();
+            final SExpression lhs = it.nth(0);
+            final SExpression rhs = it.nth(1);
 
             final SExpression actual = eval.eval(lhs);
             final SExpression expected = eval.eval(rhs);

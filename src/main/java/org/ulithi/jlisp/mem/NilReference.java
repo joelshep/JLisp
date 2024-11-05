@@ -1,7 +1,9 @@
 package org.ulithi.jlisp.mem;
 
 import org.ulithi.jlisp.core.Atom;
+import org.ulithi.jlisp.core.Function;
 import org.ulithi.jlisp.core.List;
+import org.ulithi.jlisp.exception.EvaluationException;
 
 /**
  * The special {@link NilReference NIL} reference. The {@code NIL} reference is both an atom and
@@ -24,6 +26,14 @@ public final class NilReference implements Ref {
 
     @Override
     public Atom toAtom() { return Atom.NIL; }
+
+    @Override
+    public boolean isFunction() { return false; }
+
+    @Override
+    public Function toFunction() {
+        throw new EvaluationException("NIL can not be converted to function");
+    }
 
     @Override
     public boolean isList() { return true; }
