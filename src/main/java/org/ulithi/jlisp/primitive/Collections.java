@@ -59,12 +59,7 @@ public class Collections implements BindingProvider {
                     // If the argument is a list, don't add it to result directly, but
                     // rather add its constituent elements.
                     while (!arg.toList().isEmpty()) {
-                        SExpression el = arg.toList().car();
-                        if (el.isAtom()) {
-                            result.add(el.toAtom());
-                        } else {
-                            result.add(el.toList());
-                        }
+                        result.add(arg.toList().car());
                         arg = arg.toList().cdr();
                     }
                 }
