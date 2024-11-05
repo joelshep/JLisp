@@ -57,28 +57,6 @@ public class List implements SExpression {
 
     /**
      * {@inheritDoc}
-     * <p>
-     * This implementation throws a {@link TypeConversionException} because a {@code List} is not
-     * an {@code Atom}.
-     */
-    @Override
-    public Atom toAtom() {
-        throw new TypeConversionException("Can't convert List " + this + " to Atom");
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * This implementation throws a {@link TypeConversionException} because a {@code List} is not
-     * an {@code Function}.
-     */
-    @Override
-    public Function toFunction() {
-        throw new TypeConversionException("Can't convert List " + this + " to Function");
-    }
-
-    /**
-     * {@inheritDoc}
      */
     @Override
     public List toList() {

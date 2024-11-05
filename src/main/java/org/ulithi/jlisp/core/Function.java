@@ -1,6 +1,5 @@
 package org.ulithi.jlisp.core;
 
-import org.ulithi.jlisp.exception.TypeConversionException;
 import org.ulithi.jlisp.primitive.Eval;
 
 /**
@@ -96,21 +95,9 @@ public interface Function extends SExpression {
 
     /** {@inheritDoc} */
     @Override
-    default Atom toAtom() {
-        throw new TypeConversionException("Function is not an Atom");
-    }
-
-    /** {@inheritDoc} */
-    @Override
     default boolean isFunction() { return true; }
 
     /** {@inheritDoc} */
     @Override
     default Function toFunction() { return this; }
-
-    /** {@inheritDoc} */
-    @Override
-    default List toList() {
-        throw new TypeConversionException("Function is not a List");
-    }
 }

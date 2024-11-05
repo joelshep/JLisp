@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.core;
 
+import org.ulithi.jlisp.exception.TypeConversionException;
 import org.ulithi.jlisp.mem.Ref;
 
 /**
@@ -7,7 +8,7 @@ import org.ulithi.jlisp.mem.Ref;
  * that {@code SExpressions} are used on the "language" side of the interpreter and {@code Refs}
  * are used in the memory model. Syntactic sugar ...
  * <p>
- * An {@code SExpression} can be an {@code Atom} or a {@code List}.
+ * An {@code SExpression} can be an {@code Atom}, a {@code List} or a {@code Function}.
  */
 public interface SExpression extends Ref {
     /**
@@ -69,5 +70,26 @@ public interface SExpression extends Ref {
         }
 
         return lhs.car().isEqual(rhs.car()) && lhs.cdr().isEqual(rhs.cdr());
+    }
+
+    /** {@inheritDoc} **/
+    @Override
+    default Atom toAtom() {
+        throw new TypeConversionException(
+                "Can't convert " + this.getClass().getSimpleName() +" to Atom");
+    }
+
+    /** {@inheritDoc} **/
+    @Override
+    default List toList() {
+        throw new TypeConversionException(
+                "Can't convert " + this.getClass().getSimpleName() +" to List");
+    }
+
+    /** {@inheritDoc} **/
+    @Override
+    default Function toFunction() {
+        throw new TypeConversionException(
+                "Can't convert " + this.getClass().getSimpleName() +" to Function");
     }
 }

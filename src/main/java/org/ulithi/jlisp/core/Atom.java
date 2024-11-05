@@ -164,25 +164,6 @@ public class Atom implements SExpression {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Function toFunction() {
-        throw new TypeConversionException("Can't convert Atom " + this + " to Function");
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * This implementation throws a {@link TypeConversionException} because an {@code Atom} is not
-     * a {@code List}.
-     */
-    @Override
-    public List toList() {
-        throw new TypeConversionException("Can't convert Atom " + this + " to List");
-    }
-
-    /**
      * Returns this {@link Atom Atom's} value as a boolean. Boolean atoms have their value returned
      * directly. For numeric atoms, returns true if the value is non-zero, false otherwise. For
      * string atoms, returns true if the value is non-empty (i.e., not ""), false otherwise.
