@@ -78,4 +78,8 @@ public class LambdaFunction implements Function {
      */
     @Override
     public boolean isReentrant() { return true; }
+
+    /** {@inheritDoc} **/
+    @Override
+    public String toString() { return "<lambda>"; }
 }
