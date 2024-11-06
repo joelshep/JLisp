@@ -24,3 +24,9 @@
 ;; Forms for NIL.
 (EXPECT (CAR NIL) NIL)
 (EXPECT (CDR NIL) NIL)
+
+;; Forms for MAPCAR
+(WHEN (DEFUN PLUSONE (X) (+ X 1)))
+(WHEN (SETQ A '(0 1 2 3 4 5 6 7 8 9)))
+(EXPECT  (MAPCAR 'PLUSONE A) '(1 2 3 4 5 6 7 8 9 10))
+(EXPECT (MAPCAR (LAMBDA (X) (+ X 1)) '(0 1 2 3 4 5 6 7 8 9)) '(1 2 3 4 5 6 7 8 9 10))

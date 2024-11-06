@@ -20,18 +20,17 @@ public class LangTestCase {
 
     @Test
     public void testSimpleApply() {
-        // In common lisp, (apply '+ '(2 3 4)) works.
-        assertEquals(9, eval("(APPLY PLUS (2 3 4))").toAtom().toI());
+        assertEquals(9, eval("(APPLY 'PLUS '(2 3 4))").toAtom().toI());
     }
 
     @Test
     public void testSimpleApplyWithLambda() {
-        assertEquals(8, eval("(APPLY (LAMBDA (X) (+ 5 X)) (3))").toAtom().toI());
+        assertEquals(8, eval("(APPLY (LAMBDA (X) (+ 5 X)) '(3))").toAtom().toI());
     }
 
     @Test
     public void testApplyToListArgument() {
-        assertEquals("( B C )", eval("(APPLY CDR ('(A B C)))").toList().toString());
+        assertEquals("( B C )", eval("(APPLY 'CDR '((A B C)))").toList().toString());
     }
 
     @Test(expected = EvaluationException.class)

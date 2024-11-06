@@ -19,7 +19,8 @@ public class Expect implements BindingProvider {
      */
     @Override
     public java.util.List<Binding> getBindings() {
-        return java.util.List.of(new Binding(new EXPECT()));
+        return java.util.List.of(new Binding(new EXPECT()),
+                                 new Binding(new WHEN()));
     }
 
     /**
@@ -29,19 +30,13 @@ public class Expect implements BindingProvider {
      * expression, returns T. Otherwise, writes a warning to STDERR and returns F.
      */
     public static class EXPECT extends BindableFunction {
-        public EXPECT() {
-            super("EXPECT");
-        }
+        public EXPECT() { super("EXPECT"); }
 
         @Override
-        public boolean isSpecial() {
-            return true;
-        }
+        public boolean isSpecial() { return true; }
 
         @Override
-        public boolean isReentrant() {
-            return true;
-        }
+        public boolean isReentrant() { return true; }
 
         @Override
         public SExpression apply(SExpression sexp, Environment environment, Eval eval) {
@@ -63,6 +58,28 @@ public class Expect implements BindingProvider {
                 System.err.println("Expected " + expected + ", got " + actual);
                 return Atom.F;
             }
+        }
+    }
+
+    /**
+     * Implements the non-standard {@code WHEN} function, which is intended to support unit
+     * test functionality. WHEN accepts a LISP expression to evaluate, evaluates it and returns
+     * T. {@code WHEN} is primarily to set up pre-conditions -- e.g., initializing variables,
+     * defining functions  -- for following {@code EXPECT} expressions.
+     */
+    public static class WHEN extends BindableFunction {
+        public WHEN() { super("WHEN"); }
+
+        @Override
+        public boolean isSpecial() { return true; }
+
+        @Override
+        public boolean isReentrant() { return true; }
+
+        @Override
+        public SExpression apply(SExpression sexp, Environment environment, Eval eval) {
+            eval.eval(sexp.toList().car());
+            return Atom.T;
         }
     }
 }

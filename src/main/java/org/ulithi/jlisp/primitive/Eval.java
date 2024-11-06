@@ -84,13 +84,38 @@ public class Eval {
      * Applies a function named or specified by {@code funcSpec} to the given arguments.
      *
      * @param funcSpec A {@link Function}, the name of a function, or a lambda expression.
-     * @param args A list of arguments to the function. The arguments will be recursively
-     *             evaluated before the specified function is applied.
-     * @return The result of applying the function to this arguments.
+     * @param args A list of arguments to the function. The arguments are assumed to have already
+     *             been evaluated and ready for the specified function to consume.
+     * @return The result of applying the function to the arguments.
      */
     public SExpression apply(final SExpression funcSpec, final List args) {
         final Function function = resolveFunction(funcSpec);
-        return applyImpl(function, args.getRoot());
+
+        if (function.isSpecial()) {
+            return invokeFunction(function, SExpression.fromRef(args), env);
+        }
+
+        return invokeFunction(function, args, env);
+    }
+
+    /**
+     * Applies the given Function to the argument(s) referred to by {@code rest}. If the function
+     * is "special", the argument(s) are passed directly to the function without evaluation.
+     * Otherwise, the argument(s) are evaluated recursively, and the function is invoked on the
+     * fully evaluated arguments.
+     *
+     * @param func The function to invoke.
+     * @param rest A Ref to the arguments for the function, typically a list.
+     * @return The value resulting from applying the function to the arguments.
+     */
+    private SExpression applyImpl(final Function func, final Ref rest) {
+        if (func.isSpecial()) {
+            return invokeFunction(func, SExpression.fromRef(rest), env);
+        }
+
+        final List args = evaluateArgs(rest);
+
+        return invokeFunction(func, args, env);
     }
 
     /**
@@ -124,26 +149,6 @@ public class Eval {
         return Optional.ofNullable(env.getBinding(name))
                 .filter(binding -> binding instanceof Function)
                 .map(binding -> (Function) binding);
-    }
-
-    /**
-     * Applies the given Function to the argument(s) referred to by {@code rest}. If the function
-     * is "special", the argument(s) are passed directly to the function without evaluation.
-     * Otherwise, the argument(s) are evaluated recursively, and the function is invoked on the
-     * fully evaluated arguments.
-     *
-     * @param func The function to invoke.
-     * @param rest A Ref to the arguments for the function, typically a list.
-     * @return The value resulting from applying the function to the arguments.
-     */
-    private SExpression applyImpl(final Function func, final Ref rest) {
-        if (func.isSpecial()) {
-            return invokeFunction(func, SExpression.fromRef(rest), env);
-        }
-
-        final List args = evaluateArgs(rest);
-
-        return invokeFunction(func, args, env);
     }
 
     /**
