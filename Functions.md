@@ -12,12 +12,10 @@ Collections.java
 ### APPLY
 Applies a function to an argument list. The argument list should contain the arguments needed for
 a single function execution. To apply a function iteratively to one more argument lists, use
-MAPCAR (coming soon!). Note that JLisp's implementation of APPLY may be non-standard in that
-functions may be passed by reference (e.g. `CDR` instead of `'CDR`). If this proves to be
-problematic, it may change.  
+MAPCAR.  
 Lang.java  
-`(APPLY + (1 2 3 4))` => `10`  
-`(APPLY CDR ('(A B C)))` => `( B C )`
+`(APPLY '+ '(1 2 3 4))` => `10`  
+`(APPLY 'CDR '((A B C)))` => `( B C )`
 
 ### ASSOC
 An association list (a.k.a. "alist") is a list of pairs. The ASSOC func takes a key value and an
@@ -79,12 +77,14 @@ Evaluates a form and returns the result. Note that the form itself is the result
 evaluating the arguments to EVAL.  
 Lang.java  
 `(EVAL '(+ 1 2 3))` => `6`  
-`(SETQ A 'B) (SETQ B 'C)") (EVAL A)` => `C`
+`(SETQ A 'B)`  
+`(SETQ B 'C)")`  
+`(EVAL A)` => `C`
 
 ### EXPECT
 Non-standard function. Evaluates to arguments and returns `T` if they are `EQUAL`, and logs to
 STDERR and returns `F` otherwise. Intended to support unit testing.  
-Util.java  
+Expect.java  
 `(EXPECT (+ 1 2) 4)` => `F`  
 `(EXPECT (APPEND '(A) '() '(B) '()) (A B))` => `T`
 
@@ -131,6 +131,14 @@ Constructs a list whose elements are the given arguments.
 Collections.java  
 `(LIST 'A 'B 'C)` => `( A B C )`  
 `(LIST (LIST 'A 'B) (LIST 'C 'D))` => `( ( A B ) ( C D ) )`
+
+### MAPCAR
+Applies a function iteratively to a list of arguments composed by selecting the nth argument from
+each of the one or more given lists of argument, one list for each function parameter. To apply a
+function to a single list of arguments, use `APPLY`.  
+Lang.java  
+`(MAPCAR (LAMBDA (x) (+ x 2)) '(3 5 7))` => `( 5 7 9 )`
+`(MAPCAR 'PLUS '(3 5 7) '(4 5 6))` => `( 7 10 13 )`
 
 ### MINUS | -
 When invoked with a single argument, returns the negation of the argument. Otherwise,
@@ -200,6 +208,14 @@ Returns the product of the arguments.
 Math.java  
 `(* 4 5)` => `20`  
 `(TIMES (PLUS 1 2) (MINUS 7 3))` => `12`
+
+### WHEN
+Non-standard function. Accepts a LISP expression to evaluate, evaluates it and returns
+`T`. `WHEN` is primarily to set up pre-conditions -- e.g., initializing variables,
+defining functions  -- for subsequent `EXPECT` expressions.  
+Expect.java  
+(WHEN (DEFUN PLUSONE (X) (+ X 1))) => `T`  
+(EXPECT (MAPCAR 'PLUSONE '(0 1 2 3)) '(1 2 3 4)) => `T`
 
 ### ZEROP
 Returns true if the argument is the integer 0 (zero); and false otherwise.  
