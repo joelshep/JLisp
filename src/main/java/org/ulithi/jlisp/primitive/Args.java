@@ -44,12 +44,12 @@ public class Args {
      * @throws ParseException if the given {@code sexp} is not a {@code List}.
      */
     public static Args create(final SExpression sexp) {
-        if (!sexp.isList()) {
+        if (!(sexp.isList() || sexp.isNil())) {
             throw new ParseException(
                     "Function expected argument list: received " + sexp.getClass().getSimpleName());
         }
 
-        return new Args(sexp.toList());
+        return sexp.isNil() ? new Args(List.create()) : new Args(sexp.toList());
     }
 
     /**
@@ -65,13 +65,15 @@ public class Args {
      * @throws WrongArgumentCountException if the argument list doesn't contain {@code expectedLength}
      *         elements.
      */
-    public void expect(final int expectedLength) {
+    public Args expect(final int expectedLength) {
         if (this.expectedLength == null) { this.expectedLength = expectedLength; }
 
         if (expectedLength != length) {
             throw new WrongArgumentCountException(
                     "Expected " + expectedLength + " arguments: received " + length);
         }
+
+        return this;
     }
 
     /**

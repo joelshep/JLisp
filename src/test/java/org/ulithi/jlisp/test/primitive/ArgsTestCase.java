@@ -1,6 +1,7 @@
 package org.ulithi.jlisp.test.primitive;
 
 import org.junit.Test;
+import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.InvalidArgumentException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
@@ -83,6 +84,13 @@ public class ArgsTestCase {
     public void testEmptyArgumentList() {
         final SExpression params = eval("'()");
         final Args args = Args.create(params);
+        assertEquals(0, args.length());
+        assertFalse(args.hasNext());
+    }
+
+    @Test
+    public void testNILArgs() {
+        final Args args = Args.create(Atom.NIL);
         assertEquals(0, args.length());
         assertFalse(args.hasNext());
     }
