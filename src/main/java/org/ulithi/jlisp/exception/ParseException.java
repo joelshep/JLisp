@@ -20,5 +20,4 @@ public class ParseException extends JLispRuntimeException {
     public ParseException(final Exception cause) {
         super(cause);
     }
-
 }
