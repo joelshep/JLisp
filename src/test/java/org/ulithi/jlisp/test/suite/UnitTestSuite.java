@@ -16,6 +16,7 @@ import org.ulithi.jlisp.test.mem.PTreeTestCase;
 import org.ulithi.jlisp.test.parser.GrammarTestCase;
 import org.ulithi.jlisp.test.parser.LexerTestCase;
 import org.ulithi.jlisp.test.parser.ParserTestCase;
+import org.ulithi.jlisp.test.primitive.ArgsTestCase;
 import org.ulithi.jlisp.test.primitive.CollectionsTestCase;
 import org.ulithi.jlisp.test.primitive.UtilTestCase;
 import org.ulithi.jlisp.test.primitive.LangTestCase;
@@ -31,6 +32,7 @@ import org.ulithi.jlisp.test.test.ExpectTestCase;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        ArgsTestCase.class,
         AtomTestCase.class,
         CellTestCase.class,
         CollectionsTestCase.class,
