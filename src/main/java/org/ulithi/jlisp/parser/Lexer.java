@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.ulithi.jlisp.parser.Grammar.SYMBOL_PATTERN;
+
 /**
  * The {@link Lexer} forms LISP language tokens from an {@link InputStream} or a {@link String} of
  * characters representing a LISP program or expression to be evaluated.
@@ -139,9 +141,8 @@ public class Lexer {
                 tokens.add("QUOTE");
                 state.inQuote = true;
                 state.expectAtom = true;
-            } else if (ch.matches(Grammar.LETTER) || ch.matches(Grammar.NUMERIC_LITERAL_START)) {
-                while (j < s.length() &&
-                        (s.substring(i, j + 1).matches(Grammar.ALPHA_LITERAL) || s.substring(i, j + 1).matches(Grammar.NUMERIC_LITERAL))) {
+            } else if (ch.matches(Grammar.IDENTIFIER_START) || ch.matches(Grammar.NUMERIC_LITERAL_START)) {
+                while (j < s.length() && Grammar.IDENTIFIER_REST_PATTERN.matcher(s.substring(i, j + 1)).matches()) {
                     j++;
                 }
                 tokens.add(s.substring(i, j));
@@ -166,7 +167,7 @@ public class Lexer {
                     state.depth--;
                 }
                 tokens.add(ch);
-            } else if (ch.matches(Grammar.SYMBOL)) {
+            } else if (SYMBOL_PATTERN.matcher(ch).matches()) {
                 tokens.add(ch);
             }
             i = j;

@@ -22,26 +22,20 @@ public class Grammar {
     /** Static methods only: do not instantiate. */
     private Grammar() { }
 
-    /** Regular expression pattern for a letter. */
-    public static final String LETTER = "[a-zA-Z]";
+    /** Regular expression for the first character of an identifier (variable, symbol, function). */
+    public static final String IDENTIFIER_START = "[a-zA-Z!$%&*/:<=>?~_^]";
 
-    /** Regular expression pattern for empty text (whitespace). */
-    public static final String EMPTY = "[\\s]+";
+    public static final Pattern IDENTIFIER_START_PATTERN = Pattern.compile(IDENTIFIER_START);
 
-    /** Regular expression for an alphanumeric literal. */
-    public static final String ALPHA_LITERAL = "[a-zA-Z0-9]+";
+    /** Regular expression for subsequent characters of an identifier */
+    public static final String IDENTIFIER_REST = "[a-zA-Z!$%&*/:<=>?~_^0-9.+-]+";
 
-    private static final Pattern ALPHA_LITERAL_PATTERN = Pattern.compile(ALPHA_LITERAL);
-
-    /** Regular expression for a function name. */
-    public static final String FUNCTION_NAME = "[a-zA-Z][a-zA-Z0-9]*";
-
-    private static final Pattern FUNCTION_NAME_PATTERN = Pattern.compile(FUNCTION_NAME);
+    public static final Pattern IDENTIFIER_REST_PATTERN = Pattern.compile(IDENTIFIER_REST);
 
     /** Special syntax elements. TODO: Remove math operators. */
-    public static final String SYMBOL = "[().\\+\\*\\<\\>/']";
+    public static final String SPECIAL = "[().\\+\\*\\<\\>/']";
 
-    private static final Pattern SYMBOL_PATTERN = Pattern.compile(SYMBOL);
+    public static final Pattern SYMBOL_PATTERN = Pattern.compile(SPECIAL);
 
     /** Regular expression for the start of a number (integer). */
     public static final String NUMERIC_LITERAL_START = "[\\d\\+\\-]";
@@ -86,24 +80,17 @@ public class Grammar {
     public static final String F = "F";
 
     /**
-     * Indicates if the given token represents an alphanumeric literal.
-     * @param token The token to evaluate.
-     * @return True if {@code token} is alphanumeric, false otherwise.
-     */
-    public static boolean isAlphanumeric(final String token) {
-        return ALPHA_LITERAL_PATTERN.matcher(token).matches();
-    }
-
-    /**
      * Indicates if the given token is a syntactically valid function name. Does <em>not</em>
      * indicate if a function with that name actually exists!
      * @param token The token to evaluate.
      * @return True if {@code token} is a syntactically valid function name,  false otherwise.
      */
     public static boolean isFunctionName(final String token) {
-        return FUNCTION_NAME_PATTERN.matcher(token).matches()
-                ||
-                SYMBOL_PATTERN.matcher(token).matches();
+        if (token == null || token.isBlank()) { return false; }
+
+        return (IDENTIFIER_START_PATTERN.matcher(token.substring(0, 1)).matches())
+               &&
+               (token.length() == 1 || IDENTIFIER_REST_PATTERN.matcher(token.substring(1)).matches());
     }
 
     /**

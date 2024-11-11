@@ -226,12 +226,14 @@ results in an error.
 
 ## References
 
+* https://lispcookbook.github.io/cl-cookbook/functions.html - The Common Lisp Cookbook
 * https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node1.html - Common Lisp the Language (CMU)
 * https://jtra.cz/stuff/lisp/sclr/index.html - Simplified Common Lisp Reference
 * http://www.lispworks.com/documentation/lw71/CLHS/Front/X_Master.htm - Dictionary of LISP functions.
 * https://stackoverflow.com/questions/16606172/is-an-empty-list-in-lisp-built-from-a-cons-cell - Good
 comments on NIL, atoms and lists
 * https://people.csail.mit.edu/jaffer/r5rs/Pairs-and-lists.html - Scheme manual
+* https://www.scheme.com/tspl2d/grammar.html - Scheme syntax
 * https://gigamonkeys.com/book/ - Practical Common Lisp
 * https://bernsteinbear.com/blog/lisp/
 * https://buildyourownlisp.com/
