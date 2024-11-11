@@ -3,7 +3,6 @@ package org.ulithi.jlisp.primitive;
 import org.ulithi.jlisp.core.BindableFunction;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
-import org.ulithi.jlisp.exception.EvaluationException;
 
 /**
  * Helper extension for functions like CAR and CDR that operate on a single list argument.
@@ -27,13 +26,9 @@ public abstract class AbstractListFunction extends BindableFunction {
      */
     @Override
     public SExpression apply(final SExpression sexp) {
-        final List arg = sexp.toList();
-
-        if (arg.lengthAsInt() != 1 || !arg.car().isList()) {
-            throw new EvaluationException("Argument to " + name() + " must be a list");
-        }
-
-        return applyImpl(arg.car().toList());
+        final Args args = Args.create(sexp).expect(1);
+        final List arg = args.wantList();
+        return applyImpl(arg);
     }
 
     /**

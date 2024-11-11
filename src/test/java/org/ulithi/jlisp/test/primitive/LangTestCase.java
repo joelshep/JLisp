@@ -3,6 +3,7 @@ package org.ulithi.jlisp.test.primitive;
 import org.junit.Test;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
+import org.ulithi.jlisp.exception.InvalidArgumentException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities.Session;
@@ -33,7 +34,7 @@ public class LangTestCase {
         assertEquals("( B C )", eval("(APPLY 'CDR '((A B C)))").toList().toString());
     }
 
-    @Test(expected = EvaluationException.class)
+    @Test(expected = InvalidArgumentException.class)
     public void testCAROfLiteral() {
         // CAR should throw exception if argument is not a list
         eval("(CAR (QUOTE HELLO))");
@@ -84,7 +85,7 @@ public class LangTestCase {
         assertTrue(sexp.toList().isEmpty());
     }
 
-    @Test(expected = EvaluationException.class)
+    @Test(expected = InvalidArgumentException.class)
     public void testCDROfLiteral() {
         // CDR should throw exception if argument is not a list
         eval("(CDR (QUOTE HELLO))");
