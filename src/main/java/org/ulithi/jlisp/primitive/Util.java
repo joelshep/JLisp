@@ -75,18 +75,14 @@ public class Util implements BindingProvider {
          */
         @Override
         public SExpression apply(final SExpression sexp) {
-            List it = sexp.toList();
-
-            if (it.lengthAsInt() < 2) {
-                throw new WrongArgumentCountException("Expected 2 or more arguments: received " + it.length());
-            }
+            final Args args = Args.create(sexp).expectMinLength(2);
 
             boolean result = false;
-            final SExpression lhs = it.car();
+            final SExpression lhs = args.wantAny();
 
-            while (!it.endp()) {
-                it = it.cdr().toList();
-                result = lhs.isEqual(it.car());
+            while (args.hasNext()) {
+                final SExpression rhs = args.wantAny();
+                result = lhs.isEqual(rhs);
                 if (!result) {
                     break;
                 }
