@@ -2,6 +2,7 @@ package org.ulithi.jlisp.test.primitive;
 
 import org.junit.Test;
 import org.ulithi.jlisp.core.Atom;
+import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
@@ -106,6 +107,34 @@ public class CollectionsTestCase {
         final SExpression sexp = eval("(APPEND '((A) (B)) ' ((C) (D)))");
         assertTrue(sexp.isList());
         assertEquals("( ( A ) ( B ) ( C ) ( D ) )", sexp.toString());
+    }
+
+    /**
+     * This test reproduces a significant bug in List construction from a Cell. The bug was
+     * setting the 'end' of the List (where the next element will be appended) to the CDR of
+     * the cell, instead of "walking" the list that the given cell was the head of to find
+     * the correct end. This led to behavior when (say) adding an atom to a list:
+     * (1 2 3) + 4 => (1 4), instead of (1 2 3) + 4 => (1 2 3 4).
+     */
+    @Test
+    public void testAddAtomToQuoteList() {
+        final SExpression sexp = eval("'(1 2 3)");
+        assertTrue(sexp.isList());
+        final List list = sexp.toList();
+        list.add(Atom.create(4));
+        assertEquals("( 1 2 3 4 )", list.toString());
+    }
+
+    /**
+     * Similar test, against a list created with LIST.
+     */
+    @Test
+    public void testAddItemToListList() {
+        final SExpression sexp = eval("(LIST 1 2 3)");
+        assertTrue(sexp.isList());
+        final List list = sexp.toList();
+        list.add(Atom.create(4));
+        assertEquals("( 1 2 3 4 )", list.toString());
     }
 
     @Test

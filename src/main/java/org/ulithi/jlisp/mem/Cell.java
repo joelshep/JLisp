@@ -185,7 +185,7 @@ public class Cell implements Ref {
      */
     @Override
     public List toList() {
-        return List.create(first);
+        return List.create(this);
     }
 
     /**

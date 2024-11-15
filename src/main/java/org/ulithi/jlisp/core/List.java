@@ -48,11 +48,21 @@ public class List implements SExpression {
 
     /**
      * Private constructor: constructs a new List with the given Cell as its root node.
+     *
      * @param root The root node of the new List.
      */
     private List(final Cell root) {
         this.root = root;
-        this.end = root;
+        Ref curr = root;
+        // If the cell is the head of a list, traverse to find the
+        // list end (where the next top-level element will be inserted.
+        // TODO - It might be more efficient to do this on demand, so creating
+        // a static list isn't an O(n) operation.
+        while (!curr.toCell().getRest().isNil()) {
+            curr = curr.toCell().getRest();
+        }
+
+        this.end = curr.toCell();
     }
 
     /**
@@ -268,6 +278,7 @@ public class List implements SExpression {
     private static SExpression refToSExpression(final Ref ref) {
         if (ref.isNil()) { return List.create(); }
         if (ref.isAtom()) { return ref.toAtom(); }
+        if (ref.isList()) { return ref.toList(); }
         if (ref.isCell()) { return List.create(ref); }
         if (ref.isFunction()) { return ref.toFunction(); }
         throw new JLispRuntimeException("Don't know how to convert ref: " + ref);
