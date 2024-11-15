@@ -62,6 +62,7 @@ public class Args {
     /**
      * Validates that argument list has the expected number of elements.
      * @param expectedLength The expected number of arguments in the list.
+     * @return This instance of {@code Args}.
      * @throws WrongArgumentCountException if the argument list doesn't contain {@code expectedLength}
      *         elements.
      */
@@ -71,6 +72,22 @@ public class Args {
         if (expectedLength != length) {
             throw new WrongArgumentCountException(
                     "Expected " + expectedLength + " arguments: received " + length);
+        }
+
+        return this;
+    }
+
+    /**
+     * Validates that the argument list has at least the given number of elements.
+     * @param minLength The minimum number of elements expected in the list.
+     * @return This instance of {@code Args}.
+     * @throws WrongArgumentCountException if the argument list has fewer than {@code minLength}
+     *         elements.
+     */
+    public Args expectMinLength(final int minLength) {
+        if (length < minLength) {
+            throw new WrongArgumentCountException(
+                    "Expected at least " + length + " arguments: received " + length);
         }
 
         return this;

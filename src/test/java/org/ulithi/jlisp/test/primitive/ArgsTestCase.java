@@ -64,6 +64,25 @@ public class ArgsTestCase {
         args.wantAny();
     }
 
+    @Test
+    public void testMinimumNumberOfArguments() {
+        final SExpression params = eval("'(A B C)");
+        final Args args = Args.create(params);
+        assertEquals(3, args.length());
+        args.expectMinLength(0);
+        args.expectMinLength(1);
+        args.expectMinLength(2);
+        args.expectMinLength(3);
+    }
+
+    @Test(expected = WrongArgumentCountException.class)
+    public void testTooFewArguments() {
+        final SExpression params = eval("'(A B C)");
+        final Args args = Args.create(params);
+        assertEquals(3, args.length());
+        args.expectMinLength(4);
+    }
+
     @Test(expected = InvalidArgumentException.class)
     public void testWantAtomOnListArg() {
         final SExpression params = eval("'(A (B C))");
