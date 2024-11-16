@@ -91,6 +91,12 @@ public class MathTestCase {
         assertFalse(result);
     }
 
+    @Test
+    public void testAddWithNoArguments() {
+        final int result = eval("(+)").toAtom().toI();
+        assertEquals(0, result);
+    }
+
     /**
      * Evaluates a simple addition expression: (+ 2 3).
      */
@@ -107,6 +113,12 @@ public class MathTestCase {
     public void testAddFourNumbers() {
         final int result = eval("(+ 2 3 4 5)").toAtom().toI();
         assertEquals(14, result);
+    }
+
+    @Test
+    public void testMultiplyWithNoArguments() {
+        final int result = eval("(*)").toAtom().toI();
+        assertEquals(1, result);
     }
 
     /**
@@ -166,6 +178,18 @@ public class MathTestCase {
     public void testSubtractSingleNumberNegates() {
         final int result = eval("(MINUS 47)").toAtom().toI();
         assertEquals(-47, result);
+    }
+
+    @Test
+    public void testSubtractSingleNegativeNumberNegates() {
+        final int result = eval("(MINUS -47)").toAtom().toI();
+        assertEquals(47, result);
+    }
+
+    @Test
+    public void testDivideSingleNumber() {
+        int result = eval("(/ 4)").toAtom().toI();
+        assertEquals(4, result);
     }
 
     @Test

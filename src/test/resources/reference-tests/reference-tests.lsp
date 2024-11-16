@@ -32,5 +32,5 @@
 (EXPECT (MAPCAR (LAMBDA (X) (+ X 1)) '(0 1 2 3 4 5 6 7 8 9)) '(1 2 3 4 5 6 7 8 9 10))
 
 ;; Forms for COND, plus recursion.
-(WHEN (DEFUN N! (N) (COND ((EQL N 0) 0) ((EQL N 1) 1) (T (* N (N! (- N 1)))))))
+(WHEN (DEFUN N! (N) (COND ((EQL N 0) 1) (T (* N (N! (- N 1)))))))
 (EXPECT (N! 5) 120)

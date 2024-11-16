@@ -12,8 +12,20 @@ import java.util.Arrays;
 
 /**
  * A collection of integer math functions.
+ * <p>
+ * Note that the basic arithmetic operators -- PLUS, MINUS, QUOTIENT and TIMES -- are a little
+ * nuanced. For PLUS and TIMES -- commutative operators -- applying them to an empty list returns
+ * the respective additive or multiplicative identity value (0 or 1). This is a simplifying
+ * assumption that makes it possible to treat empty and non-empty series identically. Similarly,
+ * MINUS and QUOTIENT assume an implicit argument of their "identity" values (0 or 1), so that
+ * when invoked with a single argument they return the argument: e.g. (QUOTIENT 4) is the same as
+ * (QUOTIENT 4 1) ... i.e., 4.
  */
 public class Math implements BindingProvider {
+
+    public static final Atom ZERO = Atom.create(0);
+
+    public static final Atom ONE = Atom.create(1);
 
     /** {@inheritDoc} */
     @Override
@@ -84,7 +96,7 @@ public class Math implements BindingProvider {
     }
 
     /**
-     * The {@code PLUS} function, a.k.a. {@code +}.
+     * The {@code PLUS} function, a.k.a. {@code +}. Note that (+) => 0.
      */
     public static final class PLUS extends BindableFunction {
         public PLUS() { super("PLUS"); }
@@ -97,13 +109,14 @@ public class Math implements BindingProvider {
 
         @Override
         public SExpression apply(final SExpression sexp) {
-            final int result = Math.applyNumericVarArgsOperator(sexp.toList(), op);
+            final int result = Math.applyNumericVarArgsOperator(sexp.toList().add(ZERO), op);
             return Atom.create(result);
         }
     }
 
     /**
-     * The {@code MINUS} function.
+     * The {@code MINUS} function. When invoked with a single argument, MINUS returns the
+     *  negation of its argument.
      */
     public static final class MINUS extends BindableFunction {
         public MINUS() { super("MINUS"); }
@@ -116,21 +129,19 @@ public class Math implements BindingProvider {
 
         @Override
         public SExpression apply(final SExpression sexp) {
+            final Args args = Args.create(sexp).expectMinLength(1);
+            final int first = args.peekAtom().toI();
 
-            // When invoked with a single argument, MINUS returns the
-            // negation of its argument.
-            List args = sexp.toList();
-            final int first = args.car().toAtom().toI();
+            if (args.length() == 1) {
+                return Atom.create(-first);
+            }
 
-            if (args.endp()) { return Atom.create(-first); }
-
-            final int result = Math.applyNumericVarArgsOperator(sexp.toList(), op);
-            return Atom.create(result);
+            return Atom.create(Math.applyNumericVarArgsOperator(args.toList(), op));
         }
     }
 
     /**
-     * The {@code TIMES} function, a.k.a. {@code *}.
+     * The {@code TIMES} function, a.k.a. {@code *}. Note that (*) => 1.
      */
     public static class TIMES extends BindableFunction {
         public TIMES() { super("TIMES"); }
@@ -143,13 +154,14 @@ public class Math implements BindingProvider {
 
         @Override
         public SExpression apply(final SExpression sexp) {
-            final int result = Math.applyNumericVarArgsOperator(sexp.toList(), op);
+            final int result = Math.applyNumericVarArgsOperator(sexp.toList().add(ONE), op);
             return Atom.create(result);
         }
     }
 
     /**
-     * The {@code QUOTIENT} function, a.k.a. division.
+     * The {@code QUOTIENT} function, a.k.a. division. When invoked with a single argument,
+     * QUOTIENT returns the argument (as if divided by the multiplicative identity 1 (one).
      */
     public static class QUOTIENT extends BindableFunction {
         public QUOTIENT() { super("QUOTIENT"); }
@@ -162,8 +174,14 @@ public class Math implements BindingProvider {
 
         @Override
         public SExpression apply(final SExpression sexp) {
-            final int result = Math.applyNumericVarArgsOperator(sexp.toList(), op);
-            return Atom.create(result);
+            final Args args = Args.create(sexp).expectMinLength(1);
+            final int first = args.peekAtom().toI();
+
+            if (args.length() == 1) {
+                return Atom.create(first);
+            }
+
+            return Atom.create(Math.applyNumericVarArgsOperator(args.toList(), op));
         }
     }
 
@@ -197,7 +215,7 @@ public class Math implements BindingProvider {
      * @return The result of applying the operator to the arguments.
      */
     private static int applyNumericVarArgsOperator(final List args,
-                                                   final BinaryArithmeticOperator<Integer>  op) {
+                                                   final BinaryArithmeticOperator<Integer> op) {
         List it = args;
 
         try {

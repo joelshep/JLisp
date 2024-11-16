@@ -53,6 +53,14 @@ public class Args {
     }
 
     /**
+     * @return The original {@link List} of arguments that this {@link Args} instance was
+     *         instantiated from.
+     */
+    public List toList() {
+        return this.args;
+    }
+
+    /**
      * @return The total number of arguments available through this {@link Args} instance.
      */
     public int length() {
@@ -87,7 +95,7 @@ public class Args {
     public Args expectMinLength(final int minLength) {
         if (length < minLength) {
             throw new WrongArgumentCountException(
-                    "Expected at least " + length + " arguments: received " + length);
+                    "Expected at least " + minLength + " arguments: received " + length);
         }
 
         return this;
@@ -103,19 +111,33 @@ public class Args {
     }
 
     /**
+     * Returns the next argument in the argument list as an {@link Atom}, without advancing the
+     * {@code next} index (so the same argument will be returned from the next {@code peek} or
+     * {@code want} call.
+     * @return The next argument in the argument list, as an {@link Atom}.
+     * @throws WrongArgumentCountException if the argument list has no more arguments.
+     * @throws InvalidArgumentException if the next argument is not an {@code Atom}.
+     */
+    public Atom peekAtom() {
+        checkHasNext();
+        final SExpression sexp = args.nth(index);
+        if (sexp.isAtom()) {
+            return sexp.toAtom();
+        }
+
+        throw new InvalidArgumentException("Atom expected for argument " + index +
+                                                   ": found " + sexp.getClass().getSimpleName());
+    }
+
+    /**
      * @return The next argument in the argument list as an {@link Atom}.
      * @throws WrongArgumentCountException if the argument list has no more arguments.
      * @throws InvalidArgumentException if the next argument is not an {@code Atom}.
      */
     public Atom wantAtom() {
-        checkHasNext();
-        final SExpression sexp = args.nth(index);
-        if (sexp.isAtom()) {
-            index++;
-            return sexp.toAtom();
-        }
-        throw new InvalidArgumentException("Atom expected for argument " + index +
-                                           ": found " + sexp.getClass().getSimpleName());
+        final Atom atom = peekAtom();
+        index++;
+        return atom;
     }
 
     /**
