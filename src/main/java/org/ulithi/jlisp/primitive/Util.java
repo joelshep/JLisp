@@ -78,10 +78,10 @@ public class Util implements BindingProvider {
             final Args args = Args.create(sexp).expectMinLength(2);
 
             boolean result = false;
-            final SExpression lhs = args.wantAny();
+            final SExpression lhs = args.takeAny();
 
             while (args.hasNext()) {
-                final SExpression rhs = args.wantAny();
+                final SExpression rhs = args.takeAny();
                 result = lhs.isEqual(rhs);
                 if (!result) {
                     break;

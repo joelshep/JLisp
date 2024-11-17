@@ -7,6 +7,7 @@ import org.ulithi.jlisp.core.BindingProvider;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
+import org.ulithi.jlisp.exception.InvalidArgumentException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
 
 import java.util.Arrays;
@@ -39,22 +40,23 @@ public class Collections implements BindingProvider {
         /** {@inheritDoc} */
         @Override
         public SExpression apply(final SExpression sexp) {
-            List args = sexp.toList();
+            final Args args = Args.create(sexp).expectMinLength(1);
 
-            if (args.lengthAsInt() == 1 && args.car().isAtom()) {
-                return args.car().toAtom();
-            } else if (args.car().isAtom()) {
-                throw new EvaluationException("First argument to APPEND must be a list");
+            if (args.length() == 1 && args.hasAtom()) {
+                return args.takeAtom();
             }
 
             final List result = List.create();
 
-            // Iterate over the given arguments and add them to the result list.
-            while (!args.isEmpty()) {
-                SExpression arg = args.car();
+            while (args.hasNext()) {
+                SExpression arg = args.takeAny();
+
+                if (arg.isAtom() && args.remaining() > 0) {
+                    throw new InvalidArgumentException("All arguments must be lists excpt");
+                }
 
                 if (arg.isAtom()) {
-                    result.add(arg.toAtom());
+                    result.add(arg);
                 } else {
                     // If the argument is a list, don't add it to result directly, but
                     // rather add its constituent elements.
@@ -63,7 +65,6 @@ public class Collections implements BindingProvider {
                         arg = arg.toList().cdr();
                     }
                 }
-                args = args.cdr().toList();
             }
 
             return result;

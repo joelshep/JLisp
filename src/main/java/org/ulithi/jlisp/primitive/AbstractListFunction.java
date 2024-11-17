@@ -26,8 +26,8 @@ public abstract class AbstractListFunction extends BindableFunction {
      */
     @Override
     public SExpression apply(final SExpression sexp) {
-        final Args args = Args.create(sexp).expect(1);
-        final List arg = args.wantList();
+        final Args args = Args.create(sexp).expectLength(1);
+        final List arg = args.takeList();
         return applyImpl(arg);
     }
 

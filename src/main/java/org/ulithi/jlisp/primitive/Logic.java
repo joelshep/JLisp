@@ -52,7 +52,7 @@ public class Logic implements BindingProvider {
             SExpression value = Atom.T;
 
             while (args.hasNext()) {
-                final SExpression arg = args.wantAny();
+                final SExpression arg = args.takeAny();
                 value = eval.eval(arg);
                 if (!t(value)) { return Atom.NIL; }
             }
@@ -71,8 +71,8 @@ public class Logic implements BindingProvider {
         /** {@inheritDoc} */
         @Override
         public SExpression apply(final SExpression sexp) {
-            final Args args = Args.create(sexp).expect(1);
-            return Atom.create(!t(args.wantAny()));
+            final Args args = Args.create(sexp).expectLength(1);
+            return Atom.create(!t(args.takeAny()));
         }
     }
 
@@ -101,7 +101,7 @@ public class Logic implements BindingProvider {
             SExpression value = Atom.NIL;
 
             while (args.hasNext()) {
-                final SExpression arg = args.wantAny();
+                final SExpression arg = args.takeAny();
                 value = eval.eval(arg);
                 if (t(value)) { return Atom.T; }
             }

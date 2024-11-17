@@ -68,13 +68,20 @@ public class Args {
     }
 
     /**
+     * @return The number of arguments that have not yet been "taken" by a caller.
+     */
+    public int remaining() {
+        return length - index;
+    }
+
+    /**
      * Validates that argument list has the expected number of elements.
      * @param expectedLength The expected number of arguments in the list.
      * @return This instance of {@code Args}.
      * @throws WrongArgumentCountException if the argument list doesn't contain {@code expectedLength}
      *         elements.
      */
-    public Args expect(final int expectedLength) {
+    public Args expectLength(final int expectedLength) {
         if (this.expectedLength == null) { this.expectedLength = expectedLength; }
 
         if (expectedLength != length) {
@@ -102,19 +109,40 @@ public class Args {
     }
 
     /**
+     * Returns the next argument in the argument list, without advancing the {@code next} index
+     * (so the same argument will be returned from the next {@code peek} or {@code take} call.
+     * @return The next argument as an {@link SExpression}.
+     * @throws WrongArgumentCountException if the argument list has no more arguments.
+     */
+    public SExpression peekAny() {
+        checkHasNext();
+        return args.nth(index);
+    }
+
+    /**
+     * Returns the next argument in the argument list and advances the {@code next} index.
      * @return The next argument in the argument list as an {@link SExpression}.
      * @throws WrongArgumentCountException if the argument list has no more arguments.
      */
-    public SExpression wantAny() {
-        checkHasNext();
-        return args.nth(index++);
+    public SExpression takeAny() {
+        final SExpression sexp = peekAny();
+        index++;
+        return sexp;
+    }
+
+    /**
+     * @return True if the next argument ready to be taken is an {@link Atom}; false if no
+     *         arguments remain or the next argument isn't an {@code Atom}.
+     */
+    public boolean hasAtom() {
+        return hasNext() && args.nth(index).isAtom();
     }
 
     /**
      * Returns the next argument in the argument list as an {@link Atom}, without advancing the
      * {@code next} index (so the same argument will be returned from the next {@code peek} or
-     * {@code want} call.
-     * @return The next argument in the argument list, as an {@link Atom}.
+     * {@code take} call.
+     * @return The next argument as an {@link Atom}.
      * @throws WrongArgumentCountException if the argument list has no more arguments.
      * @throws InvalidArgumentException if the next argument is not an {@code Atom}.
      */
@@ -126,34 +154,60 @@ public class Args {
         }
 
         throw new InvalidArgumentException("Atom expected for argument " + index +
-                                                   ": found " + sexp.getClass().getSimpleName());
+                                           ": found " + sexp.getClass().getSimpleName());
     }
 
     /**
-     * @return The next argument in the argument list as an {@link Atom}.
+     * Returns the next argument in the argument list as am {@link Atom} and advances the
+     * {@code next} index.
+     * @return The next argument as an {@link Atom}.
      * @throws WrongArgumentCountException if the argument list has no more arguments.
      * @throws InvalidArgumentException if the next argument is not an {@code Atom}.
      */
-    public Atom wantAtom() {
+    public Atom takeAtom() {
         final Atom atom = peekAtom();
         index++;
         return atom;
     }
 
     /**
-     * @return The next argument in the argument list as a {@link List}.
+     * @return True if the next argument ready to be taken is a {@link List}; false if no
+     *         arguments remain or the next argument isn't a {@code List}.
+     */
+    public boolean hasList() {
+        return hasNext() && args.nth(index).isList();
+    }
+
+    /**
+     * Returns the next argument in the argument list as a {@link List}, without advancing the
+     * {@code next} index (so the same argument will be returned from the next {@code peek} or
+     * {@code take} call.
+     * @return The next argument as a {@link List}.
      * @throws WrongArgumentCountException if the argument list has no more arguments.
      * @throws InvalidArgumentException if the next argument is not a {@code List}.
      */
-    public List wantList() {
+    public List peekList() {
         checkHasNext();
         final SExpression sexp = args.nth(index);
         if (sexp.isList()) {
-            index++;
             return sexp.toList();
         }
+
         throw new InvalidArgumentException("List expected for argument " + index +
                                            ": found " + sexp.getClass().getSimpleName());
+    }
+
+    /**
+     * Returns the next argument in the argument list as a {@link List} and advances the
+     * {@code next} index.
+     * @return The next argument as a {@link List}.
+     * @throws WrongArgumentCountException if the argument list has no more arguments.
+     * @throws InvalidArgumentException if the next argument is not a {@code List}.
+     */
+    public List takeList() {
+        final List list = peekList();
+        index++;
+        return list;
     }
 
     /**

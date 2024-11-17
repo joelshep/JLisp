@@ -5,6 +5,7 @@ import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
+import org.ulithi.jlisp.exception.InvalidArgumentException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
 
 import static org.junit.Assert.assertEquals;
@@ -83,13 +84,25 @@ public class CollectionsTestCase {
         assertEquals("A", sexp.toString());
     }
 
-    @Test(expected = EvaluationException.class)
+    @Test(expected = InvalidArgumentException.class)
     public void testAppendMultipleAtomsIsError() {
         eval("(APPEND 'A 'B 'C)");
     }
 
+    @Test(expected = InvalidArgumentException.class)
+    public void testAppendWithAtomAsNonFinalArgumentIsError() {
+        eval("(APPEND '(FEE FI FO) 'FUM '(BOO HOO))");
+    }
+
     @Test
-    public void testAppendSingleLists() {
+    public void testAppendSingleList() {
+        final SExpression sexp = eval("(APPEND '(A B C))");
+        assertTrue(sexp.isList());
+        assertEquals("( A B C )", sexp.toString());
+    }
+
+    @Test
+    public void testAppendSingleElementLists() {
         final SExpression sexp = eval("(APPEND '(A) '() '(B) '())");
         assertTrue(sexp.isList());
         assertEquals("( A B )", sexp.toString());
@@ -107,6 +120,13 @@ public class CollectionsTestCase {
         final SExpression sexp = eval("(APPEND '((A) (B)) ' ((C) (D)))");
         assertTrue(sexp.isList());
         assertEquals("( ( A ) ( B ) ( C ) ( D ) )", sexp.toString());
+    }
+
+    @Test
+    public void testAppendAtomToList() {
+        final SExpression sexp = eval("(APPEND '(FEE FI FO) 'FUM)");
+        assertTrue(sexp.isList());
+        assertEquals("( FEE FI FO FUM )", sexp.toString());
     }
 
     /**
