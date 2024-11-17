@@ -183,7 +183,7 @@ public class CollectionsTestCase {
         assertEquals("( oak acorns )", sexp.toString());
     }
 
-    @Test(expected = EvaluationException.class)
+    @Test(expected = InvalidArgumentException.class)
     public void testInvalidAssocList() {
         eval("(ASSOC 'oak 'pine_cones)");
     }

@@ -8,7 +8,6 @@ import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.InvalidArgumentException;
-import org.ulithi.jlisp.exception.WrongArgumentCountException;
 
 import java.util.Arrays;
 
@@ -82,19 +81,10 @@ public class Collections implements BindingProvider {
         /** {@inheritDoc} */
         @Override
         public SExpression apply(final SExpression sexp) {
-            if (!sexp.isList() || sexp.toList().lengthAsInt() < 2) {
-                throw new WrongArgumentCountException("ASSOC requires at least two arguments");
-            }
+            final Args args = Args.create(sexp).expectMinLength(2);
 
-            final List args = sexp.toList();
-            final SExpression key = args.car();
-            final SExpression alist = args.cadr();
-
-            if (!alist.isList()) {
-                throw new EvaluationException("Second argument to ASSOC must be an association list");
-            }
-
-            List assocList = alist.toList();
+            final SExpression key = args.takeAny();
+            List assocList = args.takeList();
 
             while (!assocList.isEmpty()) {
                 SExpression expr = assocList.car();
@@ -125,9 +115,9 @@ public class Collections implements BindingProvider {
         /** {@inheritDoc} */
         @Override
         public SExpression apply(final SExpression sexp) {
-            final List args = sexp.toList();
-            if (args.car().isList()) { return args.car().toList().length(); }
-            throw new EvaluationException("Argument to LENGTH must be a list");
+            final Args args = Args.create(sexp).expectLength(1);
+            final List list = args.takeList();
+            return list.length();
         }
     }
 
@@ -155,19 +145,15 @@ public class Collections implements BindingProvider {
         /** {@inheritDoc} */
         @Override
         public SExpression apply(final SExpression sexp) {
-            final List args = sexp.toList();
+            final Args args = Args.create(sexp).expectLength(2);
 
-            if (!args.car().isAtom()) {
-                throw new EvaluationException("First argumwnt to NTH must be a non-negative integer");
-            }
-
-            int index = args.car().toAtom().toI();
+            final int index = args.takeAtom().toI();
 
             if (index < 0) {
-                throw new EvaluationException("First argumwnt to NTH must be a non-negative integer");
+                throw new EvaluationException("First argument to NTH must be a non-negative integer");
             }
 
-            final List list = args.cadr().toList();
+            final List list = args.takeList();
 
             return list.nth(index);
         }
@@ -184,9 +170,9 @@ public class Collections implements BindingProvider {
         /** {@inheritDoc} */
         @Override
         public SExpression apply(final SExpression sexp) {
-            final List args = sexp.toList();
-            if (args.car().isList()) { return args.car().toList().size(); }
-            throw new EvaluationException("Argument to SIZE must be a list");
+            final Args args = Args.create(sexp).expectLength(1);
+            final List list = args.takeList();
+            return list.size();
         }
     }
 }
