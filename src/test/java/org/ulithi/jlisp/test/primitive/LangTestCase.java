@@ -180,6 +180,26 @@ public class LangTestCase {
     }
 
     @Test
+    public void testConsAtomToAtom() {
+        assertEquals("( A . B )", eval("(CONS 'A 'B)").toString());
+    }
+
+    @Test
+    public void testConsNilToAtom() {
+        assertEquals("( NIL . A )", eval("(CONS NIL 'A)").toString());
+    }
+
+    @Test
+    public void testConsAtomToNil() {
+        assertEquals("( A )", eval("(CONS 'A NIL)").toString());
+    }
+
+    @Test
+    public void testConsListToAtom() {
+        assertEquals("( ( A B ) . C )", eval("(CONS '(A B) 'C)").toString());
+    }
+
+    @Test
     public void testConsAtomAndList() {
         final SExpression sexp = eval("(CONS 1 (QUOTE (2 3)))");
         assertEquals("( 1 2 3 )", String.valueOf(sexp));
@@ -190,6 +210,18 @@ public class LangTestCase {
         final SExpression sexp = eval("(CONS HELLO ())");
         assertEquals("( HELLO )", String.valueOf(sexp));
     }
+
+    @Test
+    public void testConsListToNil() {
+        assertEquals("( ( A B ) )", eval("(CONS '(A B) NIL)").toString());
+    }
+
+    @Test
+    public void testConsNilToList() {
+        assertEquals("( NIL A B )", eval("(CONS NIL '(A B))").toString());
+    }
+
+
 
     @Test
     public void testConsListToEmptyList() {
@@ -225,26 +257,26 @@ public class LangTestCase {
 
     @Test
     public void evaluateCarConsExpression() {
-        final String result = eval("(CAR (CONS x y))").toAtom().toS();
+        final String result = eval("(CAR (CONS 'x 'y))").toAtom().toS();
         assertEquals("x", result);
     }
 
     @Test
     public void evaluateCdrConsExpression() {
-        final String result = eval("(CDR (CONS x y))").toList().toString();
-        assertEquals("( y )", result);
+        final String result = eval("(CDR (CONS 'x 'y))").toAtom().toS();
+        assertEquals("y", result);
     }
 
     @Test
     public void evaluateCdrConsListExpression() {
-        final String result = eval("(CDR (CONS x (PLUS 1 2)))").toList().toString();
-        assertEquals("( 3 )", result);
+        final int result = eval("(CDR (CONS 'x (PLUS 1 2)))").toAtom().toI();
+        assertEquals(3, result);
     }
 
     @Test
     public void evaluateConsExpression() {
-        final String result = eval("(CONS x y)").toList().toString();
-        assertEquals("( x y )", result);
+        final String result = eval("(CONS 'x 'y)").toList().toString();
+        assertEquals("( x . y )", result);
     }
 
     /**

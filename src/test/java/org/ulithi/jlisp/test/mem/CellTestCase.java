@@ -26,9 +26,11 @@ public class CellTestCase {
         assertTrue(cell.isCell());
         assertEquals(NilReference.NIL, cell.getFirst());
         assertEquals(NilReference.NIL, cell.getRest());
-        assertTrue(cell.isAtom());
-        assertTrue(cell.isList());
+        assertFalse(cell.isAtom());
+        assertTrue(cell.hasList());  // NIL is the same as an empty list.
+        assertFalse(cell.isList());
         assertTrue(cell.isNil());
+        assertTrue(cell.isTerminal());
         final Atom atom = cell.toAtom();
         assertEquals(Atom.NIL, atom);
         final List list = List.create(cell);
@@ -47,9 +49,11 @@ public class CellTestCase {
         assertEquals(atom, cell.getFirst());
         assertEquals(NilReference.NIL, cell.getRest());
         assertFalse(cell.isAtom());
+        assertTrue(cell.hasAtom());
         assertTrue(cell.getFirst().isAtom());
         assertFalse(cell.isList());
         assertFalse(cell.isNil());
+        assertTrue(cell.isTerminal());
         assertEquals(Atom.F, cell.toAtom());
         final List list = List.create(cell);
         assertFalse(list.isEmpty());
@@ -61,12 +65,14 @@ public class CellTestCase {
         final Atom atom = Atom.create("HELLO");
         final Cell cell = Cell.create(atom);
         assertTrue(cell.isCell());
+        assertFalse(cell.isAtom());
+        assertTrue(cell.hasAtom());
+        assertTrue(cell.getFirst().isAtom());
         assertEquals(atom, cell.getFirst());
         assertEquals(NilReference.NIL, cell.getRest());
-        assertFalse(cell.isAtom());
-        assertTrue(cell.getFirst().isAtom());
         assertFalse(cell.isList());
         assertFalse(cell.isNil());
+        assertTrue(cell.isTerminal());
         assertEquals(atom, cell.toAtom());
         assertEquals("(HELLO . NIL)", cell.toString());
     }
@@ -81,8 +87,10 @@ public class CellTestCase {
         assertEquals(atom, cell.getFirst());
         assertEquals(NilReference.NIL, cell.getRest());
         assertFalse(listCell.isAtom());
-        assertTrue(listCell.isList());
+        assertTrue(listCell.hasList());
+        assertFalse(listCell.isList());
         assertFalse(listCell.isNil());
+        assertTrue(cell.isTerminal());
         assertEquals(atom, cell.toAtom());
         assertEquals("((HELLO . NIL) . NIL)", listCell.toString());
     }
@@ -91,12 +99,14 @@ public class CellTestCase {
     public void testCreateCellForStringLiteral() {
         final Cell cell = Cell.create("HELLO");
         assertTrue(cell.isCell());
-        assertTrue(cell.getFirst() instanceof Atom);
-        assertEquals(NilReference.NIL, cell.getRest());
         assertFalse(cell.isAtom());
+        assertTrue(cell.hasAtom());
+        assertTrue(cell.getFirst() instanceof Atom);
         assertTrue(cell.getFirst().isAtom());
+        assertEquals(NilReference.NIL, cell.getRest());
         assertFalse(cell.isList());
         assertFalse(cell.isNil());
+        assertTrue(cell.isTerminal());
         assertEquals("HELLO", cell.toAtom().toS());
     }
 
@@ -104,12 +114,14 @@ public class CellTestCase {
     public void testCreateCellForNumericLiteral() {
         final Cell cell = Cell.create(989);
         assertTrue(cell.isCell());
+        assertFalse(cell.isAtom());
+        assertTrue(cell.hasAtom());
+        assertTrue(cell.getFirst().isAtom());
         assertTrue(cell.getFirst() instanceof Atom);
         assertEquals(NilReference.NIL, cell.getRest());
-        assertFalse(cell.isAtom());
-        assertTrue(cell.getFirst().isAtom());
         assertFalse(cell.isList());
         assertFalse(cell.isNil());
+        assertTrue(cell.isTerminal());
         assertEquals(989, cell.toAtom().toI());
     }
 
@@ -117,12 +129,14 @@ public class CellTestCase {
     public void testCreateCellForBooleanTrue() {
         final Cell cell = Cell.create(true);
         assertTrue(cell.isCell());
-        assertTrue(cell.getFirst() instanceof Atom);
-        assertEquals(NilReference.NIL, cell.getRest());
         assertFalse(cell.isAtom());
+        assertTrue(cell.hasAtom());
+        assertTrue(cell.getFirst() instanceof Atom);
         assertTrue(cell.getFirst().isAtom());
+        assertEquals(NilReference.NIL, cell.getRest());
         assertFalse(cell.isList());
         assertFalse(cell.isNil());
+        assertTrue(cell.isTerminal());
         assertTrue(cell.toAtom().toB());
     }
 
@@ -130,12 +144,58 @@ public class CellTestCase {
     public void testCreateCellForBooleanFalse() {
         final Cell cell = Cell.create(false);
         assertTrue(cell.isCell());
-        assertTrue(cell.getFirst() instanceof Atom);
-        assertEquals(NilReference.NIL, cell.getRest());
         assertFalse(cell.isAtom());
+        assertTrue(cell.hasAtom());
+        assertTrue(cell.getFirst() instanceof Atom);
         assertTrue(cell.getFirst().isAtom());
+        assertEquals(NilReference.NIL, cell.getRest());
         assertFalse(cell.isList());
         assertFalse(cell.isNil());
+        assertTrue(cell.isTerminal());
         assertFalse(cell.toAtom().toB());
+    }
+
+    @Test
+    public void testCreateConsCellWithAtoms() {
+        final Cell cell = Cell.create();
+        cell.setFirst(Atom.create("FOO"));
+        cell.setRest(Atom.create("BAR"));
+        assertTrue(cell.isCell());
+        assertFalse(cell.isNil());
+        assertFalse(cell.isAtom());
+        assertTrue(cell.hasAtom());
+        assertFalse(cell.isList());
+        assertTrue(cell.isTerminal());
+        assertEquals("(FOO . BAR)", cell.toString());
+    }
+
+    @Test
+    public void testCreateConsCellWithNilAndAtom() {
+        final Cell cell = Cell.create();
+        cell.setFirst(Atom.create(Atom.NIL));
+        cell.setRest(Atom.create("BAR"));
+        assertTrue(cell.isCell());
+        assertFalse(cell.isNil());
+        assertFalse(cell.isAtom());
+        assertTrue(cell.hasAtom());
+        assertTrue(cell.isTerminal());
+        assertFalse(cell.isList());
+        assertEquals("(NIL . BAR)", cell.toString());
+    }
+
+    @Test
+    public void testCreateConsCellWithListAndAtom() {
+        final Cell root = Cell.create(Atom.create("FOO"));
+        final Cell end = Cell.create(Atom.create("BAR"));
+        root.setRest(end);
+        end.setRest(Atom.create("BAZ"));
+        assertTrue(root.isCell());
+        assertFalse(root.isNil());
+        assertFalse(root.isAtom());
+        assertTrue(root.hasAtom());
+        assertFalse(root.isTerminal());
+        assertTrue(end.isTerminal());
+        assertFalse(root.isList());
+        assertEquals("(FOO . (BAR . BAZ))", root.toString());
     }
 }

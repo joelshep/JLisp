@@ -1,6 +1,7 @@
 package org.ulithi.jlisp.core;
 
 import org.ulithi.jlisp.exception.TypeConversionException;
+import org.ulithi.jlisp.mem.NilReference;
 import org.ulithi.jlisp.mem.Ref;
 
 /**
@@ -70,6 +71,17 @@ public interface SExpression extends Ref {
         }
 
         return lhs.car().isEqual(rhs.car()) && lhs.cdr().isEqual(rhs.cdr());
+    }
+
+    /**
+     * Returns this {@link SExpression} as a {@link Ref}.
+     * @return This {@code SExpression} as a {@code Ref}.
+     */
+    default Ref toRef() {
+        if (this.isNil()) { return NilReference.NIL; }
+
+        throw new TypeConversionException(
+                "Can't convert " + this.getClass().getSimpleName() +" to Ref");
     }
 
     /** {@inheritDoc} **/

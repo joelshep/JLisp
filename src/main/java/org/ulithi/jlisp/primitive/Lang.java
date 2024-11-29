@@ -11,6 +11,7 @@ import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.core.UserFunction;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
+import org.ulithi.jlisp.mem.Cell;
 
 import java.util.Arrays;
 
@@ -149,32 +150,12 @@ public class Lang implements BindingProvider {
 
         @Override
         public SExpression apply(final SExpression sexp) {
-            if (!sexp.isList()) { throw new EvaluationException("List argument expected"); }
+            final Args args = Args.create(sexp).expectLength(2);
 
-            List args = sexp.toList();
-
-            if (args.lengthAsInt() != 2) {
-                throw new WrongArgumentCountException("Expected 2 arguments: received " + args.length());
-            }
-
-            final List cons = List.create();
-
-            do {
-                final SExpression arg = args.car();
-                if (arg.isAtom()) {
-                    cons.add(arg.toAtom());
-                } else if (arg.isList()) {
-                    final List list = arg.toList();
-                    if (!list.isEmpty()) {
-                        cons.append(list);
-                    }
-                }
-
-                if (args.endp()) break;
-                args = args.cdr().toList();
-            } while (true);
-
-            return cons;
+            final Cell consCell = Cell.create();
+            consCell.setFirst(args.takeAny().toRef());
+            consCell.setRest(args.takeAny().toRef());
+            return List.create(consCell);
         }
     }
 

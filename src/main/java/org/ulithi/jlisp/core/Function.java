@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.core;
 
+import org.ulithi.jlisp.mem.Ref;
 import org.ulithi.jlisp.primitive.Eval;
 
 /**
@@ -88,6 +89,10 @@ public interface Function extends SExpression {
      * @return True if this function is used to define another language element, false otherwise.
      */
     default boolean isDefining() { return false; }
+
+    /** {@inheritDoc} */
+    @Override
+    default Ref toRef() { return this; }
 
     /** {@inheritDoc} */
     @Override

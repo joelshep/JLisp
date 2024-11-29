@@ -10,13 +10,16 @@ import java.util.Objects;
 import static org.ulithi.jlisp.mem.NilReference.NIL;
 
 /**
- * {@link Cell Cells} are the basic unit of storage in JLISP, acting either as storage for a single
- * literal, or as a node in a list. All {@code cells} are pairs of {@link Ref references}:
- * {@code first} (or {@code left}) and {@code rest} (or {@code right}). Both references are
- * <em>required</em>. The {@code first} reference can be a reference to an {@link Atom} or to the
- * root {@code cell} of a sub-list. The {@code rest} reference can be a reference to a {@code cell}
- * representing the next element in the list, or the {@code NIL} atom representing the end of the
- * list. A reference can refer to an {@link Atom} or another {@code Cell}.
+ * {@link Cell Cells} are the basic unit of storage in JLISP. {@code Cells} are pairs of
+ * {@link Ref references}: {@code first} (or {@code left}) and {@code rest} (or {@code right}). Both
+ * references are <em>required</em>. Cells are similar to linked list nodes, but have one key
+ * difference. Like a linked list node, the {@code first} reference in a cell can be a reference to
+ * an {@link Atom}, {@code Symbol} or {@link Function}, or to the root {@code cell} of a sub-list:
+ * i.e., it is the <em>value</em> held by the cell. The {@code rest} reference can be a reference to
+ * another {@code cell} that is the next node in the list, or the {@code NIL} atom which marks the
+ * end of the list, <em>or</em> to a non-nil {@code Atom}, {@code Symbol} or {@code Function}. A
+ * cons cell is always the end of a list, even if it is the only cell in a list. Any cell that
+ * ends with a reference to a non-cell marks the end of a list.
  * <p>
  * The type of value held in a cell's {@code first} element can be determined by the {@code isAtom()},
  * {@code isList()} and {@code isNil()} methods.
@@ -28,8 +31,8 @@ import static org.ulithi.jlisp.mem.NilReference.NIL;
  * <p>
  * So, within a cell -- a dotted-pair -- the first/left-hand field is called {@code first} and the
  * second/right-hand field is called {@code rest}. When callers fetch these fields, they receive
- * {@code Refs}, which they then need to handle appropriately, depending on whether the reference
- * is to an {@code Atom} or another {@code Cell}.
+ * {@code Refs}, which they then need to handle appropriately, depending what type of reference it
+ * is.
  * <p><strong>NIL</strong></p>
  * {@code NIL} is a LISP language concept, and play the interesting double role of being both an
  * atom and an <em>empty</em> list. From the Stack Overflow article linked in the README:
@@ -48,18 +51,21 @@ import static org.ulithi.jlisp.mem.NilReference.NIL;
  *     <li>{@code (ATOM . <Cell>)} - A non-terminal list node whose value is an atom.</li>
  *     <li>{@code (LIST . <Cell>)} - A non-terminal list node whose value is a list.</li>
  *     <li>{@code (NIL . <Cell>>)} - Invalid.</li>
+ *     <li>{@code (NIL . ATOM}} - A cons cell with NIL and an atom</li>.
+ *     <li>{@code (ATOM . ATOM}) - A cons cell with two atoms.</li>
+ *     <li>{@code (LIST . ATOM}) - A cons cell with a list and an atom.</li>
  * </ul>
  */
 public class Cell implements Ref {
     /**
-     * The first/lhs field in this cell. This can be an Atom, or a reference to a Cell, which
-     * is interpreted as the head cell of a sub-list.
+     * The first/lhs field in this cell. This can be an Atom, Symbol, Function or a reference to a
+     * Cell, which is interpreted as the head cell of a sub-list.
      */
     private Ref first;
 
     /**
      * The second/rhs field in this cell. This is typically either a reference to the next
-     * Cell, or NIL. If NULL, it signifies the cell is storage-only: not a list node.
+     * Cell, or NIL. In a CONS cell, it may also be an Atom, Symbol or Function.
      */
     private Ref rest;
 
@@ -154,11 +160,21 @@ public class Cell implements Ref {
     }
 
     /**
-     * Indicates if this {@link Cell} is pure storage for an {@link Atom}.
-     * @return True if this {@code Cell} is pure storage for an {@code Atom}, false otherwise.
+     * Indicates if this is the last {@link Cell} in a linked list of cells, as indicated by
+     * its {@code rest} element being NIL or an SExpression (not a reference to the next
+     * {@code Cell}).
+     * @return True if this {@code Cell} terminates a linked list, false otherwise.
      */
-    public boolean isAtom() {
-        return isNil() || (first instanceof Atom && rest == null);
+    public boolean isTerminal() {
+        return (rest.isNil() || !rest.isCell());
+    }
+
+    /**
+     * Indicates if this {@link Cell Cell's} value is an {@link Atom}.
+     * @return True if this {@code Cell's} value is an {@code Atom}, false otherwise.
+     */
+    public boolean hasAtom() {
+        return isNil() || (first instanceof Atom);
     }
 
     /**
@@ -174,8 +190,7 @@ public class Cell implements Ref {
      * @return True if this {@code Cell's} {@code first} element is a {@code List}, false
      *         otherwise.
      */
-    @Override
-    public boolean isList() {
+    public boolean hasList() {
         // If the first reference is nil, it's an empty list.
         return isNil() || (first instanceof Cell);
     }
@@ -194,7 +209,7 @@ public class Cell implements Ref {
      */
     @Override
     public boolean isNil() {
-        return first.equals(NIL);
+        return first.equals(NIL) && rest.equals(NIL);
     }
 
     /**

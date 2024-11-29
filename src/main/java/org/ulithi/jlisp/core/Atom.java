@@ -159,6 +159,14 @@ public class Atom implements SExpression {
      * {@inheritDoc}
      */
     @Override
+    public Ref toRef() {
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Atom toAtom() {
         return this;
     }

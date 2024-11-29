@@ -7,8 +7,8 @@ import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.mem.Ref;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import static org.ulithi.jlisp.mem.NilReference.NIL;
 
@@ -53,16 +53,16 @@ public class List implements SExpression {
      */
     private List(final Cell root) {
         this.root = root;
-        Ref curr = root;
+        Cell curr = root;
         // If the cell is the head of a list, traverse to find the
         // list end (where the next top-level element will be inserted.
         // TODO - It might be more efficient to do this on demand, so creating
         // a static list isn't an O(n) operation.
-        while (!curr.toCell().getRest().isNil()) {
-            curr = curr.toCell().getRest();
+        while (!curr.isTerminal()) {
+            curr = curr.getRest().toCell();
         }
 
-        this.end = curr.toCell();
+        this.end = curr;
     }
 
     /**
@@ -256,18 +256,25 @@ public class List implements SExpression {
             throw new EvaluationException("Index " + index + " out of bounds");
         }
 
-        int i = 0;
+        if (root.isNil()) { return Atom.NIL; }
+        if (index == 0) { return refToSExpression(root.getFirst()); }
+
         Ref curr = root;
 
-        while (!curr.isNil()) {
-            if (i == index) {
-                return refToSExpression(curr.toCell().getFirst());
-            }
-            i++;
+        for (int i = 0; i < index && !curr.isNil(); i++) {
             curr = curr.toCell().getRest();
         }
 
-        return Atom.NIL;
+        return curr.isNil() ? Atom.NIL : refToSExpression(curr.toCell().getFirst());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Ref toRef() {
+        if (isNil()) { return NIL; }
+        return root;
     }
 
     /**
@@ -315,12 +322,21 @@ public class List implements SExpression {
      * @return The number of atoms or lists that are direct members of this list.
      */
     public int lengthAsInt() {
-        int count = 0;
+        if (root.isNil()) { return 0; }
+
+        int count = 1;
         Ref curr = root;
 
         while (!curr.isNil()) {
-            count++;
+            if (curr.toCell().isTerminal()) {
+                if (!curr.toCell().getRest().isNil()) {
+                    count++;
+                }
+                break;
+            }
+
             curr = curr.toCell().getRest();
+            count++;
         }
 
         return count;
@@ -350,22 +366,34 @@ public class List implements SExpression {
      * @return The number of atoms that are direct members of this list and any sub-lists.
      */
     private int sizeAsInt() {
-        int count = 0;
-        Ref curr = root;
-        final Queue<Ref> stack = new LinkedList<>();
+        if (root.isNil()) {
+            return 0;
+        }
 
-        while (!curr.isNil()) {
-            if (curr.isList()) {
-                stack.add(curr.toCell().getFirst());
+        int count = 0;
+        final Deque<Ref> stack = new ArrayDeque<>();
+        Cell curr = root;
+
+        while (true) {
+            if (curr.hasList()) {
+                stack.add(curr.getFirst());
             } else {
                 count++;
             }
 
-            curr = curr.toCell().getRest();
-        }
+            if (curr.isTerminal()) {
+                if (!curr.getRest().isNil()) {
+                    count++;
+                }
 
-        while (!stack.isEmpty()) {
-            count += (new List(stack.remove().toCell())).sizeAsInt();
+                if (stack.isEmpty()) {
+                    break;
+                }
+
+                curr = stack.pop().toCell();
+            } else {
+                curr = curr.getRest().toCell();
+            }
         }
 
         return count;
