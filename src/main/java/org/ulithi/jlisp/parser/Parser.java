@@ -25,7 +25,7 @@ public class Parser {
      * @param tokens An ordered list of LISP language tokens produced by lexical analysis of one
      *               or more LISP expressions.
      */
-    public Optional<PTree> parse(final List<String> tokens) {
+    public Optional<PTree> parse(final List<Token> tokens) {
         if (CollectionUtils.isEmpty(tokens)) {
             return Optional.empty();
         }
@@ -41,21 +41,21 @@ public class Parser {
      *               LISP expression.
      * @return A {@link PTree parse tree} representing the expression and ready for evaluation.
      */
-    private static PTree parseTokens(final List<String> tokens) {
+    private static PTree parseTokens(final List<Token> tokens) {
         final Stack<PTree> stack = new Stack<>();
         PTree pTree = new PTree();
         boolean inlist = false;
         int depth = 0;
 
-        for (final String token: tokens) {
-            if (token.equals(Grammar.LPAREN)) {
+        for (final Token token: tokens) {
+            if (token.value().equals(Grammar.LPAREN)) {
                 if (inlist) {
                     stack.push(pTree);
                     pTree = new PTree();
                 }
                 inlist = true;
                 depth++;
-            } else if (token.equals(Grammar.RPAREN)) {
+            } else if (token.value().equals(Grammar.RPAREN)) {
                 if (!stack.empty()) {
                     final PTree inner = pTree;
                     pTree = stack.pop();
@@ -63,7 +63,7 @@ public class Parser {
                 }
                 depth--;
             } else {
-                pTree.add(Cell.create(parseToken(token)));
+                pTree.add(Cell.create(parseToken(token.value())));
             }
         }
 

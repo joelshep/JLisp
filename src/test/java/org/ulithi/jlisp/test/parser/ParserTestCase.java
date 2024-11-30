@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.ulithi.jlisp.exception.ParseException;
 import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.parser.Parser;
+import org.ulithi.jlisp.parser.Token;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,7 +44,7 @@ public class ParserTestCase {
         final List<String> tokens = Arrays.asList("(", "(", "CAR", "(", "QUOTE", "FOO", ")", ")");
 
         try {
-            parser.parse(tokens);
+            parser.parse(tokenize(tokens));
             fail("Parser should throw exception if unbalanced parentheses");
         } catch (final ParseException e) {
             // Expected.
@@ -56,7 +57,7 @@ public class ParserTestCase {
         final List<String> tokens = Arrays.asList("(", "CAR", "(", "QUOTE", "FOO", ")");
 
         try {
-            parser.parse(tokens);
+            parser.parse(tokenize(tokens));
             fail("Parser should throw exception if unbalanced parentheses");
         } catch (final ParseException e) {
             // Expected.
@@ -176,9 +177,18 @@ public class ParserTestCase {
     private static void parseAndValidate(final Parser parser,
                                          final List<String> tokens,
                                          final String expected) {
-        final Optional<PTree> ptree = parser.parse(tokens);
+        final Optional<PTree> ptree = parser.parse(tokenize(tokens));
         assertTrue(ptree.isPresent());
         final String dpExpression = ptree.get().toString();
         assertEquals(expected, dpExpression);
+    }
+
+    /**
+     * Converts a list of String tokens to a list of Token objects.
+     * @param tokens A list of LISP source code tokens, as Strings.
+     * @return An equivalent list of Token objects.
+     */
+    private static List<Token> tokenize(final List<String> tokens) {
+        return tokens.stream().map(Token::create).toList();
     }
 }

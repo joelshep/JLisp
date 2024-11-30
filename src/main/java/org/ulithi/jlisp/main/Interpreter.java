@@ -4,6 +4,7 @@ import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.parser.Lexer;
 import org.ulithi.jlisp.parser.Parser;
+import org.ulithi.jlisp.parser.Token;
 import org.ulithi.jlisp.primitive.Eval;
 
 import java.util.List;
@@ -204,7 +205,7 @@ public class Interpreter implements Runnable {
         final Parser p = new Parser();
 
         if (lexer.isComplete()) {
-            List<String> tokens = lexer.getTokens();
+            List<Token> tokens = lexer.getTokens();
             lexer.reset();
             return p.parse(tokens);
         }

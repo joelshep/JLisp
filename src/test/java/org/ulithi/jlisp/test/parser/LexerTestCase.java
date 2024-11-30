@@ -4,6 +4,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.ulithi.jlisp.exception.ParseException;
 import org.ulithi.jlisp.parser.Lexer;
+import org.ulithi.jlisp.parser.Token;
 
 import java.util.Arrays;
 import java.util.List;
@@ -163,7 +164,7 @@ public class LexerTestCase {
         assertFalse(lexer.isComplete());
         lexer.append(")\n");
         assertTrue(lexer.isComplete());
-        assertEquals(toList("(", "+", "2", "3", ")"), lexer.getTokens());
+        assertEquals(toList("(", "+", "2", "3", ")"), detokenize(lexer.getTokens()));
     }
 
     @Test
@@ -174,7 +175,8 @@ public class LexerTestCase {
         lexer.append("3");
         lexer.append("))\n");
         assertTrue(lexer.isComplete());
-        assertEquals(toList("(", "CAR", "(", "QUOTE", "(", "1", "2", "3", ")", ")", ")"), lexer.getTokens());
+        assertEquals(toList("(", "CAR", "(", "QUOTE", "(", "1", "2", "3", ")", ")", ")"),
+                     detokenize(lexer.getTokens()));
     }
 
     @Test
@@ -185,7 +187,8 @@ public class LexerTestCase {
         lexer.append("3");
         lexer.append("))\n");
         assertTrue(lexer.isComplete());
-        assertEquals(toList("(", "+", "(", "QUOTE", "(", "1", "2", "3", ")", ")", ")"), lexer.getTokens());
+        assertEquals(toList("(", "+", "(", "QUOTE", "(", "1", "2", "3", ")", ")", ")"),
+                     detokenize(lexer.getTokens()));
     }
 
     @Test
@@ -207,7 +210,8 @@ public class LexerTestCase {
     }
 
     /**
-     * Invokes the lexer on the given string and returns the resulting token list.
+     * Invokes the lexer on the given string and returns the resulting token list,
+     * representing each token with its original value as a String.
      *
      * @param expr A string.
      * @return An ordered list of tokens extracted from the given string.
@@ -215,9 +219,22 @@ public class LexerTestCase {
     private static List<String> tokenize(final String expr) {
         final Lexer lexer = new Lexer();
         lexer.append(expr);
-        return lexer.getTokens();
+        return detokenize(lexer.getTokens());
     }
 
+    /**
+     * Transforms a list of Tokens to an equivalent list of Strings representing the values of
+     * the tokens.
+     * @param tokens A list of Tokens.
+     * @return A list of Strings representing the values of the Tokens.
+     */
+    private static List<String> detokenize(final List<Token> tokens) {
+        return tokens.stream().map(Token::value).toList();
+    }
+
+    /**
+     * @return A Java List containing one element for each provided String token.
+     */
     private static List<String> toList(final String... tokens) {
         return Arrays.asList(tokens);
     }
