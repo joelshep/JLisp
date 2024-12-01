@@ -141,7 +141,7 @@ public class Lexer {
             } else if (ch.equals(Grammar.SEMI)) {
                 state.inComment = true;
             } else if (ch.matches(Grammar.QUOTE) && !state.inQuote) {
-                tokens.add(Token.create(Grammar.LPAREN));
+                tokens.add(Grammar.LPAREN_TOKEN);
                 tokens.add(Token.create("QUOTE"));
                 state.inQuote = true;
                 state.expectAtom = true;
@@ -152,25 +152,71 @@ public class Lexer {
                 tokens.add(Token.create(s.substring(i, j)));
 
                 if (state.expectAtom) {
-                    tokens.add(Token.create(Grammar.RPAREN));
+                    tokens.add(Grammar.RPAREN_TOKEN);
                     state.inQuote = false;
                     state.expectAtom = false;
                 }
             } else if (ch.equals(Grammar.LPAREN)) {
                 state.expectAtom = false;
-                if (state.inQuote) { state.quoteDepth++; } else { state.depth++; }
+                if (state.inQuote) {
+                    state.quoteDepth++;
+                } else {
+                    state.depth++;
+                }
                 tokens.add(Token.create(ch));
             } else if (ch.equals(Grammar.RPAREN)) {
                 if (state.inQuote) {
                     state.quoteDepth--;
                     if (state.quoteDepth == 0) {
-                        tokens.add(Token.create(Grammar.RPAREN));
+                        tokens.add(Grammar.RPAREN_TOKEN);
                         state.inQuote = false;
                     }
                 } else {
                     state.depth--;
                 }
                 tokens.add(Token.create(ch));
+            } else if (ch.equals(Grammar.DOUBLE_QUOTE)) {
+                final StringBuilder stringContent = new StringBuilder();
+
+                while (j < s.length()) {
+                    if (s.charAt(j) == '\\') {
+                        // Handle escape sequence
+                        if (j + 1 < s.length()) {
+                            char escaped = s.charAt(j + 1);
+                            switch (escaped) {
+                                case 'n': stringContent.append('\n'); break;
+                                case 't': stringContent.append('\t'); break;
+                                case 'r': stringContent.append('\r'); break;
+                                case '\"': stringContent.append('"'); break;
+                                case '\\': stringContent.append('\\'); break;
+                                default: stringContent.append(escaped);
+                            }
+                            j += 2;
+                        } else {
+                            throw new ParseException("Incomplete escape sequence");
+                        }
+                    } else if (s.charAt(j) == '"') {
+                        // End of string found
+                        j++;
+                        break;
+                    } else {
+                        stringContent.append(s.charAt(j));
+                        j++;
+                    }
+                }
+
+                if (j > s.length() || s.charAt(j - 1) != '"') {
+                    throw new ParseException("Unterminated string literal");
+                }
+
+                // Create a string token with the processed content
+                tokens.add(Token.create(stringContent.toString()));
+
+                if (state.expectAtom) {
+                    tokens.add(Grammar.RPAREN_TOKEN);
+                    state.inQuote = false;
+                    state.expectAtom = false;
+                }
             } else if (SYMBOL_PATTERN.matcher(ch).matches()) {
                 tokens.add(Token.create(ch));
             }

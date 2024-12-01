@@ -55,11 +55,16 @@ public class Grammar {
     /** Single quote (shorthand for QUOTE) **/
     public static final String QUOTE = "'";
 
+    /** Double quote. **/
+    public static final String DOUBLE_QUOTE = "\"";
+
     /** Left parenthesis. */
     public static final String LPAREN = "(";
+    public static final Token LPAREN_TOKEN = Token.create(LPAREN);
 
     /** Right parenthesis. */
     public static final String RPAREN = ")";
+    public static final Token RPAREN_TOKEN = Token.create(RPAREN);
 
     /** Semicolon (starts a rest-of-line comment). */
     public static final String SEMI = ";";

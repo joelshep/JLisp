@@ -1,6 +1,5 @@
 package org.ulithi.jlisp.test.parser;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.ulithi.jlisp.exception.ParseException;
 import org.ulithi.jlisp.parser.Lexer;
@@ -64,13 +63,8 @@ public class LexerTestCase {
                      tokenize("(A (B C (C D ) )"));
     }
 
-    /**
-     * These test cases should pass but currently don't due to limitations in the current
-     * lexer implementation.
-     */
     @Test
-    @Ignore
-    public void brokenTestCases() {
+    public void testTokenizeHyphenatedAtom() {
         assertEquals(toList("this-is-an-atom"),
                      tokenize("this-is-an-atom"));
     }
@@ -139,6 +133,12 @@ public class LexerTestCase {
     public void testNewlineTerminatesComment() {
         assertEquals(toList("(", "+", "1", "2", ")", "(", "+", "3", "4", ")"),
                      tokenize("(+ 1 2) ; Multi-line input, yo\n(+ 3 4)"));
+    }
+
+    @Test
+    public void testTokenizeQuotedString() {
+        assertEquals(toList("(", "PRINT", "Hello World", ")"),
+                     tokenize("(PRINT \"Hello World\")"));
     }
 
     @Test(expected = ParseException.class)
