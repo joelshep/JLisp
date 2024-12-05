@@ -20,6 +20,7 @@ public class Expect implements BindingProvider {
     @Override
     public java.util.List<Binding> getBindings() {
         return java.util.List.of(new Binding(new EXPECT()),
+                                 new Binding(new THEN()),
                                  new Binding(new WHEN()));
     }
 
@@ -58,6 +59,25 @@ public class Expect implements BindingProvider {
                 System.err.println("Expected " + expected + ", got " + actual);
                 return Atom.F;
             }
+        }
+    }
+
+    /**
+     * Implements the non-standard {@code THEN} function, which is intended to support unit
+     * test functionality. THEN accepts no arguments: its only role is to erase all user-defined
+     * functions and symbols from the environment, which were presumably created by a
+     * preceding {@link WHEN} function.
+     */
+    public static class THEN extends BindableFunction {
+        public THEN() { super("THEN"); }
+
+        @Override
+        public boolean isReentrant() { return true; }
+
+        @Override
+        public SExpression apply(SExpression sexp, Environment environment, Eval eval) {
+            environment.reset();
+            return Atom.T;
         }
     }
 

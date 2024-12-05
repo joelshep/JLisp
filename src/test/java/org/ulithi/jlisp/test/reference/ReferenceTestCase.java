@@ -60,7 +60,8 @@ public class ReferenceTestCase {
                 Optional<Boolean> result = lisp.offer(line);
                 assertTrue(line, result.isPresent() && result.get());
                 if (isCode(line)) {
-                    assertEquals(line, "T", systemOutRule.getLog().trim());
+                    assertEquals(
+                            line + ": " + systemErrRule.getLog().trim(), "T", systemOutRule.getLog().trim());
                 }
                 systemOutRule.clearLog();
                 systemErrRule.clearLog();

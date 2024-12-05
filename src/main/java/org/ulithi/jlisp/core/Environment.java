@@ -130,6 +130,14 @@ public final class Environment implements BindingRegistrar {
     }
 
     /**
+     * Removes user-defined functions and symbols from the environment. This is primarily used
+     * to support {@code EXPECT}-based unit tests.
+     */
+    public void reset() {
+        frames.get(USER_FRAME_INDEX).clear();
+    }
+
+    /**
      * Creates a frame/scope, to manage bindings for a new function invocation.
      */
     public void startScope() {

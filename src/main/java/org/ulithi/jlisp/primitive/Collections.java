@@ -22,6 +22,7 @@ public class Collections implements BindingProvider {
     public java.util.List<Binding> getBindings() {
         return Arrays.asList(new Binding(new Collections.APPEND()),
                              new Binding(new Collections.ASSOC()),
+                             new Binding(new Collections.GETF()),
                              new Binding(new Collections.LENGTH()),
                              new Binding(new Collections.LIST()),
                              new Binding(new Collections.NTH()),
@@ -101,6 +102,38 @@ public class Collections implements BindingProvider {
             }
 
             return Atom.NIL;
+        }
+    }
+
+    /**
+     * Implements the LISP {@code GETF} function, which searches a property list (plist) for a
+     * given key, returning the first matching value if found, or a default value (if provided) or
+     * NIL if not found. A property list is a list with an even number of elements and is interpreted
+     * as alternating keys and values. Keys are matched by {@code EQ} semantics and therefore must
+     * be atoms.
+     */
+    public static class GETF extends BindableFunction {
+        public GETF() { super("GETF"); }
+
+        /** {@inheritDoc} */
+        @Override
+        public SExpression apply(final SExpression sexp) {
+            final Args args = Args.create(sexp).expectMinLength(2);
+            final List kvList = args.takeList();
+            final Atom key = args.takeAtom();
+            final SExpression defaultValue = args.hasNext() ? args.takeAny() : Atom.NIL;
+
+            if (kvList.lengthAsInt() % 2 != 0) {
+                throw new InvalidArgumentException("Property list must have even number of elements");
+            }
+
+            for (int i = 0; i < kvList.lengthAsInt(); i = i + 2) {
+                if (key.eql(kvList.nth(i).toAtom())) {
+                    return kvList.nth(i + 1);
+                }
+            }
+
+            return defaultValue;
         }
     }
 
