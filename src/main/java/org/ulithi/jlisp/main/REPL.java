@@ -1,7 +1,6 @@
 package org.ulithi.jlisp.main;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.ulithi.console.Console;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,17 +33,12 @@ public final class REPL {
     private static boolean echoMode = false;
 
 	/**
-	 * Creates the console app, initializes the LISP interpreter and starts the outer
-	 * interpreter loop.
+	 * Initializes the LISP interpreter and starts the outer interpreter loop.
 	 *
 	 * @param args Any commandline arguments passed to the application.
 	 */
 	public static void main(final String [] args) {
-		final Console console = new Console();
         final Interpreter lisp = new Interpreter();
-
-		console.setTitle(lisp.getName());
-
 		runRepl(lisp);
 	}
 
