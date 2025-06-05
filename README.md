@@ -3,13 +3,23 @@
 Greenspun's Tenth Rule: Any sufficiently complicated C or Fortran program contains an ad hoc,
 informally-specified, bug-ridden, slow implementation of half of Common Lisp.
 
+## Introduction
+
+JLISP is a LISP interpreter and REPL (Read-Evaluate-Print-Loop), implemented in Java.
+
+I authored JLISP primarily as a learning experience: I've wanted to learn LISP since I was 18 or
+so, and have been interested in interpreters and compilers for almost as long. But until recently,
+I've never come to grips with either. My formal CS training is minimal -- a few 100-level classes --
+and my practical experience otherwise never involved developing or implementing even a small language.
+
+In the past few years, I have learned a little FORTH -- another old, deceptively simple-looking
+language -- and developed a primitive interpreter and REPL for it. Now I've set that aside for a
+while and am trying LISP.
+
 ## Quick Start
 
 JLISP is a standard Maven-based project, with minimal dependencies. As supplied, it compiles
 with JDK-17 but will probably compile with older versions as well.
-
-A simple REPL is included with the project, in the ```main``` package. As written, it depends
-on a simple "console" app, included in this project.
 
 To build the jar and run the unit test suite:
 
@@ -24,19 +34,6 @@ To run the JLisp REPL from the executable jar:
 ```java -jar target/org-ulithi-jlisp-0.1-SNAPSHOT.jar```
 
 See Functions.md for some information about the built-in functions in the JLisp interpreter.
-
-## Introduction
-
-JLISP is a LISP interpreter and REPL (Read-Evaluate-Print-Loop), implemented in Java.
-
-I authored JLISP primarily as a learning experience: I've wanted to learn LISP since I was 18 or
-so, and have been interested in interpreters and compilers for almost as long. But until recently,
-I've never come to grips with either. My formal CS training is minimal -- a few 100-level classes --
-and my practical experience otherwise never involved developing or implementing even a small language.
-
-In the past few years, I have learned a little FORTH -- another old, deceptively simple-looking
-language -- and developed a primitive interpreter and REPL for it. Now I've set that aside for a
-while and trying LISP.
 
 ## The Interpreter
 
