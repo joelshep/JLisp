@@ -24,7 +24,7 @@ public abstract class BindableFunction implements Function, Bindable {
     }
 
     /**
-     * {@inheritDoc}
+     * @return The programmatic name of this function.
      */
     public final String name() { return this.name; }
 
