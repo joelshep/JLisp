@@ -17,7 +17,8 @@ public class IO implements BindingProvider {
     /** {@inheritDoc} */
     @Override
     public List<Binding> getBindings() {
-        return List.of(new Binding(new FORMAT()));
+        return List.of(new Binding(new FORMAT()),
+                       new Binding(new WRITE()));
     }
 
     /**
@@ -46,6 +47,24 @@ public class IO implements BindingProvider {
             }
 
             return Atom.create(formattedString);
+        }
+    }
+
+    /**
+     * Implements the LISP {@code WRITE} function, which writes the first argument to a stream
+     * specified by an optional second argument. The argument is written as is, with not additional
+     * newlines or whitespace. If no stream is specified, defaults to writing to STDOUT.
+     * <p>
+     * Note: currently this function writes to STDOUT <em>only</em>.
+     */
+    public static class WRITE extends BindableFunction {
+        public WRITE() { super("WRITE"); }
+
+        public SExpression apply(final SExpression sexp) {
+            final Args args = Args.create(sexp).expectMinLength(1);
+            final SExpression value = args.takeAny();
+            System.out.print(value);
+            return value;
         }
     }
 }
