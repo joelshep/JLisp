@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.test.suite;
 
+import org.ulithi.jlisp.core.Environment;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.parser.Lexer;
@@ -17,7 +18,9 @@ public class UnitTestUtilities {
      * one step and then reference it (e.g. invoke the function, read the variable) later on.
      */
     public static class Session {
-        private final Eval eval = new Eval();
+        private final Environment env = new Environment();
+
+        private final Eval eval = new Eval(env);
 
         // No makee: use the newSession() factory method instead.
         private Session() { }
@@ -32,6 +35,14 @@ public class UnitTestUtilities {
         public SExpression eval(final String expression) {
             final PTree pTree = parse(expression);
             return eval.eval(pTree.root());
+        }
+
+        public boolean isDefined(final String name) {
+            return env.isDefined(name);
+        }
+
+        public boolean isMacro(final String name) {
+            return env.isMacro(name);
         }
     }
 

@@ -18,6 +18,7 @@ import org.ulithi.jlisp.test.parser.LexerTestCase;
 import org.ulithi.jlisp.test.parser.ParserTestCase;
 import org.ulithi.jlisp.test.primitive.ArgsTestCase;
 import org.ulithi.jlisp.test.primitive.CollectionsTestCase;
+import org.ulithi.jlisp.test.primitive.MacroTestCase;
 import org.ulithi.jlisp.test.primitive.UtilTestCase;
 import org.ulithi.jlisp.test.primitive.LangTestCase;
 import org.ulithi.jlisp.test.primitive.LogicTestCase;
@@ -44,6 +45,7 @@ import org.ulithi.jlisp.test.test.ExpectTestCase;
         LexerTestCase.class,
         ListTestCase.class,
         LogicTestCase.class,
+        MacroTestCase.class,
         MathTestCase.class,
         NilReferenceTestCase.class,
         ParserTestCase.class,

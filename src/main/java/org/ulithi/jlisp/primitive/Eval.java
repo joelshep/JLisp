@@ -5,6 +5,7 @@ import org.ulithi.jlisp.core.Bindable;
 import org.ulithi.jlisp.core.Environment;
 import org.ulithi.jlisp.core.Function;
 import org.ulithi.jlisp.core.List;
+import org.ulithi.jlisp.core.Macro;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.core.Symbol;
 import org.ulithi.jlisp.exception.EvaluationException;
@@ -22,7 +23,7 @@ import java.util.Optional;
 public class Eval {
 
     /** Function, variable and other bindings for this eval instance. */
-    private final Environment env = new Environment();
+    private final Environment env;
 
     /**
      * Flags indicating the context in which evalImpl() is being called. The primary difference is
@@ -32,6 +33,22 @@ public class Eval {
      */
     private static final boolean FUNCTION_CONTEXT = false;
     private static final boolean ARG_CONTEXT = true;
+
+    /**
+     * "Standard" constructor used by the REPL. Eval owns its own {@code Environment}.
+     */
+    public Eval() {
+        env = new Environment();
+    }
+
+    /**
+     * Constructs a new {@code Eval} instance with a previously instantiated {@code Environment}.
+     * This is primarily to support unit testing.
+     * @param env A previously instantiated {@code Environment}.
+     */
+    public Eval(final Environment env) {
+        this.env = env;
+    }
 
     /**
      * Given a "form" as an {@link SExpression}, evaluates the form and returns the result.
@@ -54,13 +71,30 @@ public class Eval {
         return evalImpl(cell, FUNCTION_CONTEXT);
     }
 
+    /**
+     * Performs the actual evaluation of the parsed JLISP expression referenced by the given
+     * {@link Cell}.
+     * @param cell The root {@link Cell} of the parsed expression to evaluate.
+     * @param asArg If true, then S-expressions that evaluate to a function simply produce a reference
+     *              to the function. Otherwise, eval continues on to apply the function to the
+     *              following arguments ("normal" evaluation).
+     * @return The resulting value of the evaluation.
+     */
     private SExpression evalImpl(final Cell cell, final boolean asArg) {
         if (cell.isNil()) { return List.create(); }
 
         // Get the root cell's first element as an s-expression.
         final SExpression car = SExpression.fromRef(cell.getFirst());
 
+        // If the first element is an atom, try to resolve it as a function or macro symbol.
         if (car.isAtom()) {
+            Optional<Macro> macro = resolveMacro(car.toAtom().toS());
+
+            if (macro.isPresent()) {
+                final SExpression expansion = macro.get().expand(cell.toList(), env, this);
+                return eval(expansion);
+            }
+
             return resolveFunction(car.toAtom().toS())
                     .map(f -> applyImpl(f, cell.getRest()))
                     .orElseGet(() -> evaluateSymbolOrLiteral(car.toAtom()));
@@ -140,7 +174,6 @@ public class Eval {
 
     /**
      * Attempts to resolve the binding in the current environment for the given name as a function.
-     *
      * @param name The programmatic name to resolve.
      * @return Returns an optional containing the function bound to the given name, or an empty
      *         optional if a binding doesn't exist or is not a function binding.
@@ -149,6 +182,16 @@ public class Eval {
         return Optional.ofNullable(env.getBinding(name))
                 .filter(binding -> binding instanceof Function)
                 .map(binding -> (Function) binding);
+    }
+
+    /**
+     * Attempts to resolve the binding in the global environment for the given name as a macro.
+     * @param name The programmatic name to resolve.
+     * @return Returns an optional containing the macro bound to the given name, or an empty
+     *         optional if a binding doesn't exist.
+     */
+    private Optional<Macro> resolveMacro(final String name) {
+        return Optional.ofNullable(env.getMacro(name));
     }
 
     /**

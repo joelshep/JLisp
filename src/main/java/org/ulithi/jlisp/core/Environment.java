@@ -59,6 +59,12 @@ public final class Environment implements BindingRegistrar {
     private final List<Map<String, Bindable>> frames;
 
     /**
+     * Macros. Macro definitions are considered "global" in scope: there is no framing, etc.,
+     * of macros unlike other symbols.
+     */
+    private final Map<String, Macro> macros = new HashMap<>();
+
+    /**
      * Initializes the {@code environment}, including creating a frame for core (built-in)
      * language functions and symbols, and an empty frame for user-defined bindings.
      */
@@ -131,12 +137,17 @@ public final class Environment implements BindingRegistrar {
         frames.get(USER_FRAME_INDEX).put(name.toLowerCase(), binding.bindable());
     }
 
+    public void addMacro(final String name, final Macro macro) {
+        macros.put(name.toLowerCase(), macro);
+    }
+
     /**
      * Removes user-defined functions and symbols from the environment. This is primarily used
      * to support {@code EXPECT}-based unit tests.
      */
     public void reset() {
         frames.get(USER_FRAME_INDEX).clear();
+        macros.clear();
     }
 
     /**
@@ -183,7 +194,17 @@ public final class Environment implements BindingRegistrar {
      * @return True if the given name has a valid binding, false otherwise.
      */
     public boolean isDefined(final String name) {
-        return getBinding(name) != null;
+        return getBinding(name) != null || getMacro(name) != null;
+    }
+
+    /**
+     * Indicates if the given name is bound to a macro in the global environment.
+     *
+     * @param name A macro name.
+     * @return True if the given name has a valid macro binding, false otherwise.
+     */
+    public boolean isMacro(final String name) {
+        return macros.containsKey(name.toLowerCase());
     }
 
     /**
@@ -194,6 +215,15 @@ public final class Environment implements BindingRegistrar {
      */
     public Bindable getBinding(final String name) {
         return getBinding(name, frames.size() - 1);
+    }
+
+    /**
+     * Returns the macro binding for the given name, in the global environment.
+     * @param name A macro name.
+     * @return The current binding for the given name.
+     */
+    public Macro getMacro(final String name) {
+        return macros.get(name.toLowerCase());
     }
 
     /**

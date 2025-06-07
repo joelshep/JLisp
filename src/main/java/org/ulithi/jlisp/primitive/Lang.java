@@ -4,9 +4,11 @@ import org.ulithi.jlisp.core.BindableFunction;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.BindingProvider;
+import org.ulithi.jlisp.core.DefiningFunction;
 import org.ulithi.jlisp.core.Environment;
 import org.ulithi.jlisp.core.LambdaFunction;
 import org.ulithi.jlisp.core.List;
+import org.ulithi.jlisp.core.Macro;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.core.UserFunction;
 import org.ulithi.jlisp.exception.EvaluationException;
@@ -30,10 +32,12 @@ public class Lang implements BindingProvider {
                              new Binding(new Lang.CDR()),
                              new Binding(new Lang.COND()),
                              new Binding(new Lang.CONS()),
+                             new Binding(new Lang.DEFMACRO()),
                              new Binding(new Lang.DEFUN()),
                              new Binding(new Lang.EVAL()),
                              new Binding(new Lang.IF()),
                              new Binding((new Lang.LAMBDA())),
+                             new Binding(new Lang.MACROEXPAND()),
                              new Binding((new Lang.MAPCAR())),
                              new Binding(new Lang.QUOTE()),
                              new Binding(new Lang.SETQ()));
@@ -160,37 +164,110 @@ public class Lang implements BindingProvider {
     }
 
     /**
+     * Implements the LISP {@code DEFMACRO} function. Returns a literal {@code Atom} representing
+     * the name of the newly created macro.
+     */
+    public static class DEFMACRO extends DefiningFunction {
+        public DEFMACRO() { super("DEFMACRO"); }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void define(String name, SExpression formals, SExpression definition, Environment env) {
+            final Macro macro = new Macro(name, formals, definition);
+            env.addMacro(name, macro);
+        }
+    }
+
+    /**
      * Implements the LISP {@code DEFUN} function. Returns a literal {@code Atom} representing
      * the name of the newly created function.
      */
-    public static class DEFUN extends BindableFunction {
+    public static class DEFUN extends DefiningFunction {
         public DEFUN() { super("DEFUN"); }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
-        public boolean isSpecial() { return true; }
+        protected void define(String name, SExpression formals, SExpression definition, Environment env) {
+            final UserFunction function = new UserFunction(name, formals, definition);
+            env.addUserBinding(new Binding(name, function));
+        }
+    }
 
-        @Override
-        public boolean isDefining() { return true; }
+    /**
+     * Implements the LISP {@code MACROEXPAND} function. Takes a QUOTE'd expression representing a
+     * macro application, and returns the expanded form as evaluated against the current environment.
+     */
+    public static class MACROEXPAND extends BindableFunction {
+        public MACROEXPAND() { super("MACROEXPAND"); }
 
         /** {@inheritDoc} */
         @Override
-        public SExpression apply(final SExpression sexp) {
-            throw new EvaluationException("Defining function invoked without environment reference");
-        }
+        public boolean isReentrant() { return true; }
 
         /** {@inheritDoc} **/
         @Override
-        public SExpression apply(final SExpression sexp, final Environment env) {
-            final List args = sexp.toList();
+        public SExpression apply(final SExpression sexp, final Environment env, final Eval eval) {
+            final Args args = Args.create(sexp);
+            final SExpression form = args.takeList();
 
-            final SExpression name = args.nth(0);
-            final SExpression arguments = args.nth(1);
-            final SExpression definition = args.nth(2);
-            final UserFunction function = new UserFunction(name.toString(), arguments, definition);
+            if (form.isNil() || !form.isList()) { return form; }
 
-            env.addUserBinding(new Binding(name.toAtom().toS(), function));
+            // Recursively expand the macro.
+            SExpression expanded = expandMacro(form, env, eval);
 
-            return name.toAtom();
+            if (expanded.isList()) {
+                expanded = expandNestedMacros(expanded, env, eval);
+            }
+
+            return expanded;
+        }
+
+        /**
+         * Performs a single macro expansion. If the first element of the given form is a macro
+         * reference, expands the macro against the given form and environment, but does not
+         * recursively expand any inner forms.
+         * @param form A form that may begin with a macro reference.
+         * @param env Reference to the current runtime environment.
+         * @param eval Reference to the effective Eval function.
+         * @return The expanded macro form.
+         */
+        private SExpression expandMacro(SExpression form, Environment env, Eval eval) {
+            final SExpression car = form.toList().car();
+
+            if (!car.isAtom()) { return form; }
+
+            final String name = car.toAtom().toS();
+
+            if (!env.isMacro(name)) { return form; }
+
+            return env.getMacro(name).expand(form, env, eval);
+        }
+
+        /**
+         * Performs full macro expansion, recursively expanding nested macros.
+         * @param form A form that may contain macro references.
+         * @param env Reference to the current runtime environment.
+         * @param eval Reference to the effective Eval function.
+         * @return The form with all contained macros expanded.
+         */
+        private SExpression expandNestedMacros(SExpression form, Environment env, Eval eval) {
+            if (!form.isList()) { return form; }
+
+            SExpression expanded = expandMacro(form, env, eval);
+
+            if (!expanded.isList()) { return expanded; }
+
+            List expandedElements = List.create();
+
+            for (int i = 0; i < expanded.toList().lengthAsInt(); i++) {
+                expandedElements.add(expandNestedMacros(expanded.toList().nth(i), env, eval));
+            }
+
+            return expandedElements;
         }
     }
 
@@ -262,8 +339,8 @@ public class Lang implements BindingProvider {
     }
 
     /**
-     * Implements the LISP {@code LAMBDA} function (macro). Accepts a list of formal parameters --
-     * potentially empty -- and a form representing a function body, and returns a
+     * Implements the LISP {@code LAMBDA} function (macro). Accepts a potentially empty list of
+     * formal parameters and a form representing a function body, and returns a
      * {@link org.ulithi.jlisp.core.Function} object.
      */
     public static class LAMBDA extends BindableFunction {
