@@ -329,9 +329,6 @@ public class List implements SExpression {
 
         while (!curr.isNil()) {
             if (curr.toCell().isTerminal()) {
-                if (!curr.toCell().getRest().isNil()) {
-                    count++;
-                }
                 break;
             }
 
