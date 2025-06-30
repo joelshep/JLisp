@@ -90,7 +90,6 @@ public final class REPL {
 				lisp.reset();
 			} finally {
 				System.err.flush();
-				safeSleep(20); // Blech. But it helps ...
 
 				if (ok != null && !ok) {
 					System.out.println();
