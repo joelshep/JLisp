@@ -1,5 +1,7 @@
 package org.ulithi.jlisp.parser;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -16,6 +18,8 @@ import java.util.regex.Pattern;
  * digit = "1" | "2" | " ..." | "9"
  * empty = " "
  * </pre>
+ * Some character classes are defined as {@code Sets} of characters instead of or in addition to
+ * regular expressions, to optimize lexing performance.
  */
 public class Grammar {
 
@@ -23,22 +27,45 @@ public class Grammar {
     private Grammar() { }
 
     /** Regular expression for the first character of an identifier (variable, symbol, function). */
-    public static final String IDENTIFIER_START = "[a-zA-Z!$%&*/:<=>?~_^]";
+    public static final String IDENTIFIER_START = "[a-zA-Z!$%&+*/:<=>?~_^]";
 
     public static final Pattern IDENTIFIER_START_PATTERN = Pattern.compile(IDENTIFIER_START);
+
+    /** Valid initial characters for identifiers (in addition to alphabetic characters). */
+    public static final Set<Character> IDENTIFIER_START_CHARS = new HashSet<>();
+
+    static {
+        IDENTIFIER_START_CHARS.add('!');
+        IDENTIFIER_START_CHARS.add('$');
+        IDENTIFIER_START_CHARS.add('%');
+        IDENTIFIER_START_CHARS.add('&');
+        IDENTIFIER_START_CHARS.add('+');
+        IDENTIFIER_START_CHARS.add('*');
+        IDENTIFIER_START_CHARS.add('/');
+        IDENTIFIER_START_CHARS.add(':');
+        IDENTIFIER_START_CHARS.add('<');
+        IDENTIFIER_START_CHARS.add('=');
+        IDENTIFIER_START_CHARS.add('>');
+        IDENTIFIER_START_CHARS.add('?');
+        IDENTIFIER_START_CHARS.add('~');
+        IDENTIFIER_START_CHARS.add('_');
+        IDENTIFIER_START_CHARS.add('^');
+    }
 
     /** Regular expression for subsequent characters of an identifier */
     public static final String IDENTIFIER_REST = "[a-zA-Z!$%&*/:<=>?~_^0-9.+-]+";
 
     public static final Pattern IDENTIFIER_REST_PATTERN = Pattern.compile(IDENTIFIER_REST);
 
-    /** Special syntax elements. TODO: Remove math operators. */
-    public static final String SPECIAL = "[().\\+\\*\\<\\>/']";
+    /** Special syntax elements. */
+    public static final Set<Character> SYMBOLS = new HashSet<>();
 
-    public static final Pattern SYMBOL_PATTERN = Pattern.compile(SPECIAL);
-
-    /** Regular expression for the start of a number (integer). */
-    public static final String NUMERIC_LITERAL_START = "[\\d\\+\\-]";
+    static {
+        SYMBOLS.add('(');
+        SYMBOLS.add(')');
+        SYMBOLS.add('.');
+        SYMBOLS.add('\'');
+    }
 
     /** Regular expression for a number (integer). */
     public static final String NUMERIC_LITERAL = "[+\\-]?\\d+";
@@ -49,28 +76,30 @@ public class Grammar {
     /** Regular expression for line/expression that is whitespace and a comment. */
     public static final String FULL_LINE_COMMENT = "^\\s*;+.*$";
 
-    /** Dot symbol (for S-Expressions) **/
+    /** Dot symbol (for S-Expressions) */
     public static final String DOT = ".";
 
-    /** Single quote (shorthand for QUOTE) **/
-    public static final String QUOTE = "'";
+    /** Single quote (shorthand for QUOTE) */
+    public static final char QUOTE = '\'';
 
-    /** Double quote. **/
-    public static final String DOUBLE_QUOTE = "\"";
+    /** Double quote. */
+    public static final char DOUBLE_QUOTE = '"';
 
     /** Left parenthesis. */
     public static final String LPAREN = "(";
+    public static final char LPAREN_CHAR = '(';
     public static final Token LPAREN_TOKEN = Token.create(LPAREN);
 
     /** Right parenthesis. */
     public static final String RPAREN = ")";
+    public static final char RPAREN_CHAR = ')';
     public static final Token RPAREN_TOKEN = Token.create(RPAREN);
 
     /** Semicolon (starts a rest-of-line comment). */
-    public static final String SEMI = ";";
+    public static final char SEMI = ';';
 
-    /** End-of-line character. **/
-    public static final String EOL = "\n";
+    /** End-of-line character. */
+    public static final char EOL = '\n';
 
     /** A single space character. */
     public static final String SPACE = " ";

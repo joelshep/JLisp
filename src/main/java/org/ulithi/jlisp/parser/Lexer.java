@@ -9,8 +9,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.ulithi.jlisp.parser.Grammar.SYMBOL_PATTERN;
-
 /**
  * The {@link Lexer} forms LISP language tokens from an {@link InputStream} or a {@link String} of
  * characters representing a LISP program or expression to be evaluated.
@@ -132,20 +130,20 @@ public class Lexer {
 
         while (i < s.length()) {
             int j = i + 1;
-            final String ch = s.substring(i, j);
+            final char ch = s.charAt(i);
 
-            if (ch.equals(Grammar.EOL)) {
+            if (ch == Grammar.EOL) {
                 state.inComment = false;
             } else if (state.inComment) {
                 // Continue
-            } else if (ch.equals(Grammar.SEMI)) {
+            } else if (ch == Grammar.SEMI) {
                 state.inComment = true;
-            } else if (ch.matches(Grammar.QUOTE) && !state.inQuote) {
+            } else if (ch == Grammar.QUOTE && !state.inQuote) {
                 tokens.add(Grammar.LPAREN_TOKEN);
                 tokens.add(Token.create("QUOTE"));
                 state.inQuote = true;
                 state.expectAtom = true;
-            } else if (ch.matches(Grammar.IDENTIFIER_START) || ch.matches(Grammar.NUMERIC_LITERAL_START)) {
+            } else if (isIdentifierStart(ch) || isNumericLiteralStart(ch)) {
                 while (j < s.length() && Grammar.IDENTIFIER_REST_PATTERN.matcher(s.substring(i, j + 1)).matches()) {
                     j++;
                 }
@@ -156,7 +154,7 @@ public class Lexer {
                     state.inQuote = false;
                     state.expectAtom = false;
                 }
-            } else if (ch.equals(Grammar.LPAREN)) {
+            } else if (ch == Grammar.LPAREN_CHAR) {
                 state.expectAtom = false;
                 if (state.inQuote) {
                     state.quoteDepth++;
@@ -164,7 +162,7 @@ public class Lexer {
                     state.depth++;
                 }
                 tokens.add(Token.create(ch));
-            } else if (ch.equals(Grammar.RPAREN)) {
+            } else if (ch == Grammar.RPAREN_CHAR) {
                 if (state.inQuote) {
                     state.quoteDepth--;
                     if (state.quoteDepth == 0) {
@@ -175,14 +173,14 @@ public class Lexer {
                     state.depth--;
                 }
                 tokens.add(Token.create(ch));
-            } else if (ch.equals(Grammar.DOUBLE_QUOTE)) {
+            } else if (ch == Grammar.DOUBLE_QUOTE) {
                 final StringBuilder stringContent = new StringBuilder();
 
                 while (j < s.length()) {
                     if (s.charAt(j) == '\\') {
                         // Handle escape sequence
                         if (j + 1 < s.length()) {
-                            char escaped = s.charAt(j + 1);
+                            final char escaped = s.charAt(j + 1);
                             switch (escaped) {
                                 case 'n': stringContent.append('\n'); break;
                                 case 't': stringContent.append('\t'); break;
@@ -217,7 +215,7 @@ public class Lexer {
                     state.inQuote = false;
                     state.expectAtom = false;
                 }
-            } else if (SYMBOL_PATTERN.matcher(ch).matches()) {
+            } else if (isSymbol(ch)) {
                 tokens.add(Token.create(ch));
             }
             i = j;
@@ -230,5 +228,17 @@ public class Lexer {
 
         state.tokens.addAll(tokens);
         state.inComment = false;
+    }
+
+    private static boolean isIdentifierStart(final char ch) {
+        return Grammar.IDENTIFIER_START_CHARS.contains(ch) || Character.isLetter(ch);
+    }
+
+    private static boolean isSymbol(final char ch) {
+        return Grammar.SYMBOLS.contains(ch);
+    }
+
+    private static boolean isNumericLiteralStart(final char ch) {
+        return Character.isDigit(ch) || ch == '-';
     }
 }
