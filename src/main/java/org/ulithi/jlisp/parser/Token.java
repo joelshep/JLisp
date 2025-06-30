@@ -19,6 +19,15 @@ public class Token {
     }
 
     /**
+     * Creates a new {@link Token} to represent the given {@code char} value.
+     * @param ch A source code token, as a {@code char}.
+     * @return A {@code Token} representing the given source code token.
+     */
+    public static Token create (final char ch) {
+        return new Token(String.valueOf(ch));
+    }
+
+    /**
      * Creates a new {@link Token} to represent the given {@code String} value.
      * @param value A source code token, as a {@code String}.
      */
