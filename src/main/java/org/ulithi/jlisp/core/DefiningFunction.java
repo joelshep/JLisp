@@ -56,5 +56,15 @@ public abstract class DefiningFunction extends BindableFunction {
         return name;
     }
 
+    /**
+     * Subclasses should override this method to define (create a representation of) the specified
+     * function or macro.
+     *
+     * @param name The programmatic name of the function or macro: e.g., "CAR", "PLUS", etc.
+     * @param formals A list of formal parameters to the function or macro. It may be an empty list,
+     *                but otherwise must be a list of valid symbol names.
+     * @param definition The form representing the function or macro body.
+     * @param env Reference to the current runtime {@link Environment}.
+     */
     protected abstract void define(String name, SExpression formals, SExpression definition, Environment env);
 }
