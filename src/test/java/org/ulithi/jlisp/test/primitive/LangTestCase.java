@@ -221,8 +221,6 @@ public class LangTestCase {
         assertEquals("( NIL A B )", eval("(CONS NIL '(A B))").toString());
     }
 
-
-
     @Test
     public void testConsListToEmptyList() {
         final SExpression sexp = eval("(CONS (QUOTE (PHONE HOME)) ())");
@@ -335,14 +333,16 @@ public class LangTestCase {
             session.eval("(average 7)");
             fail("Expected EvaluationException");
         } catch (final EvaluationException e) {
-            assertTrue(e.getMessage().startsWith("Expected 2"));
+            assertTrue(e.getMessage().startsWith("Too few arguments"));
+            assertTrue(e.getMessage().endsWith("expected 2"));
         }
 
         try {
             session.eval("(average 7 5 3)");
             fail("Expected EvaluationException");
         } catch (final EvaluationException e) {
-            assertTrue(e.getMessage().startsWith("Expected 2"));
+            assertTrue(e.getMessage().startsWith("Too many arguments"));
+            assertTrue(e.getMessage().endsWith("expected 2"));
         }
     }
 
@@ -398,14 +398,12 @@ public class LangTestCase {
     public void testMapcarWithLambda() {
         final SExpression result = eval("(MAPCAR (LAMBDA (x) (+ x 2)) '(3 5 7))");
         assertEquals("( 5 7 9 )", result.toString());
-        System.out.println(result);
     }
 
     @Test
     public void testMapcarWithTwoArguments() {
         final SExpression result = eval("(MAPCAR 'PLUS '(3 5 7) '(4 5 6))");
         assertEquals("( 7 10 13 )", result.toString());
-        System.out.println(result);
     }
 
     @Test
@@ -458,6 +456,22 @@ public class LangTestCase {
         assertTrue(sexp.isList());
         assertEquals("( ( FOO BAR ) ( BAZ QUX ) )", sexp.toString());
         assertEquals(2, sexp.toList().length().toI());
+    }
+
+    @Test
+    public void testQuoteWithPlusOperator() {
+        final SExpression sexp = eval("(list '+ x 1)");
+        assertTrue(sexp.isList());
+        assertEquals("( + x 1 )", sexp.toString());
+        assertEquals(3, sexp.toList().lengthAsInt());
+    }
+
+    @Test
+    public void testQuoteWithMultiplierOperator() {
+        final SExpression sexp = eval("(list '* x 2)");
+        assertTrue(sexp.isList());
+        assertEquals("( * x 2 )", sexp.toString());
+        assertEquals(3, sexp.toList().lengthAsInt());
     }
 
     @Test
