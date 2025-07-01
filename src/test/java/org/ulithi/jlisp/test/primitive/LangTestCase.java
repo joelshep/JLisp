@@ -1,5 +1,6 @@
 package org.ulithi.jlisp.test.primitive;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
@@ -9,6 +10,7 @@ import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities.Session;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.ulithi.jlisp.test.suite.UnitTestUtilities.eval;
@@ -344,6 +346,142 @@ public class LangTestCase {
             assertTrue(e.getMessage().startsWith("Too many arguments"));
             assertTrue(e.getMessage().endsWith("expected 2"));
         }
+    }
+
+    @Test
+    public void testDefunWithRestParameter() {
+        // Define a function that cons together the first argument and all rest args into a list
+        // (assuming there is at least on rest arg).
+        Session session = newSession();
+        session.eval("(defun con-ser (first &rest others) (cons first others))");
+
+        SExpression result = session.eval("(con-ser 1 2)");
+        assertTrue(result.isList());
+        assertEquals(2, result.toList().lengthAsInt());
+        assertEquals("( 1 2 )", result.toString());
+
+        result = session.eval("(con-ser 1 2 3 4)");
+        assertTrue(result.isList());
+        assertEquals(4, result.toList().lengthAsInt());
+        assertEquals("( 1 2 3 4 )", result.toString());
+    }
+
+    @Test
+    public void testDefunWithRestParameterAndOperation() {
+        // Define a function that sums all arguments.
+        Session session = newSession();
+        session.eval("(defun sum-all (first &rest numbers) (+ first (apply '+ numbers)))");
+
+        SExpression result = session.eval("(sum-all 1 2 3 4)");
+        assertEquals(10, result.toAtom().toI());
+    }
+
+    @Test
+    public void testDefunWithOptionalParameter() {
+        // Test function with one optional parameter
+        Session session = newSession();
+        session.eval("(defun greet (name &optional title) (if title (list title name) name))");
+
+        // Test without optional arg
+        SExpression result = session.eval("(greet 'John)");
+        assertEquals("John", result.toString());
+
+        // Test with optional arg
+        result = session.eval("(greet 'John 'Dr)");
+        assertEquals("( Dr John )", result.toString());
+    }
+
+    @Test
+    public void testDefunWithOptionalAndTooFewArguments() {
+        Session session = newSession();
+        session.eval("(defun test-args (req1 req2 &optional opt) (list req1 req2 opt))");
+
+        try {
+            session.eval("(test-args 1)");  // Should throw - missing required arg
+        } catch (final EvaluationException e) {
+            assertTrue(e.getMessage().startsWith("Too few arguments"));
+            assertTrue(e.getMessage().endsWith("expected 4"));
+        }
+    }
+
+    @Ignore("Default values for optional parameters not implemented")
+    @Test
+    public void testOptionalParameterDefaultValue() {
+        Session session = newSession();
+        session.eval("(defun test-default (x &optional (y 10)) (+ x y))");
+
+        SExpression result = session.eval("(test-default 5)");
+        assertEquals(15, result.toAtom().toI());
+
+        result = session.eval("(test-default 5 20)");
+        assertEquals(25, result.toAtom().toI());
+    }
+
+    @Ignore("Default values for optional parameters not implemented")
+    @Test
+    public void testDefunWithMultipleOptionalParameters() {
+        // Test function with multiple optional parameters and default values
+        Session session = newSession();
+        session.eval("(defun make-point (x &optional (y 0) (z 0)) (list x y z))");
+
+        // Test with just required arg
+        SExpression result = session.eval("(make-point 1)");
+        assertEquals("( 1 0 0 )", result.toString());
+
+        // Test with one optional arg
+        result = session.eval("(make-point 1 2)");
+        assertEquals("( 1 2 0 )", result.toString());
+
+        // Test with all args
+        result = session.eval("(make-point 1 2 3)");
+        assertEquals("( 1 2 3 )", result.toString());
+    }
+
+    @Test
+    public void testDefunWithOptionalAndRestParameters() {
+        // Define function with both optional and rest parameters
+        Session session = newSession();
+        session.eval("(defun complex-args (req &optional opt &rest others) (list req opt others))");
+
+        // Test with just required arg
+        SExpression result = session.eval("(complex-args 1)");
+        assertEquals("( 1 NIL ( NIL ) )", result.toString());
+
+        // Test with optional arg
+        result = session.eval("(complex-args 1 2)");
+        assertEquals("( 1 2 ( NIL ) )", result.toString());
+
+        // Test with rest args
+        result = session.eval("(complex-args 1 2 3 4 5)");
+        assertEquals("( 1 2 ( 3 4 5 ) )", result.toString());
+    }
+
+    @Test
+    public void testInvalidRestParameter() {
+        assertThrows(EvaluationException.class, () -> {
+            eval("(defun bad-rest (x &rest r1 &rest r2) (list x r1 r2))");
+        });
+    }
+
+    @Test
+    public void testRestWithNoParameter() {
+        assertThrows(EvaluationException.class, () -> {
+            eval("(defun missing-rest-param (x &rest) x)");
+        });
+    }
+
+    @Test
+    public void testOptionalAfterRest() {
+        assertThrows(EvaluationException.class, () -> {
+            eval("(defun bad-optional-order (x &rest r &optional opt) (list x r opt))");
+        });
+    }
+
+    @Test
+    public void testMultipleOptional() {
+        assertThrows(EvaluationException.class, () -> {
+            eval("(defun multiple-optional (x &optional o1 &optional o2) (list x o1 o2))");
+        });
     }
 
     @Test
