@@ -34,6 +34,10 @@ public class Predicate implements BindingProvider {
      */
     public static class ATOM extends BindableFunction {
         public ATOM() { super("ATOM"); }
+
+        @Override
+        public String[] synonyms() { return new String[]{"ATOM?"}; }
+
         @Override
         public SExpression apply(final SExpression sexp) {
             final List args = sexp.toList();
@@ -52,6 +56,9 @@ public class Predicate implements BindingProvider {
      */
     public static class INTEGERP extends BindableFunction {
         public INTEGERP() { super("INTEGERP"); }
+
+        @Override
+        public String[] synonyms() { return new String[]{"INTEGER?"}; }
 
         @Override
         public SExpression apply(final SExpression sexp) {
@@ -77,6 +84,9 @@ public class Predicate implements BindingProvider {
         public MINUSP() { super("MINUSP"); }
 
         @Override
+        public String[] synonyms() { return new String[]{"MINUS?"}; }
+
+        @Override
         public SExpression apply(final SExpression sexp) {
             return evaluateNumericPredicate(sexp, n -> n < 0);
         }
@@ -90,6 +100,9 @@ public class Predicate implements BindingProvider {
         public PLUSP() { super("PLUSP"); }
 
         @Override
+        public String[] synonyms() { return new String[]{"PLUS?"}; }
+
+        @Override
         public SExpression apply(final SExpression sexp) {
             return evaluateNumericPredicate(sexp, n -> n > 0);
         }
@@ -101,6 +114,9 @@ public class Predicate implements BindingProvider {
      */
     public static class ZEROP extends BindableFunction {
         public ZEROP() { super("ZEROP"); }
+
+        @Override
+        public String[] synonyms() { return new String[]{"ZERO?"}; }
 
         @Override
         public SExpression apply(final SExpression sexp) {
