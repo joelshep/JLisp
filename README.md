@@ -7,7 +7,7 @@ informally-specified, bug-ridden, slow implementation of half of Common Lisp.
 
 JLISP is a LISP interpreter and REPL (Read-Evaluate-Print-Loop), implemented in Java.
 
-I authored JLISP primarily as a learning experience: I've wanted to learn LISP since I was 18 or
+I authored JLISP primarily as a learning experience. I've wanted to learn LISP since I was 18 or
 so, and have been interested in interpreters and compilers for almost as long. But until recently,
 I've never come to grips with either. My formal CS training is minimal -- a few 100-level classes --
 and my practical experience otherwise never involved developing or implementing even a small language.
@@ -64,7 +64,7 @@ have pointers). The first field/pointer is the CAR of the CONS cell, the second 
 If we were drawing a cell, it would look like a rectangle on its side, split into two boxes -- one
 for each field -- with pointers coming from each. In text, it is much easier to represent a cell as
 in dotted-pair notation like this: `(4 . NIL)`. This is a cell whose CAR is the numeric literal 4,
-and whose CDR is the special value NIL: think if it as a null pointer or reference. Simple LISP
+and whose CDR is the special value NIL: think of NIL as a null pointer or reference. Simple LISP
 expressions are stored in memory as linked lists of cells. For example `(+ 1 2)` would be stored as
 `(+ *)-->(1 *)-->(2 NIL)` (where * represents a pointer to the next cell in the list). In dotted-pair
 notation, this is represented as `(+ . (1 . (2 . NIL)))`.
@@ -92,10 +92,11 @@ A cell field can be one of several things:
 This is where it gets a touch messy. Atoms and lists are part of the language model. Cells are not:
 they're part of the memory model. At first, I made them all sexprs (i.e., I had them all inherit
 from SExpression) but cells are *not* sexprs. In the memory model, however, atoms and cells are the
-things that can be referred to from cell fields: they are all *references*.
+things that can be referred to from cell fields: they are all *referents*, which are represented as
+Refs in JLISP.
 
-So, in JLISP, a cell is a pair of Refs, and the Atom and Cell classes inherit from Ref, which
-is a simple marker interface in the JLISP memory model.
+So, in JLISP, a cell is a pair of Refs, and the Atom and Cell classes inherit from ```Ref```,
+which is a simple marker interface in the JLISP memory model.
 
 The ```SExpression``` class in ```org.ulithi.jlisp.core``` is not only the super-class for
 ```Atom``` and ```List```, but it is the bridge between the language model and the memory model.
