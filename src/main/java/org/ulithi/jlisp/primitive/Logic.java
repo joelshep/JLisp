@@ -78,7 +78,7 @@ public class Logic implements BindingProvider {
 
     /**
      * Implements the LISP {@code OR} special function. Returns {@code T} if any argument evaluates
-     * to {@code T}. If every argument evaluates to a{@code NIL} or {@code F} value, returns the
+     * to {@code T}. If every argument evaluates to a {@code NIL} or {@code F} value, returns the
      * value of the last argument, or {@code F} if invoked without arguments. {@code OR} evaluates
      * its arguments from left to right and short-circuits evaluation: once an argument which
      * evaluates to {@code T} is encountered, no further arguments are evaluated.
