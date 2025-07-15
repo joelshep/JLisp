@@ -1,7 +1,6 @@
 package org.ulithi.jlisp.main;
 
 import org.ulithi.jlisp.core.SExpression;
-import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.parser.Lexer;
 import org.ulithi.jlisp.parser.Parser;
 import org.ulithi.jlisp.parser.Token;
@@ -22,7 +21,7 @@ public class Interpreter implements Runnable {
     private static final String NAME = "JLisp";
 
     /** A version string for the core LISP implementation. */
-    private static final String VERSION = "0.10";
+    private static final String VERSION = "0.20";
 
     /** If true, enables stack trace dumps in the event of processing errors. */
     private boolean verbose = false;
@@ -120,14 +119,14 @@ public class Interpreter implements Runnable {
      *         form, or didn't complete a form created by previous calls to the interpreter.
      */
     private Optional<Boolean> processExpression(final String expression,
-                                                final Function<PTree, Optional<Boolean>> impl,
+                                                final Function<SExpression, Optional<Boolean>> impl,
                                                 final Function<Exception, Optional<Boolean>> onError)
     {
         try {
-            final Optional<PTree> pTree = parseExpression(expression);
+            final Optional<SExpression> form = parseExpression(expression);
 
-            if (pTree.isPresent()) {
-                return impl.apply(pTree.get());
+            if (form.isPresent()) {
+                return impl.apply(form.get());
             } else if (lexer.hasTokens()) {
                 return Optional.empty();
             } else {
@@ -139,41 +138,41 @@ public class Interpreter implements Runnable {
     }
 
     /**
-     * Implements the 'offer' method by evaluating the given PTree, if provided.
-     * @param pTree A parsed LISP expression.
+     * Implements the 'offer' method by evaluating the given SExpression, if provided.
+     * @param sexp A parsed LISP expression.
      * @return An Optional True if the expression was successfully evaluated, empty if the
      *         expression wasn't evaluated. Evaluation errors are handled by the caller.
      */
-    private Optional<Boolean> offerImpl(final PTree pTree) {
-            SExpression ret = eval.eval(pTree.root());
+    private Optional<Boolean> offerImpl(final SExpression sexp) {
+            final SExpression ret = eval.eval(sexp);
             System.out.println(" " + ret);
             return Optional.of(Boolean.TRUE);
     }
 
     /**
-     * Implements the 'parse' method by outputting a string representation of the given PTree in
-     * dotted pair notation, if provided.
+     * Implements the 'parse' method by outputting a string representation of the given SExpression
+     * in dotted pair notation, if provided.
      *
-     * @param pTree A parsed LISP expression.
-     * @return An Optional True if the PTree was present and output, empty if no PTree was
-     *         provided. Errors are handled by the caller.
+     * @param sexp A parsed LISP expression.
+     * @return An Optional True if the SExpression was present and output, empty if no SExpression
+     *         was provided. Errors are handled by the caller.
      */
-    private Optional<Boolean> parseImpl(final PTree pTree) {
-        System.out.println(pTree);
+    private Optional<Boolean> parseImpl(final SExpression sexp) {
+        System.out.println(sexp);
         return Optional.of(Boolean.TRUE);
     }
 
     /**
      * Implements the 'echo' method by outputting the "unparsed" string representation of the given
-     * PTree: i.e., takes the parse tree, converts it back to an equivalent LISP expression and
-     * outputs that.
+     * SExpression: i.e., takes the parse tree, converts it back to an equivalent LISP expression
+     * and outputs that.
      *
-     * @param pTree A parsed LISP expression.
-     * @return An Optional True if the PTree was present and output, empty if no PTree was
-     *         provided. Errors are handled by the caller.
+     * @param sexp A parsed LISP expression.
+     * @return An Optional True if the SExpression was present and output, empty if no SExpression
+     *         was provided. Errors are handled by the caller.
      */
-    private Optional<Boolean> echoImpl(final PTree pTree) {
-        System.out.println(pTree.unparse());
+    private Optional<Boolean> echoImpl(final SExpression sexp) {
+        System.out.println(sexp);
         return Optional.of(Boolean.TRUE);
     }
 
@@ -200,7 +199,7 @@ public class Interpreter implements Runnable {
      * @param expression The expression to parse.
      * @return The parse tree for the expression.
      */
-    private Optional<PTree> parseExpression(final String expression) {
+    private Optional<SExpression> parseExpression(final String expression) {
         lexer.append(expression);
         final Parser p = new Parser();
 

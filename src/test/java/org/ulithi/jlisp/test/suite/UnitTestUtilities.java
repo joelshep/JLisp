@@ -2,7 +2,6 @@ package org.ulithi.jlisp.test.suite;
 
 import org.ulithi.jlisp.core.Environment;
 import org.ulithi.jlisp.core.SExpression;
-import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.parser.Lexer;
 import org.ulithi.jlisp.parser.Parser;
 import org.ulithi.jlisp.primitive.Eval;
@@ -26,15 +25,15 @@ public class UnitTestUtilities {
         private Session() { }
 
         /**
-         * Evaluates the given expression and returns the result, retaining any state created
-         * by the expression or previous expressions evaluated by the same session.
+         * Evaluates the given form and returns the result, retaining any state created by the
+         * form or previous forms evaluated by the same session.
          *
-         * @param expression The LISP expression to evaluate.
+         * @param form The LISP form to evaluate.
          * @return The result of the evaluation, as an {@link SExpression}.
          */
-        public SExpression eval(final String expression) {
-            final PTree pTree = parse(expression);
-            return eval.eval(pTree.root());
+        public SExpression eval(final String form) {
+            final SExpression sexp = parse(form);
+            return eval.eval(sexp);
         }
 
         public boolean isDefined(final String name) {
@@ -57,26 +56,25 @@ public class UnitTestUtilities {
     }
 
     /**
-     * Scans, parses, evaluates the given LISP {@code expression} and returns the result as a
+     * Scans, parses, evaluates the given LISP {@code form} and returns the result as an
      * {@code SExpression}.
-     * @param expression The LISP expression to evaluate.
+     * @param form The LISP form to evaluate.
      * @return The result of the evaluation, as an {@link SExpression}.
      */
-    public static SExpression eval(final String expression) {
-        final PTree ptree = parse(expression);
+    public static SExpression eval(final String form) {
+        final SExpression sexp = parse(form);
         final Eval eval = new Eval();
-        return eval.eval(ptree.root());
+        return eval.eval(sexp);
     }
 
     /**
-     * Scans and parses the given LISP {@code expression} and returns resulting parse tree
-     * ({@link PTree}.
-     * @param expression The LISP expression to evaluate.
-     * @return The result of the parsing, as a {@code PTree}.
+     * Scans and parses the given LISP form and returns the equivalent ({@link SExpression}.
+     * @param form The LISP form to parse.
+     * @return The result of the parsing, as an {@link SExpression}.
      */
-    public static PTree parse(final String expression) {
+    public static SExpression parse(final String form) {
         final Lexer lexer = new Lexer();
-        lexer.append(expression);
+        lexer.append(form);
         final Parser p = new Parser();
         return p.parse(lexer.getTokens()).orElseThrow();
     }

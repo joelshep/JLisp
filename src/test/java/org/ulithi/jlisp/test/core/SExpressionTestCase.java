@@ -6,7 +6,6 @@ import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.NilReference;
-import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.mem.Ref;
 
 import static org.junit.Assert.assertEquals;
@@ -115,8 +114,7 @@ public class SExpressionTestCase {
     @Test
     public void testSimpleList() {
         final String expression = "(1 2 3 4)";
-        final PTree pTree = parse(expression);
-        SExpression sexp = SExpression.fromRef(pTree.root());
+        final SExpression sexp = parse((expression));
         assertTrue(sexp.isList());
         assertEquals("( 1 2 3 4 )", String.valueOf(sexp));
     }
@@ -124,27 +122,25 @@ public class SExpressionTestCase {
     @Test
     public void testCarAtom() {
         final String expression = "(A B C D)";
-        final PTree pTree = parse(expression);
-        SExpression sexp = SExpression.fromRef(pTree.root().getFirst());
-        assertTrue(sexp.isAtom());
-        assertEquals("A", ((Atom)sexp).toS());
+        final SExpression sexp = parse((expression));
+        assertTrue(sexp.isList());
+        assertTrue(sexp.toList().car().isAtom());
+        assertEquals("A", sexp.toList().car().toString());
     }
 
     @Test
     public void testCarList() {
         final String expression = "((A B C) D E F)";
-        final PTree pTree = parse(expression);
-        SExpression sexp = SExpression.fromRef(pTree.root().getFirst());
+        final SExpression sexp = parse((expression));
         assertTrue(sexp.isList());
-        assertEquals("( A B C )", String.valueOf(sexp));
+        assertEquals("( A B C )", sexp.toList().car().toString());
     }
 
     @Test
     public void testCdr() {
         final String expression = "(A B C D)";
-        final PTree pTree = parse(expression);
-        SExpression sexp = SExpression.fromRef(pTree.root().getRest());
+        final SExpression sexp = parse((expression));
         assertTrue(sexp.isList());
-        assertEquals("( B C D )", String.valueOf(sexp));
+        assertEquals("( B C D )", sexp.toList().cdr().toString());
     }
 }

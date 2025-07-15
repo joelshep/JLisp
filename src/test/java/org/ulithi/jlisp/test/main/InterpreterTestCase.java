@@ -74,7 +74,7 @@ public class InterpreterTestCase {
 
     @Test
     public void testOfferWithError() {
-        final Optional<Boolean> result = lisp.offer("+ 1 2 A");
+        final Optional<Boolean> result = lisp.offer("(+ 1 2 A)");
         assertTrue(result.isPresent() && !result.get());
         assertEquals("Can't convert string literal to number", systemErrRule.getLog().trim());
     }

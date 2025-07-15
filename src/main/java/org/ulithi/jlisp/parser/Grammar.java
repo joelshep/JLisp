@@ -88,12 +88,10 @@ public class Grammar {
     /** Left parenthesis. */
     public static final String LPAREN = "(";
     public static final char LPAREN_CHAR = '(';
-    public static final Token LPAREN_TOKEN = Token.create(LPAREN);
 
     /** Right parenthesis. */
     public static final String RPAREN = ")";
     public static final char RPAREN_CHAR = ')';
-    public static final Token RPAREN_TOKEN = Token.create(RPAREN);
 
     /** Semicolon (starts a rest-of-line comment). */
     public static final char SEMI = ';';

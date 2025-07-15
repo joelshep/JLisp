@@ -10,15 +10,15 @@ import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.core.Symbol;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.UndefinedSymbolException;
-import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.Ref;
 
 import java.util.Optional;
 
 /**
- * Implements the LISP {@code eval} function. The {@code eval} function accepts a "form" -- a list
- * whose first element is a symbol that identifies an operator or function -- and evaluates it
- * according the LISP language semantics, returning the result as a {@link Ref}.
+ * Implements the LISP {@code eval} function. The {@code eval} function accepts a "form" -- an
+ * {@link SExpression} representing either an {@code Atom} or a list whose first element is a symbol
+ * that identifies an operator or function -- and evaluates it according the LISP language semantics,
+ * returning the result as an {@link SExpression}.
  */
 public class Eval {
 
@@ -53,65 +53,60 @@ public class Eval {
     /**
      * Given a "form" as an {@link SExpression}, evaluates the form and returns the result.
      *
-     * @param sexp An {@code SExpression} representing the LISP form to evaluate.
-     * @return The resulting value of the evaluation.
+     * @param form An {@code SExpression} representing the LISP form to evaluate.
+     * @return The resulting value of the evaluation, also as an {@code SExpression}.
      */
-    public SExpression eval(final SExpression sexp) {
-        return sexp.isAtom() ? eval(Cell.create(sexp.toAtom())) : eval(sexp.toList().getRoot());
+    public SExpression eval(final SExpression form) {
+        return evalImpl(form, FUNCTION_CONTEXT);
     }
 
     /**
-     * Given the root {@link Cell} of a parsed JLISP expression, evaluates the expression and
-     * returns the result.
-     *
-     * @param cell The root {@link Cell} of the parsed expression to evaluate.
-     * @return The resulting value of the evaluation.
-     */
-    public SExpression eval(final Cell cell) {
-        return evalImpl(cell, FUNCTION_CONTEXT);
-    }
-
-    /**
-     * Performs the actual evaluation of the parsed JLISP expression referenced by the given
-     * {@link Cell}.
-     * @param cell The root {@link Cell} of the parsed expression to evaluate.
+     * Performs the actual evaluation of the parsed JLISP form referenced by the given
+     * {@link SExpression}.
+     * @param form A LISP form, as an {@link SExpression}, to evaluate.
      * @param asArg If true, then S-expressions that evaluate to a function simply produce a reference
-     *              to the function. Otherwise, eval continues on to apply the function to the
+     *              to the function. Otherwise, {@code eval} continues on to apply the function to the
      *              following arguments ("normal" evaluation).
-     * @return The resulting value of the evaluation.
+     * @return The resulting value of the evaluation as an {@code SExpression}.
      */
-    private SExpression evalImpl(final Cell cell, final boolean asArg) {
-        if (cell.isNil()) { return List.create(); }
+    private SExpression evalImpl(final SExpression form, final boolean asArg) {
+        if (form.isNil()) { return List.create(); }
 
-        // Get the root cell's first element as an s-expression.
-        final SExpression car = SExpression.fromRef(cell.getFirst());
+        if (form.isAtom()) { return evaluateSymbolOrLiteral(form.toAtom()); }
+
+        final List list = form.toList();
+
+        // The CAR of the list should be a function or defined macro reference.
+        final SExpression car = list.car();
 
         // If the first element is an atom, try to resolve it as a function or macro symbol.
         if (car.isAtom()) {
             Optional<Macro> macro = resolveMacro(car.toAtom().toS());
 
             if (macro.isPresent()) {
-                final SExpression expansion = macro.get().expand(cell.toList(), env, this);
+                final SExpression expansion = macro.get().expand(list, env, this);
                 return eval(expansion);
             }
 
             return resolveFunction(car.toAtom().toS())
-                    .map(f -> applyImpl(f, cell.getRest()))
-                    .orElseGet(() -> evaluateSymbolOrLiteral(car.toAtom()));
+                .map(f -> applyImpl(f, list.cdr()))
+                .orElseGet(() -> {
+                    final SExpression evaluated = evaluateSymbolOrLiteral(car.toAtom());
+                    if (!evaluated.isFunction()) {
+                        throw new EvaluationException("Expected function!");
+                    }
+                    return applyImpl(evaluated.toFunction(), list.cdr());
+                });
         }
 
-        // If the first element is a list, recursively evaluate it: it's expected
-        // to evaluate to a function to apply to remainder of the parsed expression.
+        // If the first element is a list, recursively evaluate it: it's expected to evaluate to
+        // a function to apply to the remainder of the parsed expression.
         if (car.isList()) {
-            final SExpression evaluated = eval((Cell) cell.getFirst());
-            return asArg ? evaluated : applyImpl(evaluated.toFunction(), cell.getRest());
+            final SExpression evaluated = eval(car.toList());
+            return asArg ? evaluated : applyImpl(evaluated.toFunction(), list.cdr());
         }
 
-        if (car.isFunction()) {
-            return applyImpl((Function) car, cell.getRest());
-        }
-
-        throw new EvaluationException(String.format("Unexpected car %s in form %s", car, cell));
+        throw new EvaluationException(String.format("Unexpected car %s in form %s", car, form));
     }
 
     /**
@@ -139,12 +134,12 @@ public class Eval {
      * fully evaluated arguments.
      *
      * @param func The function to invoke.
-     * @param rest A Ref to the arguments for the function, typically a list.
+     * @param rest An {@link SExpression} representing a list of arguments to the function.
      * @return The value resulting from applying the function to the arguments.
      */
-    private SExpression applyImpl(final Function func, final Ref rest) {
+    private SExpression applyImpl(final Function func, final SExpression rest) {
         if (func.isSpecial()) {
-            return invokeFunction(func, SExpression.fromRef(rest), env);
+            return invokeFunction(func, rest, env);
         }
 
         final List args = evaluateArgs(rest);
@@ -195,19 +190,19 @@ public class Eval {
     }
 
     /**
-     * Assumes the given Ref is a List of arguments to a function. Iterates over the list,
+     * Assumes the given SExpression is a List of arguments to a function. Iterates over the list,
      * recursively evaluates each element and accumulates the results.
-     * @param rest A Ref to a list of arguments to a LISP function.
+     * @param rest An SExpression representing a list of arguments to a LISP function.
      * @return A List of the evaluated arguments.
      */
-    private List evaluateArgs(final Ref rest) {
+    private List evaluateArgs(final SExpression rest) {
         Ref it = rest;
         final List args = List.create();
 
         while (!it.isNil()) {
-            final SExpression intermediate = evalImpl((Cell) it, ARG_CONTEXT);
+            final SExpression intermediate = evalImpl(it.toList().car(), ARG_CONTEXT);
             args.add(intermediate);
-            it = ((Cell)it).getRest();
+            it = it.toList().cdr();
         }
 
         return args;

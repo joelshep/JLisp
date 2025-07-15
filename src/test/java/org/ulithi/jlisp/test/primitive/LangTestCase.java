@@ -168,7 +168,7 @@ public class LangTestCase {
     public void testCondShortcutsEvaluation() {
         final Session session = newSession();
         session.eval("(SETQ X 0)");
-        final SExpression sexp = session.eval("(COND ((EQ 1 1) 'foo) ((SETQ X 1) 'bar))");
+        final SExpression sexp = session.eval("(COND ((EQL 1 1) 'foo) ((SETQ X 1) 'bar))");
         assertTrue(sexp.isAtom());
         assertEquals("foo", sexp.toAtom().toS());
         final SExpression x = session.eval("X");
@@ -445,11 +445,11 @@ public class LangTestCase {
 
         // Test with just required arg
         SExpression result = session.eval("(complex-args 1)");
-        assertEquals("( 1 NIL ( NIL ) )", result.toString());
+        assertEquals("( 1 NIL NIL )", result.toString());
 
         // Test with optional arg
         result = session.eval("(complex-args 1 2)");
-        assertEquals("( 1 2 ( NIL ) )", result.toString());
+        assertEquals("( 1 2 NIL )", result.toString());
 
         // Test with rest args
         result = session.eval("(complex-args 1 2 3 4 5)");

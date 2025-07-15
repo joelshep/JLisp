@@ -3,11 +3,13 @@ package org.ulithi.jlisp.test.parser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.ParseException;
-import org.ulithi.jlisp.mem.PTree;
+import org.ulithi.jlisp.parser.Grammar;
 import org.ulithi.jlisp.parser.Parser;
 import org.ulithi.jlisp.parser.Token;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -71,7 +73,7 @@ public class ParserTestCase {
     @Test
     public void parseNumericLiteral() {
         final List<String> tokens = Collections.singletonList("43");
-        final String expected = "(43 . NIL)";
+        final String expected = "43";
         parseAndValidate(parser, tokens, expected);
     }
 
@@ -81,7 +83,7 @@ public class ParserTestCase {
     @Test
     public void parseEmptyList() {
         final List<String> tokens = Arrays.asList("(", ")");
-        final String expected = "(NIL . NIL)";
+        final String expected = "NIL";
         parseAndValidate(parser, tokens, expected);
     }
 
@@ -90,9 +92,9 @@ public class ParserTestCase {
      */
     @Test
     public void parseSingleElementList() {
-        // ( FOO ) => (FOO . NIL)
         final List<String> tokens = Arrays.asList("(", "FOO", ")");
-        final String expected = "(FOO . NIL)";
+        assertEquals(3, tokens.size());
+        final String expected = "( FOO )";
         parseAndValidate(parser, tokens, expected);
     }
 
@@ -101,9 +103,8 @@ public class ParserTestCase {
      */
     @Test
     public void parseSimpleList() {
-        // ( + 1 2 4 )  =>  (+ . (1 . (2 . (4 . NIL))))
         final List<String> tokens = Arrays.asList("(", "+", "1", "2", "4", ")");
-        final String expected = "(+ . (1 . (2 . (4 . NIL))))";
+        final String expected = "( + 1 2 4 )";
         parseAndValidate(parser, tokens, expected);
     }
 
@@ -112,9 +113,8 @@ public class ParserTestCase {
      */
     @Test
     public void parseNestedList() {
-        // ( + 2 ( * 5 9 ) )  =>  (+ . (2 . ((* . (5 . (9 . NIL))) . NIL)))
         final List<String> tokens = Arrays.asList("(", "+", "2", "(", "*", "5", "9", ")", ")");
-        final String expected = "(+ . (2 . ((* . (5 . (9 . NIL))) . NIL)))";
+        final String expected = "( + 2 ( * 5 9 ) )";
         parseAndValidate(parser, tokens, expected);
     }
 
@@ -123,17 +123,15 @@ public class ParserTestCase {
      */
     @Test
     public void parseListOfLists() {
-        // ( ( 2 3 ) ( 4 5 ) )
         final List<String> tokens = Arrays.asList("(", "(", "2", "3", ")", "(", "4", "5", ")", ")");
-        final String expected = "((2 . (3 . NIL)) . ((4 . (5 . NIL)) . NIL))";
+        final String expected = "( ( 2 3 ) ( 4 5 ) )";
         parseAndValidate(parser, tokens, expected);
     }
 
     @Test
     public void testOperatorAndListOperands() {
-        // (+ (* 2 3) (* 4 5))
         final List<String> tokens = Arrays.asList("(", "+", "(", "*", "4", "5", ")", "(", "*", "2", "3", ")", ")");
-        final String expected = "(+ . ((* . (4 . (5 . NIL))) . ((* . (2 . (3 . NIL))) . NIL)))";
+        final String expected = "( + ( * 4 5 ) ( * 2 3 ) )";
         parseAndValidate(parser, tokens, expected);
     }
 
@@ -142,22 +140,21 @@ public class ParserTestCase {
      */
     @Test
     public void parseInitialNestedList() {
-        // ( ( 2 3 ) 4 )  =>  ((2. (3 . NIL)) . (4 . NIL))
         final List<String> tokens = Arrays.asList("(", "(", "2", "3", ")", "4", ")");
-        final String expected = "((2 . (3 . NIL)) . (4 . NIL))";
+        final String expected = "( ( 2 3 ) 4 )";
         parseAndValidate(parser, tokens, expected);
     }
 
     @Test
     public void testListWithNilAsElement() {
         final List<String> tokens = Arrays.asList("(", "NIL", ")");
-        final String expected = "(NIL . NIL)";
+        final String expected = "( NIL )";
         parseAndValidate(parser, tokens, expected);
     }
 
     @Test
     public void testNilIsCaseInsensitive() {
-        final String expected = "(NIL . NIL)";
+        final String expected = "( NIL )";
         List<String> tokens = Arrays.asList("(", "NIL", ")");
         parseAndValidate(parser, tokens, expected);
         tokens = Arrays.asList("(", "nil", ")");
@@ -177,10 +174,10 @@ public class ParserTestCase {
     private static void parseAndValidate(final Parser parser,
                                          final List<String> tokens,
                                          final String expected) {
-        final Optional<PTree> ptree = parser.parse(tokenize(tokens));
-        assertTrue(ptree.isPresent());
-        final String dpExpression = ptree.get().toString();
-        assertEquals(expected, dpExpression);
+        final Optional<SExpression> sexp = parser.parse(tokenize(tokens));
+        assertTrue(sexp.isPresent());
+        final String expression = sexp.get().toString();
+        assertEquals(expected, expression);
     }
 
     /**
@@ -189,6 +186,13 @@ public class ParserTestCase {
      * @return An equivalent list of Token objects.
      */
     private static List<Token> tokenize(final List<String> tokens) {
-        return tokens.stream().map(Token::create).toList();
+        final List<Token> tokenized = new ArrayList<>(tokens.size());
+
+        for (final String token: tokens) {
+            if (token.equals(Grammar.LPAREN)) { tokenized.add(Token.LPAREN); }
+            else if (token.equals(Grammar.RPAREN)) { tokenized.add(Token.RPAREN); }
+            else { tokenized.add(Token.fromAtom(token)); }
+        }
+        return tokenized;
     }
 }

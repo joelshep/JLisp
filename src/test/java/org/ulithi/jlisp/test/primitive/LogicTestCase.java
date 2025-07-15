@@ -3,10 +3,12 @@ package org.ulithi.jlisp.test.primitive;
 import org.junit.Test;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.SExpression;
+import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.ulithi.jlisp.test.suite.UnitTestUtilities.eval;
 import static org.ulithi.jlisp.test.suite.UnitTestUtilities.newSession;
@@ -25,7 +27,7 @@ public class LogicTestCase {
     public void testSimpleAndWithBooleanSymbols() {
         assertTrue(eval("(AND T T T)").toAtom().toB());
         assertFalse(eval("(AND T F T)").toAtom().toB());
-        assertFalse(eval("AND F F F").toAtom().toB());
+        assertFalse(eval("(AND F F F)").toAtom().toB());
     }
 
     @Test
@@ -92,7 +94,7 @@ public class LogicTestCase {
     public void testSimpleORWithBooleanSymbols() {
         assertTrue(eval("(OR T T T)").toAtom().toB());
         assertTrue(eval("(OR F F T)").toAtom().toB());
-        assertFalse(eval("OR F F F").toAtom().toB());
+        assertFalse(eval("(OR F F F)").toAtom().toB());
     }
 
     @Test
@@ -127,13 +129,39 @@ public class LogicTestCase {
 
     @Test
     public void testT() {
-        final boolean result = eval("(T)").toAtom().toB();
+        final boolean result = eval("T").toAtom().toB();
         assertTrue(result);
     }
 
     @Test
+    public void testTNotFunction() {
+        Exception ex = null;
+        try {
+            eval("(T)").toAtom().toB();
+        } catch (final EvaluationException e) {
+            ex = e;
+        }
+
+        assertNotNull(ex);
+        assertEquals("Expected function!", ex.getMessage());
+    }
+
+    @Test
     public void testF() {
-        final boolean result = eval("(F)").toAtom().toB();
+        final boolean result = eval("F").toAtom().toB();
         assertFalse(result);
+    }
+
+    @Test
+    public void testFNotFunction() {
+        Exception ex = null;
+        try {
+            eval("(F)").toAtom().toB();
+        } catch (final EvaluationException e) {
+            ex = e;
+        }
+
+        assertNotNull(ex);
+        assertEquals("Expected function!", ex.getMessage());
     }
 }
