@@ -18,7 +18,7 @@ public final class REPL {
 	private static final String PROMPT = "\n> ";
 
     /** Line prefix to escape to a REPL-implemented command. **/
-    private static final String ESCAPE_PREFIX = ":";
+    private static final String ESCAPE_PREFIX = "/";
 
     /**
      * If true, parses each statement and prints the resulting parse tree in dotted-pair
@@ -59,7 +59,7 @@ public final class REPL {
 
         System.out.printf("%s %s. %s%n",
                           lisp.getName(), lisp.getVersion(),
-                          "\":help\" for help.");
+                          "\"/help\" for help.");
 
 		//
 		// Prompt for input and interpret it line by line, until either a
@@ -163,7 +163,7 @@ public final class REPL {
      * Writes a help message for this REPL to STDERR.
      */
     private static void showHelp() {
-        System.err.println("Enter \":\" (colon) for a REPL command. Available commands:");
+        System.err.println("Enter \"/\" for a REPL command: e.g. \"/help\". Available commands:");
         System.err.println("\tPARSE: Parse statement and print parse tree without evaluating");
         System.err.println("\tECHO: Parse statement and print parsed statement without evaluating");
         System.err.println("\tEVAL: Return to normal evaluation mode");
