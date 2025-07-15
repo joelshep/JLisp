@@ -135,7 +135,7 @@ public class FunctionUtils {
 
         // Handle rest parameter if present
         if (restParam != null) {
-            context.put(restParam, it);
+            context.put(restParam, it.isNil() ? Atom.NIL : it);
         }
 
         // Error if unused arguments and no rest parameter
