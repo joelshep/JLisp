@@ -4,7 +4,6 @@ import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.JLispRuntimeException;
 import org.ulithi.jlisp.exception.TypeConversionException;
 import org.ulithi.jlisp.mem.Cell;
-import org.ulithi.jlisp.mem.PTree;
 import org.ulithi.jlisp.mem.Ref;
 
 import java.util.ArrayDeque;
@@ -13,7 +12,10 @@ import java.util.Deque;
 import static org.ulithi.jlisp.mem.NilReference.NIL;
 
 /**
- * Wrapper class for a LISP list.
+ * Represents a LISP list. A {@link List} is implemented as a chain of one or more {@link Cell Cells},
+ * where the CAR of the {@code Cell} represents an element of the list (and is possible a list itself),
+ * and the CDR is a reference to the next {@link Cell} in the list, or is {@code NIL} if the
+ * {@code Cell} is the last cell in the list.
  */
 public class List implements SExpression {
 
@@ -22,7 +24,7 @@ public class List implements SExpression {
 
     /**
      * Reference to the last top-level cell in this list: used to determine where
-     * to add a new cell to extend the list.
+     * to add a new cell to extend (append to) the list.
      */
     private Cell end;
 
@@ -101,12 +103,12 @@ public class List implements SExpression {
     }
 
     /**
-     * Extends this {@link List} with the given {@link Atom}. If this is an empty list, the
-     * {@code Atom} becomes the first element in this list. If this is not an empty list, the
-     * {@code Atom} is appended via a cell to this {@code list}.
+     * Extends this {@link List} with the given {@link Function}. If this is an empty list, the
+     * {@code Function} becomes the first element in this list. If this is not an empty list, the
+     * {@code Function} is appended via a cell to this {@code list}.
      *
-     * @param function The {@code Atom} to append to this {@code List}.
-     * @return This {@code List} with the given {@code Atom} appended.
+     * @param function The {@code Function} to append to this {@code List}.
+     * @return This {@code List} with the given {@code Function} appended.
      */
     public List add(final Function function) {
         assert function != null : "function is null";
@@ -228,19 +230,6 @@ public class List implements SExpression {
     public SExpression cdr() {
         final Ref ref = root.getRest();
         return refToSExpression(ref);
-    }
-
-    /**
-     * Returns a {@link SExpression} representing the {@code car} of the {@code cdr} of this list:
-     * i.e., the second element in the list.
-     * @return The {@code car} of the {@code cdr} of this list.
-     */
-    public SExpression cadr() {
-        if (isNil() || cdr() == null || cdr().isNil()) {
-            throw new EvaluationException("Cannot get cadr of a list with fewer than two elements");
-        }
-
-        return cdr().toList().car();
     }
 
     /**
@@ -400,7 +389,51 @@ public class List implements SExpression {
      * {@inheritDoc}
      */
     public String toString() {
-        PTree pTree = new PTree(root);
-        return pTree.unparse();
+        if (root.isNil()) { return "NIL"; }
+        StringBuilder sb = new StringBuilder();
+        toStringImpl(root, sb);
+        return sb.toString();
+    }
+
+    /**
+     * Recursively generates a String representation of this List.
+     * @param cell The root cell of the/a List.
+     * @param sb StringBuilder used to recursively build a representation.
+     */
+    private void toStringImpl(final Cell cell, final StringBuilder sb) {
+        if (cell == null || cell.isNil()) {
+            return;
+        }
+
+        sb.append("( ");
+
+        // Walk through the list, processing the current CAR of the list and then recursively
+        // processing the CDR.
+        Cell curr = cell;
+
+        while (!curr.isNil()) {
+            if (curr.hasList()) {
+                toStringImpl(curr.getFirst().toCell(), sb);
+            } else {
+                sb.append(curr.getFirst().toString());
+            }
+
+            Ref rest = curr.getRest();
+
+            if (rest.isNil()) {
+                break;
+            }
+
+            // Handle dotted pairs
+            if (curr.isTerminal()) {
+                sb.append(" . ").append(rest);
+                break;
+            }
+
+            sb.append(" ");
+            curr = rest.toCell();
+        }
+
+        sb.append(" )");
     }
 }
