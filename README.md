@@ -45,80 +45,60 @@ be keywords, functions, symbols or literals. The Lexer (in the org.ulithi.jlisp.
 performs very little semantic processing: it is essentially producing groups of character data for
 the next phase -- parsing -- to assign meaning to.
 2. Parsing: In this phase, the tokenized program text produced by the Lexer is ingested by the Parser
-(in the org.ulithi.jlisp.parser package), which then produces the "parse tree" -- a.k.a. abstract
-syntax tree or AST -- for the program. The JLISP parse tree is a classic LISP "dotted-pair" structure.
-More on this later.
-3. Evaluation: Finally, after the program text has been tokenized, parsed and a valid parse tree
-generated, the program expression(s) are evaluated by recursively walking and evaluating the parse
-tree nodes. This process produces an S-Expression representing the output of the evaluation.
+(in the org.ulithi.jlisp.parser package), which then produces an s-expression representation for the
+program. The JLISP s-expression representation is a classic LISP "dotted-pair" structure. More on
+this later.
+3. Evaluation: Finally, after the program text has been tokenized, parsed and a valid s-expression
+representation has been generated, the program expression(s) are evaluated by recursively walking
+and evaluating the s-expression. This process produces a new s-expression representing the output of
+the evaluation.
 
-## Conceptual Model(s)
+## Conceptual Model
 
-There are two layers to JLISP's representation of a LISP expression: the physical memory model, and
-the conceptual language model.
+As of JLISP 0.2, JLISP's internal model of LISP forms closely follows the language semantics.
+Prior, JLISP had a secondary abstract syntax tree (AST) implementation as well, but it was
+fundamentally flawed in that it provided no straightforward way to unambiguously represent a single
+atom, like "FOO", with a single element list like ( FOO ). This led to some subtle and not-so-subtle
+bugs. It turned out to be easier to just remove the secondary AST and have the parser directly
+generate S-expression instead.
 
-The **memory model** describes the in-memory structure -- the AST essentially -- that the Parser generates.
-JLISP builds the parse tree, or AST, from simple CONS cells, which can be presented as a *dotted pair*.
-A CONS cell consists of two fields: each field is a pointer (or, in JLISP, a reference: Java doesn't
-have pointers). The first field/pointer is the CAR of the CONS cell, the second pointer is the CDR.
-If we were drawing a cell, it would look like a rectangle on its side, split into two boxes -- one
-for each field -- with pointers coming from each. In text, it is much easier to represent a cell as
-in dotted-pair notation like this: `(4 . NIL)`. This is a cell whose CAR is the numeric literal 4,
-and whose CDR is the special value NIL: think of NIL as a null pointer or reference. Simple LISP
-expressions are stored in memory as linked lists of cells. For example `(+ 1 2)` would be stored as
-`(+ *)-->(1 *)-->(2 NIL)` (where * represents a pointer to the next cell in the list). In dotted-pair
-notation, this is represented as `(+ . (1 . (2 . NIL)))`.
+LISP expressions -- also known as "forms" -- are represented as S-Expressions (symbolic expressions).
+S-Expressions (usually referred to as sexps in the code) are either *atoms* -- numeric and alphanumeric
+literals, and symbols like variable and function names -- or lists of atoms and sexprs:
 
-The **language model** describes, well, the lists -- or, more precisely, the S-Expressions
-(Symbolic Expressions) that LISP syntax builds on. S-Expressions (sexprs, or sexps) are either
-*atoms* -- numeric and alphanumeric literals, and symbols like variable and function names -- or
-lists of atoms and sexprs:
 ```
 s_expression = atomic_symbol | "(" s_expression "." s_expression ")" | list
 list = "(" s_expression [s_expression] ")"
 ```
-At the moment, JLISP is unable to parse the dotted-pair version of a sexpr as program text, but it
+The `org.ulithi.jlisp.core` package contains the implementations of S-Expressions, Lists and Atoms:
+the basic building blocks of the LISP language.
+
+Internally, S-Expressions are composed of `Cell` objects. A JLISP Cell is very similar to a LISP
+CONS cell. Like a CONS cell, a JLISP Cell consists of two fields: each field is a pointer (or, in
+JLISP, a reference: Java doesn't have pointers). The first field/pointer is the CAR of the CONS cell,
+the second pointer is the CDR. If we were drawing a cell, it would look like a rectangle on its side,
+split into two boxes -- one for each field -- with pointers coming from each. The CAR pointer, or
+reference, points to an atom or the beginning of another list. The CDR pointer either points to
+the next cell in the list, or terminates the list with a NIL or other atom. In text, it is much
+easier to represent a cell using dotted-pair notation like this: `(4 . NIL)`. This is a cell whose
+CAR is the numeric literal 4, and whose CDR is the special value NIL: think of NIL as a null pointer
+or reference. `(4 . NIL)` is equivalent to the single-element list `(4)`. Simple LISP expressions are
+stored in memory as linked lists of cells. For example `(+ 1 2)` would be stored as
+`[+ *]-->[1 *]-->[2 NIL]` (where * represents a pointer to the next cell in the list). In dotted-pair
+notation, this is represented as `(+ . (1 . (2 . NIL)))`.
+
+(At the moment, JLISP is unable to parse the dotted-pair version of a sexpr as program text, but it
 does use dotted-pair notation when serialized a parse tree as a String. I.e., it can output it, but
-not yet accept it as input.
+not yet accept it as input.)
 
-So, how do these two conceptual worlds come together?
-
-A cell field can be one of several things:
-1. A reference to an atom.
-2. A reference to a list.
-3. A reference to another cell.
-4. NIL (which is a special case of being both an atom and a list).
-
-This is where it gets a touch messy. Atoms and lists are part of the language model. Cells are not:
-they're part of the memory model. At first, I made them all sexprs (i.e., I had them all inherit
-from SExpression) but cells are *not* sexprs. In the memory model, however, atoms and cells are the
-things that can be referred to from cell fields: they are all *referents*, which are represented as
-Refs in JLISP.
-
-So, in JLISP, a cell is a pair of Refs, and the Atom and Cell classes inherit from ```Ref```,
-which is a simple marker interface in the JLISP memory model.
-
-The ```SExpression``` class in ```org.ulithi.jlisp.core``` is not only the super-class for
-```Atom``` and ```List```, but it is the bridge between the language model and the memory model.
-The ```SExpression``` class's primary function is to transform cells and references to atoms
-and lists.
-
-### A Word About NIL
-
-In JLISP, ```NIL``` is a condition, not a value. ```NIL``` is not defined as a value in JLISP.
-For atoms, T (true) and F (false) are the Boolean values. An empty list when coerced, to a Boolean,
-evaluates to F: all other lists evaluate to T. The ```NIL?``` predicate returns T for the F atom
-and the empty list, and returns T otherwise. ```NIL``` only exists in the memory model, as an
-end-of-list marker.
-
-I originally tried to implement ```NIL``` with similar semantics to early LISP versions, where
-NIL was false was an atom was an empty list was a list terminator ... but it proved to be more
-overloading than I could manage. So, I gave up and decided to go a more Scheme-like route by
-simply excluding ```NIL``` as a first-class concept.
+To manage all this, in JLISP a cell is a pair of `Ref` (reference) instances. Cells themselves are
+`Refs`, as are `SExpressions` which includes all atoms and lists.
 
 ## Evaluation
 
-Eval starts with a cell, which is *probably* the root cell of a parse tree.
+***Note: This section is outdated and needs to be re-written.***
+
+Eval starts with a cell, which is *probably* the root cell of an S-expression.
 
 If the cell CAR is a string, boolean or numeric literal (i.e. an atom that is not a symbol), just
 evaluate it and return.
