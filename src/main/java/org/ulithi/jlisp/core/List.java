@@ -25,7 +25,7 @@ public class List implements SExpression {
      * Reference to the last top-level cell in this list: used to determine where
      * to add a new cell to extend (append to) the list.
      */
-    private Cell end;
+    private Cell end = null;
 
     /**
      * Creates an empty {@link List}.
@@ -54,16 +54,25 @@ public class List implements SExpression {
      */
     private List(final Cell root) {
         this.root = root;
-        Cell curr = root;
-        // If the cell is the head of a list, traverse to find the
-        // list end (where the next top-level element will be inserted.
-        // TODO - It might be more efficient to do this on demand, so creating
-        // a static list isn't an O(n) operation.
-        while (!curr.isTerminal()) {
-            curr = curr.getRest().toCell();
-        }
+    }
 
-        this.end = curr;
+    /**
+     * Determines the end of this list: where the next top-level element will be inserted.
+     * <p>
+     * Many lists are created and never modified. Therefore, this O(n) operation is deferred
+     * until there is actually a need to modify the end of the list. Once the end of the list
+     * has been modified, there is no need to find it again.
+     * @return The cell that is the terminal cell of this list.
+     */
+    private Cell getEnd() {
+        if (end == null) {
+            Cell curr = root;
+            while (!curr.isTerminal()) {
+                curr = curr.getRest().toCell();
+            }
+            end = curr;
+        }
+        return end;
     }
 
     /**
@@ -118,7 +127,7 @@ public class List implements SExpression {
             root = cell;
             end = root;
         } else {
-            end.setRest(cell);
+            getEnd().setRest(cell);
             end = cell;
         }
 
@@ -141,7 +150,7 @@ public class List implements SExpression {
             root = cell;
             end = root;
         } else {
-            end.setRest(cell);
+            getEnd().setRest(cell);
             end = cell;
         }
 
@@ -166,7 +175,7 @@ public class List implements SExpression {
             root = cell;
             end = root;
         } else {
-            end.setRest(cell);
+            getEnd().setRest(cell);
             end = (Cell)end.getRest();
         }
 
@@ -188,7 +197,7 @@ public class List implements SExpression {
             root = Cell.createAsList(list.getRoot());
             end = root;
         } else {
-            end.setRest(list.getRoot());
+            getEnd().setRest(list.getRoot());
             end = list.end;
         }
 
@@ -208,8 +217,7 @@ public class List implements SExpression {
      * @return True if this list is empty, false otherwise.
      */
     public boolean isEmpty() {
-        final Ref first = this.root.getFirst();
-        return (first == NIL);
+        return (root.getFirst() == NIL);
     }
 
     /**
