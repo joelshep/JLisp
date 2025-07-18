@@ -24,7 +24,6 @@ public interface SExpression extends Ref {
      * @return An {@link Atom} or {@link List} as represented by the {@code Ref}.
      */
     static SExpression fromRef(final Ref ref) {
-        assert ref != null: "Ref is null";
         if (ref.isNil()) { return Atom.NIL; }
         if (ref.isAtom()) { return ref.toAtom(); }
         return List.create(ref);

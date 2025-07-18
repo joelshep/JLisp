@@ -3,6 +3,7 @@ package org.ulithi.jlisp.mem;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Function;
 import org.ulithi.jlisp.core.List;
+import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
 
 /**
@@ -20,6 +21,9 @@ public final class NilReference implements Ref {
      * No construction: use the globally defined NIL object.
      */
     private NilReference() { }
+
+    @Override
+    public SExpression toSExpression() { return Atom.NIL; }
 
     @Override
     public boolean isAtom() { return true; }

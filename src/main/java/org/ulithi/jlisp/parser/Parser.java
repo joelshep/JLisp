@@ -118,18 +118,8 @@ public class Parser {
          * the detected data type of the token.
          */
         private static Atom parseToken(final String token) {
-            if (NIL.equalsIgnoreCase(token)) {
-                return Atom.NIL;
-            }
-            if (Grammar.isNumeric(token)) {
-                return Atom.create(Integer.parseInt(token));
-            }
-
-            // TODO Symbols, properly.
-            if (token.equals("+") || token.equals("*")) {
-                return Atom.createSymbol(token);
-            }
-
+            if (NIL.equalsIgnoreCase(token)) { return Atom.NIL; }
+            if (Grammar.isNumeric(token)) { return Atom.create(Integer.parseInt(token)); }
             return Atom.create(token);
         }
     }

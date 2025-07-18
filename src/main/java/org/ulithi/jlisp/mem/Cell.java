@@ -3,6 +3,8 @@ package org.ulithi.jlisp.mem;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Function;
 import org.ulithi.jlisp.core.List;
+import org.ulithi.jlisp.core.SExpression;
+import org.ulithi.jlisp.exception.TypeConversionException;
 import org.ulithi.jlisp.parser.Grammar;
 
 import java.util.Objects;
@@ -209,7 +211,18 @@ public class Cell implements Ref {
      */
     @Override
     public boolean isNil() {
-        return first.equals(NIL) && rest.equals(NIL);
+        return first == NIL && rest == NIL;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Note: There is no deterministic conversion of a single Cell to an SExpression.
+     * @return
+     */
+    @Override
+    public SExpression toSExpression() {
+        throw new TypeConversionException("Cannot convert Cell to SExpression");
     }
 
     /**

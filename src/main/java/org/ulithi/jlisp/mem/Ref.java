@@ -4,6 +4,7 @@ import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.Bindable;
 import org.ulithi.jlisp.core.Function;
 import org.ulithi.jlisp.core.List;
+import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.TypeConversionException;
 
 /**
@@ -15,6 +16,12 @@ import org.ulithi.jlisp.exception.TypeConversionException;
  * of a LISP form, and the corresponding {@code SExpression}.
  */
 public interface Ref extends Bindable {
+
+    /**
+     * If possible, returns this {@link Ref} as an {@link SExpression}.
+     * @return This {@link Ref} as an {@link SExpression}.
+     */
+    SExpression toSExpression();
 
     /**
      * Indicates if this is a reference to an {@link Atom}.
@@ -75,4 +82,4 @@ public interface Ref extends Bindable {
      * @return True if this is a {@code NIL} reference, false otherwise.
      */
     boolean isNil();
- }
+}

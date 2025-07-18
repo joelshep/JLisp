@@ -1,7 +1,6 @@
 package org.ulithi.jlisp.core;
 
 import org.ulithi.jlisp.exception.EvaluationException;
-import org.ulithi.jlisp.exception.JLispRuntimeException;
 import org.ulithi.jlisp.exception.TypeConversionException;
 import org.ulithi.jlisp.mem.Cell;
 import org.ulithi.jlisp.mem.Ref;
@@ -267,17 +266,22 @@ public class List implements SExpression {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SExpression toSExpression() {
+        return this;
+    }
+
+    /**
      * Attempts to convert the given Ref to an SExpression.
      * @param ref The Ref to convert.
      * @return A NIL, List or Atom representation of the Ref.
      */
     private static SExpression refToSExpression(final Ref ref) {
         if (ref.isNil()) { return List.create(); }
-        if (ref.isAtom()) { return ref.toAtom(); }
-        if (ref.isList()) { return ref.toList(); }
-        if (ref.isCell()) { return List.create(ref); }
-        if (ref.isFunction()) { return ref.toFunction(); }
-        throw new JLispRuntimeException("Don't know how to convert ref: " + ref);
+        if (ref.isCell()) { return List.create(ref.toCell()); }
+        return ref.toSExpression();
     }
 
     /**

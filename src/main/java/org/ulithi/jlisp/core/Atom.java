@@ -132,7 +132,7 @@ public class Atom implements SExpression {
      */
     @Override
     public final boolean isNil() {
-        return this.equals(Atom.NIL);
+        return this == Atom.NIL;
     }
 
     /**
@@ -162,6 +162,12 @@ public class Atom implements SExpression {
     public Ref toRef() {
         return this;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SExpression toSExpression() { return this; }
 
     /**
      * {@inheritDoc}

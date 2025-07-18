@@ -96,6 +96,10 @@ public interface Function extends SExpression {
 
     /** {@inheritDoc} */
     @Override
+    default SExpression toSExpression() { return this; }
+
+    /** {@inheritDoc} */
+    @Override
     default boolean isNil() { return false; }
 
     /** {@inheritDoc} */

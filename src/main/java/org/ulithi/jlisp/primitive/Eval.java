@@ -200,8 +200,8 @@ public class Eval {
         final List args = List.create();
 
         while (!it.isNil()) {
-            final SExpression intermediate = evalImpl(it.toList().car(), ARG_CONTEXT);
-            args.add(intermediate);
+            final SExpression arg = evalImpl(it.toList().car(), ARG_CONTEXT);
+            args.add(arg);
             it = it.toList().cdr();
         }
 
