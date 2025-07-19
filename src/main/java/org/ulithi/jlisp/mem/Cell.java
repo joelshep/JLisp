@@ -140,7 +140,6 @@ public class Cell implements Ref {
      * @param rest The new Cell's {@code rest} element.
      */
     private Cell(final Ref first, final Ref rest) {
-        Objects.requireNonNull(first);
         this.first = first;
         this.rest = rest;
     }

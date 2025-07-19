@@ -41,7 +41,6 @@ public class List implements SExpression {
      * @return A new {@link List}.
      */
     public static List create(final Ref ref) {
-        assert ref != null: "Ref is null";
         if (ref.isNil()) { return List.create(); }
         if (ref.isCell()) { return new List(ref.toCell()); }
         throw new TypeConversionException("Cannot create List from Atom");
@@ -287,8 +286,10 @@ public class List implements SExpression {
      * @return A NIL, List or Atom representation of the Ref.
      */
     private static SExpression refToSExpression(final Ref ref) {
-        if (ref.isNil()) { return List.create(); }
+        // Order of conditionals determined by profiling: has a noticeable impact on
+        // overall performance.
         if (ref.isCell()) { return List.create(ref.toCell()); }
+        if (ref.isNil()) { return List.create(); }
         return ref.toSExpression();
     }
 
