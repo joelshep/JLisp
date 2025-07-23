@@ -40,4 +40,10 @@ public class ExpectTestCase {
         final SExpression result = UnitTestUtilities.eval("(EXPECT (CAR '(A B C)) NIL)");
         assertFalse(result.toAtom().toB());
     }
+
+    @Test
+    public void testBareThen() {
+        final SExpression result = UnitTestUtilities.eval("(THEN)");
+        assertTrue(result.toAtom().toB());
+    }
 }

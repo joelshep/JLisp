@@ -3,10 +3,12 @@ package org.ulithi.jlisp.test.core;
 import org.junit.Test;
 import org.ulithi.jlisp.core.Atom;
 import org.ulithi.jlisp.core.BindableFunction;
+import org.ulithi.jlisp.core.Binding;
 import org.ulithi.jlisp.core.Environment;
 import org.ulithi.jlisp.core.Function;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
+import org.ulithi.jlisp.exception.SyntaxException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -120,6 +122,18 @@ public class EnvironmentTestCase {
         env.startScope();
         env.addBinding("foo", createFunction("foo"));
         env.addBinding("PLUS", createFunction("bar"));
+    }
+
+    @Test(expected = EvaluationException.class)
+    public void testUserBindingToCoreSymbolThrows() {
+        final Environment env = new Environment();
+        env.addUserBinding(new Binding("PLUS", createFunction("PLUS")));
+    }
+
+    @Test(expected = SyntaxException.class)
+    public void testUserBindingWithInvalidNameThrows() {
+        final Environment env = new Environment();
+        env.addUserBinding(new Binding("000FOO", createFunction("000FOO")));
     }
 
     private static BindableFunction createFunction(final String name) {

@@ -76,7 +76,7 @@ public class Expect implements BindingProvider {
 
         @Override
         public SExpression apply(SExpression sexp, Environment environment, Eval eval) {
-            environment.reset();
+            environment.resetFromCurrentScope();
             return Atom.T;
         }
     }
