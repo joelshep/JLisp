@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.InvalidArgumentException;
+import org.ulithi.jlisp.exception.SyntaxException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities.Session;
@@ -530,6 +531,74 @@ public class LangTestCase {
         final SExpression result = eval("((LAMBDA (x) (+ x x)) 17)");
         assertTrue(result.isAtom());
         assertEquals(34, result.toAtom().toI());
+    }
+
+    @Test
+    public void testBasicLetBinding() {
+        String expr = "(let ((x 10)) x)";
+        assertEquals(10, eval(expr).toAtom().toI());
+    }
+
+    @Test
+    public void testMultipleLetBindings() {
+        String expr = "(let ((x 10) (y 20)) (+ x y))";
+        assertEquals(30, eval(expr).toAtom().toI());
+    }
+
+    @Test
+    public void testNestedLetBindings() {
+        String expr = "(let ((x 10)) (let ((y 20)) (+ x y)))";
+        assertEquals(30, eval(expr).toAtom().toI());
+    }
+
+    @Test
+    public void testLetWithMultipleForms() {
+        String expr = "(let ((x 10)) (+ x 1) (+ x 2) (+ x 3))";
+        assertEquals(13, eval(expr).toAtom().toI());
+    }
+
+    @Test
+    public void testLetShadowing() {
+        final Session session = newSession();
+        session.eval("(setq x 100)");
+        String expr = "(let ((x 10)) x)";
+        assertEquals(10, session.eval(expr).toAtom().toI());
+        assertEquals(100, session.eval("x").toAtom().toI());
+    }
+
+    @Test
+    public void testLetParallelBinding() {
+        final Session session = newSession();
+        session.eval("(setq a 1)");
+        String expr = "(let ((x a) (a 2)) x)";
+        assertEquals(1, session.eval(expr).toAtom().toI());
+    }
+
+    @Test(expected = SyntaxException.class)
+    public void testLetWithInvalidBindingStructure() {
+        String expr = "(let (x 10) x)";
+        eval(expr);
+    }
+
+    @Test(expected = SyntaxException.class)
+    public void testLetWithNonSymbolBinding() {
+        String expr = "(let ((10 20)) x)";
+        eval(expr);
+    }
+
+    @Test
+    public void testLetWithEmptyBindingList() {
+        String expr = "(let () 42)";
+        assertEquals(42, eval(expr).toAtom().toI());
+    }
+
+    @Test
+    public void testLetWithComplexExpression() {
+        String expr =
+            "(let ((x 10) (y 20)) " +
+            "  (let ((z (+ x y))) " +
+            "    (* z 2)))";
+        assertEquals(60, eval(expr).toAtom().toI());
     }
 
     @Test

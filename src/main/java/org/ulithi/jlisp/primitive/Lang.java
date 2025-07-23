@@ -12,6 +12,7 @@ import org.ulithi.jlisp.core.Macro;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.core.UserFunction;
 import org.ulithi.jlisp.exception.EvaluationException;
+import org.ulithi.jlisp.exception.SyntaxException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
 import org.ulithi.jlisp.mem.Cell;
 
@@ -37,6 +38,7 @@ public class Lang implements BindingProvider {
                              new Binding(new Lang.EVAL()),
                              new Binding(new Lang.IF()),
                              new Binding((new Lang.LAMBDA())),
+                             new Binding((new Lang.LET())),
                              new Binding(new Lang.MACROEXPAND()),
                              new Binding((new Lang.MAPCAR())),
                              new Binding(new Lang.QUOTE()),
@@ -357,13 +359,60 @@ public class Lang implements BindingProvider {
         }
     }
 
+    public static class LET extends BindableFunction {
+        public LET() { super("LET"); }
+
+        @Override
+        public boolean isReentrant() { return true; }
+
+        @Override
+        public boolean isSpecial() { return true; }
+
+        public SExpression apply(final SExpression sexp, final Environment env, final Eval eval) {
+            final Args args = Args.create(sexp);
+
+            // First argument should be list of bindings
+            final List bindings = args.takeList();
+
+            // Process each binding
+            for (int i = 0; i < bindings.lengthAsInt(); i++) {
+                final SExpression binding = bindings.nth(i);
+
+                if (!binding.isList()) {
+                    throw new SyntaxException("Invalid binding specification for LET: " + binding);
+                }
+
+                final List bindingPair = binding.toList();
+
+                final SExpression nameAtom = bindingPair.nth(0);
+
+                if (!nameAtom.isAtom()) {
+                    throw new EvaluationException("Binding argument for LET must be a symbol: received " + nameAtom);
+                }
+
+                final String name = nameAtom.toAtom().toS();
+                final SExpression definition = eval.eval(bindingPair.nth(1));
+                env.addBinding(name, definition);
+            }
+
+            // Evaluate body forms in sequence, return last result
+            SExpression result = Atom.NIL;
+
+            while (args.hasNext()) {
+                result = eval.eval(args.takeAny());
+            }
+
+            return result;
+        }
+    }
+
     public static class MAPCAR extends BindableFunction {
         public MAPCAR() { super("MAPCAR"); }
 
         @Override
         public boolean isReentrant() { return true; }
 
-        public SExpression apply(final SExpression sexp, final Environment environment, final Eval eval) {
+        public SExpression apply(final SExpression sexp, final Environment env, final Eval eval) {
             final List args = sexp.toList();
             final SExpression function = args.nth(0);
             final List[] argLists = new List[args.lengthAsInt()-1];
