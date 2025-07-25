@@ -41,6 +41,7 @@ public class Lang implements BindingProvider {
                              new Binding((new Lang.LET())),
                              new Binding(new Lang.MACROEXPAND()),
                              new Binding((new Lang.MAPCAR())),
+                             new Binding((new Lang.PROGN())),
                              new Binding(new Lang.QUOTE()),
                              new Binding(new Lang.SETQ()));
     }
@@ -431,6 +432,38 @@ public class Lang implements BindingProvider {
                 }
 
                 result.add(eval.apply(function, invocationArgs));
+            }
+
+            return result;
+        }
+    }
+
+    /**
+     * Implements the LISP {@code PROGN} special form.  The {@code PROGN} form evaluates each form
+     * in its body sequentially and in the order in which they appear. The value of the last
+     * evaluated form is returned; values returned by other forms are discarded.
+     * <p>
+     * (progn &lt;form1&gt; &lt;form2&gt; .. &lt;formN&gt;) => result
+     * </p>
+     */
+    public static class PROGN extends BindableFunction {
+        public PROGN() { super("PROGN"); }
+
+        @Override
+        public boolean isReentrant() { return true; }
+
+        @Override
+        public boolean isSpecial() { return true; }
+
+        public SExpression apply(final SExpression sexp, final Environment env, final Eval eval) {
+            final List forms = sexp.toList();
+
+            if (forms.isEmpty()) { return Atom.NIL; }
+
+            SExpression result = Atom.NIL;
+
+            for (int i = 0; i < forms.lengthAsInt(); i++) {
+                result = eval.eval(forms.nth(i));
             }
 
             return result;

@@ -2,10 +2,13 @@ package org.ulithi.jlisp.test.primitive;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.ulithi.jlisp.core.Atom;
+import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.InvalidArgumentException;
 import org.ulithi.jlisp.exception.SyntaxException;
+import org.ulithi.jlisp.exception.TypeConversionException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities.Session;
@@ -619,6 +622,149 @@ public class LangTestCase {
         session.eval(" (SETQ a '(1 2 3))");
         final SExpression result = session.eval("(MAPCAR (LAMBDA (x) (+ 5 x)) a)");
         assertEquals("( 6 7 8 )", result.toString());
+    }
+
+    @Test
+    public void testPrognSimple() {
+        final Session session = newSession();
+        assertEquals(Atom.NIL, session.eval("(progn)"));
+        assertEquals(42, session.eval("(progn 42)").toAtom().toI());
+        assertEquals(3, session.eval("(progn 1 2 3)").toAtom().toI());
+        assertEquals(42, eval("(progn nil nil 42)").toAtom().toI());
+    }
+
+    @Test
+    public void testPrognWithGlobalScopes() {
+        final Session session = newSession();
+        session.eval("(progn (setq x 1) (setq y 2) (+ x y))");
+        assertEquals(1, session.eval("x").toAtom().toI());
+        assertEquals(2, session.eval("y").toAtom().toI());
+    }
+
+    @Test
+    public void testPrognWithMixedScopes() {
+        final Session session = newSession();
+        session.eval("(progn (setq x 1) (let ((y 2)) (+ x y)))");
+        assertEquals(1, session.eval("x").toAtom().toI());
+
+        try {
+            // TODO - Should give undefined symbol error ...
+            session.eval("y").toAtom().toI();
+            fail("Expected TypeConversionException");
+        } catch (TypeConversionException e) {
+            // Okay
+        }
+    }
+
+    @Test
+    public void testPrognWithQuotes() {
+        assertEquals("c", eval("(progn 'a 'b 'c)").toAtom().toString());
+    }
+
+    @Test
+    public void testNestedProgn() {
+        assertEquals(4, eval("(progn 1 (progn 2 3) 4)").toAtom().toI());
+    }
+
+    @Test
+    public void testPrognWithSideEffects() {
+        final Session session = newSession();
+        // Test that side effects occur in the correct order
+        session.eval("(setq result nil)");
+
+        String expr =
+            "(progn " +
+            "  (setq result (cons 1 result)) " +
+            "  (setq result (cons 2 result)) " +
+            "  (setq result (cons 3 result)))";
+
+        session.eval(expr);
+
+        // Check the final list should be (3 2 1)
+        SExpression result = session.eval("result");
+        List resultList = result.toList();
+        assertEquals(3, resultList.nth(0).toAtom().toI());
+        assertEquals(2, resultList.nth(1).toAtom().toI());
+        assertEquals(1, resultList.nth(2).toAtom().toI());
+    }
+
+    @Test
+    public void testPrognInFunction() {
+        final Session session = newSession();
+
+        // Test PROGN within a function definition
+        String defun =
+            "(defun test-func () " +
+            "  (progn " +
+            "    (setq x 1) " +
+            "    (setq y 2) " +
+            "    (+ x y)))";
+
+        session.eval(defun);
+        String expr = "(test-func)";
+        assertEquals(3, session.eval("(test-func)").toAtom().toI());
+}
+
+    @Test(expected = EvaluationException.class)
+    public void testPrognWithError() {
+        // Test that errors in middle of PROGN propagate correctly
+        eval("(progn (setq x 1) (undefined-function) (setq y 2))");
+    }
+
+    @Test
+    public void testPrognPreservesEnvironment() {
+        final Session session = newSession();
+
+        // Test that PROGN doesn't affect outer environment unexpectedly
+        session.eval("(setq x 10)");
+        String expr = "(progn (let ((x 20)) x) x)";
+        assertEquals(10, session.eval("(progn (let ((x 20)) x) x)").toAtom().toI());
+    }
+
+    @Test
+    public void testPrognWithComplexExpressions() {
+        // Test PROGN with more complex expressions
+        String expr =
+            "(progn " +
+            "  (+ 1 2) " +
+            "  (* 3 4) " +
+            "  (/ 10 2))";
+        assertEquals(5, eval(expr).toAtom().toI());
+    }
+
+    @Test
+    public void testPrognWithStrings() {
+        // Test PROGN with string literals
+        assertEquals("third", eval("(progn \"first\" \"second\" \"third\")").toAtom().toS());
+    }
+
+    @Test
+    public void testPrognWithMacro() {
+        final Session session = newSession();
+
+        // Define a simple increment macro that adds 1 to its argument
+        String defmacro =
+            "(defmacro inc (x) " +
+            "  (list 'setq x (list '+ x 1)))";
+        session.eval(defmacro);
+
+        String expr =
+            "(progn " +
+            "  (setq counter 5) " +
+            "  (inc counter) " +
+            "  counter)";
+
+        SExpression result = session.eval(expr);
+        assertEquals(6, result.toAtom().toI());
+
+        // Ensure macro expansion didn't affect subsequent evaluations
+        String expr2 =
+            "(progn " +
+            "  (inc counter) " +
+            "  counter)";
+
+        result = session.eval(expr2);
+        assertEquals(7, result.toAtom().toI());
     }
 
     @Test
