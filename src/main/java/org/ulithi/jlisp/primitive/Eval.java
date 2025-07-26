@@ -217,7 +217,7 @@ public class Eval {
     private SExpression evaluateSymbolOrLiteral(final Atom atom) {
         return resolveSymbol(atom.toS())
                 .orElseGet(() -> {
-                    if (atom.isLiteral()) {
+                    if (atom.isLiteral() || atom.isNil()) {
                         return atom;
                     }
                     throw new UndefinedSymbolException("Unknown symbol: " + atom);

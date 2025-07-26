@@ -10,7 +10,8 @@ public class Token {
      * Enumerates the different types of tokens relevant for parsing and evaluation.
      */
     public enum Type {
-        ATOM,
+        SYMBOL,
+        LITERAL,
         LIST_START,
         LIST_END,
         DOT
@@ -29,13 +30,34 @@ public class Token {
     private final Type type;
 
     /**
-     * Creates and returns an Atom-type {@link Token} wrapping the given value.
-     * @param value A parsed atom-type value.
-     * @return A {@code Token} representing the atom-type value.
+     * Creates and returns an Atom-type {@link Token} wrapping the string or numeric literal
+     * value.
+     * @param value A parsed atom-type string or numeric literal value.
+     * @return A {@code Token} representing the value.
      */
-    public static Token fromAtom(final String value) {
-        return new Token(value, Type.ATOM);
+    public static Token asLiteral(final String value) {
+        return new Token(value, Type.LITERAL);
     }
+
+    /**
+     * Creates and returns a Symbol-type {@link Token} whose name is the given value.
+     * @param value A symbolic name.
+     * @return A {@code Token} representing the symbol.
+     */
+    public static Token asSymbol(final String value) {
+        return new Token(value, Type.SYMBOL);
+    }
+
+    /**
+     * Creates a new {@link Token} to represent the given {@code String} value and {@code Type}
+     * @param value A source code token, as a {@code String}.
+     * @param type The semantic type of the token.
+     */
+    private Token(final String value, final Type type) {
+        this.value = value;
+        this.type = type;
+    }
+
 
     /**
      * Indicates if this token represents the start of a list.
@@ -51,14 +73,31 @@ public class Token {
      */
     public boolean isListEnd() {
         return this.type == Type.LIST_END;
+
     }
 
     /**
-     * Indicates if this token represents an atomic value.
-     * @return True if this token represents an atomic value, false otherwise.
+     * Indicates if this token represents a literal value.
+     * @return True if this token represents a literal value, false otherwise.
      */
-    public boolean isAtom() {
-        return this.type == Type.ATOM;
+    public boolean isLiteral() {
+        return this.type == Type.LITERAL;
+    }
+
+    /**
+     * Indicates if this token represents the special symbol NIL.
+     * @return True if this token represents NIL, false otherwise.
+     */
+    public boolean isNil() {
+        return isSymbol() && value.toUpperCase().equals(Grammar.NIL);
+    }
+
+    /**
+     * Indicates if this token represents a symbol.
+     * @return True if this token represents a symbol, false otherwise.
+     */
+    public boolean isSymbol() {
+        return this.type == Type.SYMBOL;
     }
 
     /**
@@ -67,16 +106,6 @@ public class Token {
      */
     public boolean isDot() {
         return this.type == Type.DOT;
-    }
-
-    /**
-     * Creates a new {@link Token} to represent the given {@code String} value and {@code Type}
-     * @param value A source code token, as a {@code String}.
-     * @param type The semantic type of the token.
-     */
-    private Token(final String value, final Type type) {
-        this.value = value;
-        this.type = type;
     }
 
     /**

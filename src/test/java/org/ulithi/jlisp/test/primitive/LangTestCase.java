@@ -9,6 +9,7 @@ import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.InvalidArgumentException;
 import org.ulithi.jlisp.exception.SyntaxException;
 import org.ulithi.jlisp.exception.TypeConversionException;
+import org.ulithi.jlisp.exception.UndefinedSymbolException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities.Session;
@@ -132,13 +133,13 @@ public class LangTestCase {
 
     @Test
     public void testSimpleCond() {
-        SExpression sexp = eval("(COND ((EQL 2 2) SNOO) ((EQL 3 4) BOO) ((EQL 5 5) (+ 4 5)))");
+        SExpression sexp = eval("(COND ((EQL 2 2) \"SNOO\") ((EQL 3 4) \"BOO\") ((EQL 5 5) (+ 4 5)))");
         assertEquals("SNOO", sexp.toString());
 
-        sexp = UnitTestUtilities.eval("(COND ((EQL 2 3) SNOO) ((EQL 4 4) BOO) ((EQL 5 5) (+ 4 5)))");
+        sexp = UnitTestUtilities.eval("(COND ((EQL 2 3) \"SNOO\") ((EQL 4 4) \"BOO\") ((EQL 5 5) (+ 4 5)))");
         assertEquals("BOO", sexp.toString());
 
-        sexp = UnitTestUtilities.eval("(COND ((EQL 2 3) SNOO) ((EQL 3 4) BOO) ((EQL 5 5) (+ 4 5)))");
+        sexp = UnitTestUtilities.eval("(COND ((EQL 2 3) \"SNOO\") ((EQL 3 4) \"BOO\") ((EQL 5 5) (+ 4 5)))");
         assertEquals(9, sexp.toAtom().toI());
     }
 
@@ -213,7 +214,7 @@ public class LangTestCase {
 
     @Test
     public void testConsLiteralToEmptyList() {
-        final SExpression sexp = eval("(CONS HELLO ())");
+        final SExpression sexp = eval("(CONS \"HELLO\" ())");
         assertEquals("( HELLO )", String.valueOf(sexp));
     }
 
@@ -391,7 +392,7 @@ public class LangTestCase {
         assertEquals("John", result.toString());
 
         // Test with optional arg
-        result = session.eval("(greet 'John 'Dr)");
+        result = session.eval("(greet \"John\" \"Dr\")");
         assertEquals("( Dr John )", result.toString());
     }
 
@@ -646,14 +647,7 @@ public class LangTestCase {
         final Session session = newSession();
         session.eval("(progn (setq x 1) (let ((y 2)) (+ x y)))");
         assertEquals(1, session.eval("x").toAtom().toI());
-
-        try {
-            // TODO - Should give undefined symbol error ...
-            session.eval("y").toAtom().toI();
-            fail("Expected TypeConversionException");
-        } catch (TypeConversionException e) {
-            // Okay
-        }
+        assertThrows(UndefinedSymbolException.class, () -> session.eval("y"));
     }
 
     @Test
@@ -705,7 +699,7 @@ public class LangTestCase {
         assertEquals(3, session.eval("(test-func)").toAtom().toI());
 }
 
-    @Test(expected = EvaluationException.class)
+    @Test(expected = UndefinedSymbolException.class)
     public void testPrognWithError() {
         // Test that errors in middle of PROGN propagate correctly
         eval("(progn (setq x 1) (undefined-function) (setq y 2))");
@@ -813,17 +807,17 @@ public class LangTestCase {
 
     @Test
     public void testQuoteWithPlusOperator() {
-        final SExpression sexp = eval("(list '+ x 1)");
+        final SExpression sexp = eval("(list '+ 4 1)");
         assertTrue(sexp.isList());
-        assertEquals("( + x 1 )", sexp.toString());
+        assertEquals("( + 4 1 )", sexp.toString());
         assertEquals(3, sexp.toList().lengthAsInt());
     }
 
     @Test
     public void testQuoteWithMultiplierOperator() {
-        final SExpression sexp = eval("(list '* x 2)");
+        final SExpression sexp = eval("(list '* 5 2)");
         assertTrue(sexp.isList());
-        assertEquals("( * x 2 )", sexp.toString());
+        assertEquals("( * 5 2 )", sexp.toString());
         assertEquals(3, sexp.toList().lengthAsInt());
     }
 
@@ -861,5 +855,33 @@ public class LangTestCase {
         assertEquals("( C D )", result.toString());
         X = session.eval("X");
         assertEquals("( C D )", X.toString());
+    }
+
+    /**
+     * This test is actually indirectly exercising lexing and parsing to ensure that it's
+     * distinguishing between a symbol x and a literal string "x". At the time this test was
+     * implemented, it failed because eval would evaluate a bare x to the string literal "x" if
+     * it wasn't defined as a symbol, instead of throwing an unknown symbol exception.
+     */
+    @Test
+    public void testSetQVarVsBareVar() {
+        final Session session = newSession();
+
+        // Evaling a bare, undefined symbol should throw.
+        assertThrows(UndefinedSymbolException.class, () -> session.eval("x"));
+
+        // Evaling a string literal should produce the string.
+        assertEquals("x", session.eval("\"x\"").toAtom().toS());
+
+        // Create and bind 'x' as a symbol.
+        session.eval("(setq x 5)");
+
+        // Evaling a symbol should return the value it is bound to.
+        assertEquals(5, session.eval("x").toAtom().toI());
+    }
+
+    @Test
+    public void testNil() {
+        assertTrue(eval("NIL").isNil());
     }
 }

@@ -140,15 +140,16 @@ public class Lexer {
                 state.inComment = true;
             } else if (ch == Grammar.QUOTE && !state.inQuote) {
                 tokens.add(Token.LPAREN);
-                tokens.add(Token.fromAtom("QUOTE"));
+                tokens.add(Token.asSymbol("QUOTE"));
                 state.inQuote = true;
                 state.expectAtom = true;
             } else if (isIdentifierStart(ch) || isNumericLiteralStart(ch)) {
+                boolean isNumericLiteral = isNumericLiteralStart(ch);
                 while (j < s.length() && Grammar.IDENTIFIER_REST_PATTERN.matcher(s.substring(i, j + 1)).matches()) {
                     j++;
                 }
 
-                tokens.add(Token.fromAtom(s.substring(i, j)));
+                tokens.add(isNumericLiteral ? Token.asLiteral(s.substring(i, j)) : Token.asSymbol(s.substring(i, j)));
 
                 if (state.expectAtom) {
                     tokens.add(Token.RPAREN);
@@ -209,7 +210,7 @@ public class Lexer {
                 }
 
                 // Create a string token with the processed content
-                tokens.add(Token.fromAtom(stringContent.toString()));
+                tokens.add(Token.asLiteral(stringContent.toString()));
 
                 if (state.expectAtom) {
                     tokens.add(Token.RPAREN);
@@ -217,7 +218,7 @@ public class Lexer {
                     state.expectAtom = false;
                 }
             } else if (isSymbol(ch)) {
-                tokens.add(Token.fromAtom(String.valueOf(ch)));
+                tokens.add(Token.asSymbol(String.valueOf(ch)));
             }
             i = j;
         }

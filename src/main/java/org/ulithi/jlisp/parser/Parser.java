@@ -57,13 +57,17 @@ public class Parser {
         private SExpression parseTokens(final java.util.List<Token> tokens) {
             final Token token = tokens.get(pos);
 
+            pos++;
             if (token.isListStart()) {
-                pos++;
                 return parseList(tokens);
-            } else if (token.isAtom()) {
-                pos++;
+            } else if (token.isNil()) {
+                return Atom.NIL;
+            } else if (token.isSymbol()) {
+                return Atom.createSymbol(token.value());
+            } else if (token.isLiteral()) {
                 return parseToken(token.value());
             }
+            pos--;
 
             throw new ParseException("Unexpected token: " + token);
         }

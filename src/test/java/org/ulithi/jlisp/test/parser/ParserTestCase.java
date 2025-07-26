@@ -191,7 +191,9 @@ public class ParserTestCase {
         for (final String token: tokens) {
             if (token.equals(Grammar.LPAREN)) { tokenized.add(Token.LPAREN); }
             else if (token.equals(Grammar.RPAREN)) { tokenized.add(Token.RPAREN); }
-            else { tokenized.add(Token.fromAtom(token)); }
+            else if (token.startsWith("\"") && token.endsWith("\"")) { tokenized.add(Token.asLiteral(token)); }
+            else if (token.matches("-?\\d+")) { tokenized.add(Token.asLiteral(token)); }
+            else { tokenized.add(Token.asSymbol(token)); }
         }
         return tokenized;
     }
