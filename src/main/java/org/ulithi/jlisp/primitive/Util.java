@@ -32,6 +32,9 @@ public class Util implements BindingProvider {
     public static class EQL extends BindableFunction {
         public EQL() { super("EQL"); }
 
+        @Override
+        public String[] synonyms() { return new String[]{ "=" }; }
+
         /** {@inheritDoc} */
         @Override
         public SExpression apply(final SExpression sexp) {
@@ -50,7 +53,8 @@ public class Util implements BindingProvider {
                 if (lhs.isAtom() && rhs.isAtom()) {
                     result = lhs.toAtom().eql(rhs.toAtom());
                 } else if (lhs.isList() && rhs.isList()) {
-                    result = lhs.toList().isEmpty() && rhs.toList().isEmpty();
+                    // The effective address for a List is the address (object id) of its root cell.
+                    result = (lhs.toList().getRoot() == rhs.toList().getRoot());
                 } else {
                     result = (lhs == it.car());
                 }

@@ -59,6 +59,13 @@ import static org.ulithi.jlisp.mem.NilReference.NIL;
  * </ul>
  */
 public class Cell implements Ref {
+
+    /**
+     * Special singleton {@link Cell} representing the NIL value. This is in part to help
+     * ensure that any two empty lists are considered {@code EQL}.
+     */
+    public static final Cell NIL_CELL = new Cell(NIL, NIL);
+
     /**
      * The first/lhs field in this cell. This can be an Atom, Symbol, Function or a reference to a
      * Cell, which is interpreted as the head cell of a sub-list.

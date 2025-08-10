@@ -90,7 +90,7 @@ public class Parser {
             SExpression car = parseTokens(tokens);
 
             // Check for dot notation
-            if (pos < tokens.size() /*!tokens.isEmpty()*/ && tokens.get(pos).isDot()) {
+            if (pos < tokens.size() && tokens.get(pos).isDot()) {
                 pos++;
                 SExpression cdr = parseTokens(tokens);
 

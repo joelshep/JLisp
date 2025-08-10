@@ -6,11 +6,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.SystemErrRule;
 import org.junit.contrib.java.lang.system.SystemOutRule;
+import org.ulithi.jlisp.core.List;
 import org.ulithi.jlisp.core.SExpression;
+import org.ulithi.jlisp.test.suite.UnitTestUtilities;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.ulithi.jlisp.test.suite.UnitTestUtilities.Session;
 import static org.ulithi.jlisp.test.suite.UnitTestUtilities.eval;
+import static org.ulithi.jlisp.test.suite.UnitTestUtilities.newSession;
 
 /**
  * Unit tests for {@link org.ulithi.jlisp.primitive.Util}.
@@ -35,24 +39,70 @@ public class UtilTestCase {
     }
 
     @Test
-    public void testAtomsAreEq() {
+    public void testSameListIsEql() {
+        Session session = newSession();
+        session.eval("(SETQ MY-LIST (QUOTE (1 2 3)))");
+        final SExpression sexp = session.eval("(EQL MY-LIST MY-LIST)");
+        assertTrue(sexp.isAtom());
+        assertTrue(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testDifferentListsWithSameContentsAreNotEql() {
+        final SExpression sexp = eval("(EQL (QUOTE (1 2 3)) (QUOTE (1 2 3)))");
+        assertTrue(sexp.isAtom());
+        assertFalse(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testSameNumberIsEql() {
+        final SExpression sexp = eval("(EQL 42 42)");
+        assertTrue(sexp.isAtom());
+        assertTrue(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testDifferentNumbersAreNotEql() {
+        final SExpression sexp = eval("(EQL 42 43)");
+        assertTrue(sexp.isAtom());
+        assertFalse(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testSameSymbolIsEql() {
         final SExpression sexp = eval("(EQL (QUOTE FOO) (QUOTE FOO))");
         assertTrue(sexp.isAtom());
         assertTrue(sexp.toAtom().toB());
     }
 
     @Test
-    public void testEqlIsCaseSensitive() {
-        final SExpression sexp = eval("(EQL (QUOTE FOO) (QUOTE Foo))");
+    public void testDifferentSymbolsAreNotEql() {
+        final SExpression sexp = eval("(EQL (QUOTE FOO) (QUOTE BAR))");
         assertTrue(sexp.isAtom());
         assertFalse(sexp.toAtom().toB());
     }
 
     @Test
-    public void testDifferentAtomsAreNotEql() {
-        final SExpression sexp = eval("(EQL (QUOTE FOO) (QUOTE BAR))");
+    public void testSameEmptyListIsEql() {
+        List emptyList = eval("(QUOTE ())").toList();
+        String expr = String.format("(EQL '%s '%s)", emptyList, emptyList);
+        SExpression sexp = eval(expr);
         assertTrue(sexp.isAtom());
-        assertFalse(sexp.toAtom().toB());
+        assertTrue(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testDifferentEmptyListsAreEql() {
+        final SExpression sexp = eval("(EQL (LIST) (LIST))");
+        assertTrue(sexp.isAtom());
+        assertTrue(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testQuotedEmptyListsAreEql() {
+        final SExpression sexp = eval("(EQL (QUOTE ()) (QUOTE ()))");
+        assertTrue(sexp.isAtom());
+        assertTrue(sexp.toAtom().toB());
     }
 
     @Test
@@ -63,10 +113,45 @@ public class UtilTestCase {
     }
 
     @Test
-    public void testEmptyListsAreEql() {
-        final SExpression sexp = eval("(EQL (QUOTE ()) (QUOTE ()))");
+    public void testConsedListsAreNotEql() {
+        final SExpression sexp = eval("(EQL (CONS 1 NIL) (CONS 1 NIL))");
+        assertTrue(sexp.isAtom());
+        assertFalse(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testNilIsEqlToItself() {
+        final SExpression sexp = eval("(EQL NIL NIL)");
         assertTrue(sexp.isAtom());
         assertTrue(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testTIsEqlToItself() {
+        final SExpression sexp = eval("(EQL T T)");
+        assertTrue(sexp.isAtom());
+        assertTrue(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testFIsEqlToItself() {
+        final SExpression sexp = eval("(EQL F F)");
+        assertTrue(sexp.isAtom());
+        assertTrue(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testAtomsAreEql() {
+        final SExpression sexp = eval("(EQL (QUOTE FOO) (QUOTE FOO))");
+        assertTrue(sexp.isAtom());
+        assertTrue(sexp.toAtom().toB());
+    }
+
+    @Test
+    public void testEqlIsCaseSensitive() {
+        final SExpression sexp = eval("(EQL (QUOTE FOO) (QUOTE Foo))");
+        assertTrue(sexp.isAtom());
+        assertFalse(sexp.toAtom().toB());
     }
 
     @Test

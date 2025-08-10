@@ -8,6 +8,7 @@ import org.ulithi.jlisp.mem.Ref;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import static org.ulithi.jlisp.mem.Cell.NIL_CELL;
 import static org.ulithi.jlisp.mem.NilReference.NIL;
 
 /**
@@ -28,11 +29,11 @@ public class List implements SExpression {
     private Cell end = null;
 
     /**
-     * Creates an empty {@link List}.
+     * Creates an empty {@link List}. All empty lists are considered {@code EQL}.
      * @return An empty {@code List}.
      */
     public static List create() {
-        return new List(Cell.create());
+        return new List(NIL_CELL);
     }
 
     /**
