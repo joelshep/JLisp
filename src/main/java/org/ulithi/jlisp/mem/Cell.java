@@ -90,6 +90,16 @@ public class Cell implements Ref {
     }
 
     /**
+     * Creates a "cons" {@link Cell} representing a dotted pair.
+     * @param car A {@code Ref} that will be the new {@code Cell's} first element.
+     * @param cdr A {@code Ref} that will be the new {@code Cell's} second element.
+     * @return A new {@link Cell} of the form {@code (<car> . <cdr>)}.
+     */
+    public static Cell create(final Ref car, final Ref cdr) {
+        return new Cell(car, cdr);
+    }
+
+    /**
      * Constructs a new list {@link Cell} with a literal {@link Atom} for the given {@code token}
      * as the {@code first} element and {@code NIL} as the {@code rest} element.
      *

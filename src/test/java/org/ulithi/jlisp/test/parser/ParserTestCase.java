@@ -146,31 +146,115 @@ public class ParserTestCase {
     }
 
     @Test
-    public void testListWithNilAsElement() {
-        final List<String> tokens = Arrays.asList("(", "NIL", ")");
-        final String expected = "( NIL )";
-        parseAndValidate(parser, tokens, expected);
+    public void testParseDottedPair() {
+        List<Token> tokens = Arrays.asList(
+            Token.LPAREN,
+            Token.asSymbol("a"),
+            Token.DOT,
+            Token.asSymbol("b"),
+            Token.RPAREN
+        );
+
+        SExpression result = parse(parser, tokens);
+        assertTrue(result.isList());
+        assertEquals("a", result.toList().car().toAtom().toS());
+        assertEquals("b", result.toList().cdr().toAtom().toS());
     }
 
     @Test
-    public void testNilIsCaseInsensitive() {
-        final String expected = "( NIL )";
-        List<String> tokens = Arrays.asList("(", "NIL", ")");
-        parseAndValidate(parser, tokens, expected);
-        tokens = Arrays.asList("(", "nil", ")");
-        parseAndValidate(parser, tokens, expected);
-        tokens = Arrays.asList("(", "NiL", ")");
-        parseAndValidate(parser, tokens, expected);
+    public void testParseNestedDottedPair() {
+        List<Token> tokens = Arrays.asList(
+            Token.LPAREN,
+            Token.LPAREN,
+            Token.asSymbol("a"),
+            Token.DOT,
+            Token.asSymbol("b"),
+            Token.RPAREN,
+            Token.DOT,
+            Token.asSymbol("c"),
+            Token.RPAREN
+        );
+
+        SExpression result = parse(parser, tokens);
+        assertTrue(result.isList());
+        SExpression car = result.toList().car();
+        assertTrue(car.isList());
+        assertEquals("a", car.toList().car().toAtom().toS());
+        assertEquals("b", car.toList().cdr().toAtom().toS());
+
+        SExpression cdr = result.toList().cdr();
+        assertEquals("c", cdr.toAtom().toS());
     }
 
-    /**
-     * Parses the given list of tokens and compares the resulting dotted-pair representation
-     * to the expected result.
-     *
-     * @param parser The parser.
-     * @param tokens The list of tokens to parse.
-     * @param expected The dotted-pair expression the parsed tokens are expected to produce.
-     */
+        @Test
+        public void testParseDottedPairWithList() {
+            List<Token> tokens = Arrays.asList(
+                    Token.LPAREN,
+                    Token.asSymbol("a"),
+                    Token.DOT,
+                    Token.LPAREN,
+                    Token.asSymbol("b"),
+                    Token.asSymbol("c"),
+                    Token.RPAREN,
+                    Token.RPAREN
+            );
+
+            SExpression result = parse(parser, tokens);
+            assertTrue(result.isList());
+            SExpression car = result.toList().car();
+            assertEquals("a", car.toAtom().toS());
+
+            SExpression cdr = result.toList().cdr();
+            assertTrue(cdr.isList());
+            assertEquals("b", cdr.toList().car().toAtom().toS());
+            assertEquals("c", cdr.toList().cdr().toList().car().toAtom().toS());
+        }
+
+        @Test(expected = ParseException.class)
+        public void testParseInvalidDottedPair() {
+            List<Token> tokens = Arrays.asList(
+                Token.LPAREN,
+                Token.asSymbol("a"),
+                Token.DOT,
+                Token.DOT,
+                Token.RPAREN
+            );
+
+            parser.parse(tokens);
+        }
+
+        @Test
+        public void testListWithNilAsElement() {
+            final List<String> tokens = Arrays.asList("(", "NIL", ")");
+            final String expected = "( NIL )";
+            parseAndValidate(parser, tokens, expected);
+        }
+
+        @Test
+        public void testNilIsCaseInsensitive() {
+            final String expected = "( NIL )";
+            List<String> tokens = Arrays.asList("(", "NIL", ")");
+            parseAndValidate(parser, tokens, expected);
+            tokens = Arrays.asList("(", "nil", ")");
+            parseAndValidate(parser, tokens, expected);
+            tokens = Arrays.asList("(", "NiL", ")");
+            parseAndValidate(parser, tokens, expected);
+        }
+
+        private static SExpression parse(final Parser parser, final List<Token> tokens) {
+            final Optional<SExpression> sexp = parser.parse(tokens);
+            assertTrue(sexp.isPresent());
+            return sexp.get();
+        }
+
+        /**
+         * Parses the given list of tokens and compares the resulting dotted-pair representation
+         * to the expected result.
+         *
+         * @param parser The parser.
+         * @param tokens The list of tokens to parse.
+         * @param expected The dotted-pair expression the parsed tokens are expected to produce.
+         */
     private static void parseAndValidate(final Parser parser,
                                          final List<String> tokens,
                                          final String expected) {

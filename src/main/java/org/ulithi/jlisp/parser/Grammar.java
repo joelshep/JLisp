@@ -63,7 +63,6 @@ public class Grammar {
     static {
         SYMBOLS.add('(');
         SYMBOLS.add(')');
-        SYMBOLS.add('.');
         SYMBOLS.add('\'');
     }
 
@@ -75,9 +74,6 @@ public class Grammar {
 
     /** Regular expression for line/expression that is whitespace and a comment. */
     public static final String FULL_LINE_COMMENT = "^\\s*;+.*$";
-
-    /** Dot symbol (for S-Expressions) */
-    public static final String DOT = ".";
 
     /** Single quote (shorthand for QUOTE) */
     public static final char QUOTE = '\'';
@@ -92,6 +88,10 @@ public class Grammar {
     /** Right parenthesis. */
     public static final String RPAREN = ")";
     public static final char RPAREN_CHAR = ')';
+
+    /** Dot symbol (for S-Expressions) */
+    public static final String DOT = ".";
+    public static final char DOT_CHAR = '.';
 
     /** Semicolon (starts a rest-of-line comment). */
     public static final char SEMI = ';';

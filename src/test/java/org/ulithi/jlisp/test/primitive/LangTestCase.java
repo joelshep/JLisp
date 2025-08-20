@@ -8,7 +8,6 @@ import org.ulithi.jlisp.core.SExpression;
 import org.ulithi.jlisp.exception.EvaluationException;
 import org.ulithi.jlisp.exception.InvalidArgumentException;
 import org.ulithi.jlisp.exception.SyntaxException;
-import org.ulithi.jlisp.exception.TypeConversionException;
 import org.ulithi.jlisp.exception.UndefinedSymbolException;
 import org.ulithi.jlisp.exception.WrongArgumentCountException;
 import org.ulithi.jlisp.test.suite.UnitTestUtilities;

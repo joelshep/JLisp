@@ -25,6 +25,16 @@
 (EXPECT (CAR NIL) NIL)
 (EXPECT (CDR NIL) NIL)
 
+;; Forms for dotted pairs.
+(EXPECT (CONS 'A 'B) '(A . B))
+(EXPECT (CAR '(A . B)) 'A)
+(EXPECT (CDR '(A . B)) 'B)
+(EXPECT (CAR (CONS 'A 'B)) 'A)
+(EXPECT (CDR (CONS 'A 'B)) 'B)
+(EXPECT (CDR '(A . (B . C))) '(B . C))
+(EXPECT (CAR '((A . B) . C)) '( A . B ))
+(EXPECT (CONS 'A (CONS 'B 'C)) '(A B . C))
+
 ;; Forms for GETF
 (EXPECT (GETF '(A B 4 D A X) 'A) 'B)
 (EXPECT (GETF '(A B 4 D A X) 'X) NIL)

@@ -94,14 +94,12 @@ public class Parser {
                 pos++;
                 SExpression cdr = parseTokens(tokens);
 
-                if (tokens.isEmpty() || !tokens.get(pos).isListEnd()) {
-                    throw new ParseException("Expected closing parenthesis");
+                if (pos >= tokens.size() || !tokens.get(pos).isListEnd()) {
+                    throw new ParseException("Dotted pair should have exactly two sub-forms");
                 }
 
                 pos++;
-                final org.ulithi.jlisp.core.List ret = org.ulithi.jlisp.core.List.create();
-                ret.add(car).add(cdr);
-                return ret;
+                return List.create(car, cdr);
             }
 
             // Normal list

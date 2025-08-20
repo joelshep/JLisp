@@ -219,6 +219,8 @@ public class Lexer {
                 }
             } else if (isSymbol(ch)) {
                 tokens.add(Token.asSymbol(String.valueOf(ch)));
+            } else if (ch == Grammar.DOT_CHAR) {
+                tokens.add(Token.DOT);
             }
             i = j;
         }

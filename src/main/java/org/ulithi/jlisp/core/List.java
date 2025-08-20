@@ -48,6 +48,17 @@ public class List implements SExpression {
     }
 
     /**
+     * Creates a new "improper" list with the given {@code car} and {@link cdr} elements: a
+     * two-element list that is not terminated by NIL or the empty list.
+     * @param car A {@link Ref} to the first element of the list.
+     * @param cdr A {@link Ref} to the second element of the list.
+     * @return A new {@link List} that is the dotted pair of {@code car} and {@code cdr}.
+     */
+    public static List create(final Ref car, final Ref cdr) {
+        return new List(Cell.create(car, cdr));
+    }
+
+    /**
      * Private constructor: constructs a new List with the given Cell as its root node.
      *
      * @param root The root node of the new List.

@@ -25,25 +25,25 @@ public class LexerTestCase {
     @Test
     public void testTokenizeSimpleExpressions() {
         assertEquals(toList("(", "PLUS", "2", "3", ")"),
-                     tokenize("(PLUS 2 3)"));
+                     toTokenValues("(PLUS 2 3)"));
         assertEquals(toList("(", "PLUS", "3", "4", ")"),
-                     tokenize("( PLUS 3 4 )"));
+                     toTokenValues("( PLUS 3 4 )"));
         assertEquals(toList("(", ")"),
-                     tokenize("()"));
+                     toTokenValues("()"));
         assertEquals(toList("(", ")"),
-                     tokenize(" ( ) "));
+                     toTokenValues(" ( ) "));
         assertEquals(toList("HELLO"),
-                     tokenize("HELLO"));
+                     toTokenValues("HELLO"));
         assertEquals(toList("FOO"),
-                     tokenize(" FOO "));
+                     toTokenValues(" FOO "));
         assertEquals(toList("123"),
-                     tokenize("123"));
+                     toTokenValues("123"));
         assertEquals(toList("456"),
-                     tokenize("  456 "));
+                     toTokenValues("  456 "));
         assertEquals(toList("-123"),
-                     tokenize("-123"));
+                     toTokenValues("-123"));
         assertEquals(toList("A"),
-                     tokenize("A"));
+                     toTokenValues("A"));
     }
 
     /**
@@ -52,98 +52,98 @@ public class LexerTestCase {
     @Test
     public void testTokenizeNestedExpressions() {
         assertEquals(toList("(", "A", "(", "B", "C", ")", ")"),
-                     tokenize("( A ( B C ) )"));
+                     toTokenValues("( A ( B C ) )"));
         assertEquals(toList("(", "A", "(", ")", ")"),
-                     tokenize("(A () )"));
+                     toTokenValues("(A () )"));
         assertEquals(toList("(", "(","A",  ")", ")"),
-                     tokenize("( (A) )"));
+                     toTokenValues("( (A) )"));
         assertEquals(toList("(", "A", "(", "B", "C", ")", "(", "C", "D", ")", ")"),
-                     tokenize("(A (B C) (C D ) )"));
+                     toTokenValues("(A (B C) (C D ) )"));
         assertEquals(toList("(", "A", "(", "B", "C", "(", "C", "D", ")", ")"),
-                     tokenize("(A (B C (C D ) )"));
+                     toTokenValues("(A (B C (C D ) )"));
     }
 
     @Test
     public void testTokenizeHyphenatedAtom() {
         assertEquals(toList("this-is-an-atom"),
-                     tokenize("this-is-an-atom"));
+                     toTokenValues("this-is-an-atom"));
     }
 
     @Test
     public void testTokenizeSingleQuoteAtom() {
         // 'A
-        assertEquals(toList("(", "QUOTE", "A", ")"), tokenize("'A"));
+        assertEquals(toList("(", "QUOTE", "A", ")"), toTokenValues("'A"));
 
         // 'FOO
-        assertEquals(toList("(", "QUOTE", "FOO", ")"), tokenize("'FOO"));
+        assertEquals(toList("(", "QUOTE", "FOO", ")"), toTokenValues("'FOO"));
     }
 
     @Test
     public void testTokenizeSingleQuoteList() {
         // '(FOO BAR)
         assertEquals(toList("(", "QUOTE", "(", "FOO", "BAR", ")", ")"),
-                     tokenize("'(FOO BAR)"));
+                     toTokenValues("'(FOO BAR)"));
 
         // '(1 2 3)
         assertEquals(toList("(", "QUOTE", "(", "1", "2", "3", ")", ")"),
-                     tokenize("'(1 2 3)"));
+                     toTokenValues("'(1 2 3)"));
     }
 
     @Test
     public void testQuoteMultipleAtoms() {
         // (LIST 'A 'B 'C)
         assertEquals(toList("(", "LIST", "(", "QUOTE", "A", ")", "(", "QUOTE", "B", ")", "(", "QUOTE", "C", ")", ")"),
-                     tokenize("(LIST 'A 'B 'C)"));
+                     toTokenValues("(LIST 'A 'B 'C)"));
     }
 
     @Test
     public void testQuoteMixed() {
         // (CAR (CONS 'A '(B C)))
         assertEquals(toList("(", "CAR", "(", "CONS", "(", "QUOTE", "A", ")", "(", "QUOTE", "(", "B", "C", ")", ")", ")", ")"),
-                     tokenize("(CAR (CONS 'A '(B C)))"));
+                     toTokenValues("(CAR (CONS 'A '(B C)))"));
     }
 
     @Test
     public void testQuoteMultipleLists() {
         // (LIST '(A B) '(C D) 'E)
         assertEquals(toList("(", "LIST", "(", "QUOTE", "(", "A", "B", ")", ")", "(", "QUOTE", "(", "C", "D", ")", ")", "(", "QUOTE", "E", ")", ")"),
-                     tokenize("(LIST '(A B) '(C D) 'E)"));
+                     toTokenValues("(LIST '(A B) '(C D) 'E)"));
     }
 
     @Test
     public void testNestedQuote() {
         // (LIST 'A 'B '(C 'D E))
         assertEquals(toList("(", "LIST", "(", "QUOTE", "A", ")", "(", "QUOTE", "B", ")", "(", "QUOTE", "(", "C", "'", "D", "E", ")", ")", ")"),
-                     tokenize("(LIST 'A 'B '(C 'D E))"));
+                     toTokenValues("(LIST 'A 'B '(C 'D E))"));
     }
 
     @Test
     public void testFullLineComment() {
-        final List<String> tokens = tokenize("; (A B C)   ");
+        final List<String> tokens = toTokenValues("; (A B C)   ");
         assertTrue(tokens.isEmpty());
     }
 
     @Test
     public void testEndOfLineComment() {
         assertEquals(toList("(", "+", "1", "2", "3", ")"),
-                     tokenize("(+ 1 2 3) ; Add some numbers"));
+                     toTokenValues("(+ 1 2 3) ; Add some numbers"));
     }
 
     @Test
     public void testNewlineTerminatesComment() {
         assertEquals(toList("(", "+", "1", "2", ")", "(", "+", "3", "4", ")"),
-                     tokenize("(+ 1 2) ; Multi-line input, yo\n(+ 3 4)"));
+                     toTokenValues("(+ 1 2) ; Multi-line input, yo\n(+ 3 4)"));
     }
 
     @Test
     public void testTokenizeQuotedString() {
         assertEquals(toList("(", "PRINT", "Hello World", ")"),
-                     tokenize("(PRINT \"Hello World\")"));
+                     toTokenValues("(PRINT \"Hello World\")"));
     }
 
     @Test(expected = ParseException.class)
     public void testTooManyCloseParensThrows() {
-        tokenize("(+ 1 2 (* 2 3)))");
+        toTokenValues("(+ 1 2 (* 2 3)))");
     }
 
     @Test
@@ -192,6 +192,81 @@ public class LexerTestCase {
     }
 
     @Test
+    public void testSimpleDottedPair() {
+        final List<Token> tokens = toTokens("(a . b)");
+        assertEquals(5, tokens.size());
+        assertEquals(Token.LPAREN, tokens.get(0));
+        assertEquals("a", tokens.get(1).value());
+        assertEquals(Token.DOT, tokens.get(2));
+        assertEquals("b", tokens.get(3).value());
+        assertEquals(Token.RPAREN, tokens.get(4));
+    }
+
+    @Test
+    public void testNestedDottedPair() {
+        final List<Token> tokens = toTokens("((1 . 2) . 3)");
+        assertEquals(9, tokens.size());
+        assertEquals(Token.LPAREN, tokens.get(0));
+        assertEquals(Token.LPAREN, tokens.get(1));
+        assertEquals("1", tokens.get(2).value());
+        assertEquals(Token.DOT, tokens.get(3));
+        assertEquals("2", tokens.get(4).value());
+        assertEquals(Token.RPAREN, tokens.get(5));
+        assertEquals(Token.DOT, tokens.get(6));
+        assertEquals("3", tokens.get(7).value());
+        assertEquals(Token.RPAREN, tokens.get(8));
+    }
+
+    @Test
+    public void testDottedPairWithList() {
+        final List<Token> tokens = toTokens("(a . (b c))");
+        assertEquals(8, tokens.size());
+        assertEquals(Token.LPAREN, tokens.get(0));
+        assertEquals("a", tokens.get(1).value());
+        assertEquals(Token.DOT, tokens.get(2));
+        assertEquals(Token.LPAREN, tokens.get(3));
+        assertEquals("b", tokens.get(4).value());
+        assertEquals("c", tokens.get(5).value());
+        assertEquals(Token.RPAREN, tokens.get(6));
+        assertEquals(Token.RPAREN, tokens.get(7));
+    }
+
+    @Test
+    public void testDotInSymbolName() {
+        final List<Token> tokens = toTokens("my.symbol");
+        assertEquals(1, tokens.size());
+        assertTrue(tokens.get(0).isSymbol());
+        assertEquals("my.symbol", tokens.get(0).value());
+    }
+
+    @Test
+    public void testDotWithWhitespace() {
+        final List<Token> tokens = toTokens("(a  .  b)");
+        assertEquals(5, tokens.size());
+        assertEquals(Token.LPAREN, tokens.get(0));
+        assertEquals("a", tokens.get(1).value());
+        assertEquals(Token.DOT, tokens.get(2));
+        assertEquals("b", tokens.get(3).value());
+        assertEquals(Token.RPAREN, tokens.get(4));
+    }
+
+    @Test
+    public void testMultipleDottedPairs() {
+        final List<Token> tokens = toTokens("(a . b) (c . d)");
+        assertEquals(10, tokens.size());
+        assertEquals(Token.LPAREN, tokens.get(0));
+        assertEquals("a", tokens.get(1).value());
+        assertEquals(Token.DOT, tokens.get(2));
+        assertEquals("b", tokens.get(3).value());
+        assertEquals(Token.RPAREN, tokens.get(4));
+        assertEquals(Token.LPAREN, tokens.get(5));
+        assertEquals("c", tokens.get(6).value());
+        assertEquals(Token.DOT, tokens.get(7));
+        assertEquals("d", tokens.get(8).value());
+        assertEquals(Token.RPAREN, tokens.get(9));
+    }
+
+    @Test
     public void testNewLexer() {
         final Lexer lexer = new Lexer();
         assertFalse(lexer.isComplete());
@@ -216,10 +291,19 @@ public class LexerTestCase {
      * @param expr A string.
      * @return An ordered list of tokens extracted from the given string.
      */
-    private static List<String> tokenize(final String expr) {
+    private static List<String> toTokenValues(final String expr) {
+        return detokenize(toTokens(expr));
+    }
+
+    /**
+     * Tokenizes the given string.
+     * @param expr A string representing a LISP form or expression.
+     * @return An ordered list of tokens extracted from the form.
+     */
+    private static List<Token> toTokens(final String expr) {
         final Lexer lexer = new Lexer();
         lexer.append(expr);
-        return detokenize(lexer.getTokens());
+        return lexer.getTokens();
     }
 
     /**

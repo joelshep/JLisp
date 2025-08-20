@@ -17,11 +17,14 @@ public class Token {
         DOT
     }
 
-    /** Singleton instances of the token for a left-parenthesis (list start). */
+    /** Singleton instance of the token for a left-parenthesis (list start). */
     public static final Token LPAREN = new Token(Grammar.LPAREN, Type.LIST_START);
 
-    /** Singleton instances of the token for a right-parenthesis (list end). */
+    /** Singleton instance of the token for a right-parenthesis (list end). */
     public static final Token RPAREN = new Token(Grammar.RPAREN, Type.LIST_END);
+
+    /** Singleton instance of the token for the dot (cons) symbol. */
+    public static final Token DOT = new Token(Grammar.DOT, Type.DOT);
 
     /** The token value as a String. */
     private final String value;
@@ -89,7 +92,7 @@ public class Token {
      * @return True if this token represents NIL, false otherwise.
      */
     public boolean isNil() {
-        return isSymbol() && value.toUpperCase().equals(Grammar.NIL);
+        return isSymbol() && value.equalsIgnoreCase(Grammar.NIL);
     }
 
     /**
