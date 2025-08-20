@@ -33,6 +33,58 @@ public class PredicateTestCase {
     }
 
     @Test
+    public void testConsIsConsp() {
+        final SExpression sexp = eval("(CONSP (CONS 'A 'B))");
+        assertEquals(Atom.T, sexp);
+    }
+
+    @Test
+    public void testProperListIsConsp() {
+        final SExpression sexp = eval("(CONSP (QUOTE (1 2 3)))");
+        assertEquals(Atom.T, sexp);
+    }
+
+    @Test
+    public void testNilIsNotConsp() {
+        final SExpression sexp = eval("(CONSP NIL)");
+        assertEquals(Atom.F, sexp);
+    }
+
+    @Test
+    public void testAtomIsNotConsp() {
+        final SExpression sexp = eval("(CONSP (QUOTE A))");
+        assertEquals(Atom.F, sexp);
+    }
+
+    @Test
+    public void testNumberIsNotConsp() {
+        final SExpression sexp = eval("(CONSP (QUOTE 42))");
+        assertEquals(Atom.F, sexp);
+    }
+
+    @Test
+    public void testEmptyListIsNotConsp() {
+        final SExpression sexp = eval("(CONSP (QUOTE ()))");
+        assertEquals(Atom.F, sexp);
+    }
+
+    @Test
+    public void testNestedConsIsConsp() {
+        final SExpression sexp = eval("(CONSP (QUOTE ((1 . 2) . 3)))");
+        assertEquals(Atom.T, sexp);
+    }
+
+    @Test(expected = WrongArgumentCountException.class)
+    public void testConspRequiresOneArgument() {
+        eval("(CONSP)");
+    }
+
+    @Test(expected = WrongArgumentCountException.class)
+    public void testConspRejectsTwoArguments() {
+        eval("(CONSP 'A 'B)");
+    }
+
+    @Test
     public void testNumericLiteralIsInteger() {
         final SExpression sexp = eval("(INTEGERP (QUOTE 3))");
         assertEquals(Atom.T, sexp);

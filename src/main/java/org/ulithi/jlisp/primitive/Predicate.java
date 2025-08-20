@@ -22,6 +22,7 @@ public class Predicate implements BindingProvider {
     @Override
     public java.util.List<Binding> getBindings() {
         return Arrays.asList(new Binding(new Predicate.ATOM()),
+                             new Binding(new Predicate.CONSP()),
                              new Binding(new Predicate.INTEGERP()),
                              new Binding(new Predicate.MINUSP()),
                              new Binding(new Predicate.PLUSP()),
@@ -42,11 +43,33 @@ public class Predicate implements BindingProvider {
         public SExpression apply(final SExpression sexp) {
             final List args = sexp.toList();
 
-            if (args.lengthAsInt() == 1 && args.car().isAtom()) {
-                return Atom.T;
+            if (args.lengthAsInt() != 1) {
+                throw new WrongArgumentCountException("Expected one argument: received " + args.lengthAsInt());
             }
 
-            return Atom.F;
+            return args.car().isAtom() ? Atom.T : Atom.F;
+        }
+     }
+
+    /**
+     * Implements the LISP {@code CONSP} function. The {@code CONSP} function accepts a value and
+     * returns true if the value is a cons expression, false otherwise.
+     */
+    public static class CONSP extends BindableFunction {
+        public CONSP() { super("CONSP"); }
+
+        @Override
+        public String[] synonyms() { return new String[]{"CONS?"}; }
+
+        @Override
+        public SExpression apply(final SExpression sexp) {
+            final List args = sexp.toList();
+
+            if (args.lengthAsInt() != 1) {
+                throw new WrongArgumentCountException("Expected one argument: received " + args.lengthAsInt());
+            }
+
+            return (!args.car().isNil() && !args.car().isAtom()) ? Atom.T : Atom.F;
         }
     }
 

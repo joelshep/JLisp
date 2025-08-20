@@ -48,7 +48,7 @@ public class List implements SExpression {
     }
 
     /**
-     * Creates a new "improper" list with the given {@code car} and {@link cdr} elements: a
+     * Creates a new "improper" list with the given {@code car} and {@code cdr} elements: a
      * two-element list that is not terminated by NIL or the empty list.
      * @param car A {@link Ref} to the first element of the list.
      * @param cdr A {@link Ref} to the second element of the list.
